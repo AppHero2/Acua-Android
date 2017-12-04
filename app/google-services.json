@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "173602554771",
+    "firebase_url": "https://acua-a3c6b.firebaseio.com",
+    "project_id": "acua-a3c6b",
+    "storage_bucket": "acua-a3c6b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:173602554771:android:fc93853776dd8e57",
+        "android_client_info": {
+          "package_name": "com.mosili.acua"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "173602554771-2qo6nm72j9853tukrrpleqe6lqh74uu4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mosili.acua",
+            "certificate_hash": "30056c28d7214086457f283947027c4ca33084f2"
+          }
+        },
+        {
+          "client_id": "173602554771-u79h82t6i41arfjeebtcnf3jfqa3lpr2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqfl1QO_Sw-U7d2ohAjjP6O5ZumsQCm38"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "173602554771-u79h82t6i41arfjeebtcnf3jfqa3lpr2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
