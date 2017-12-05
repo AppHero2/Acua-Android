@@ -44,10 +44,10 @@ public class Util {
             .considerExifParams(true)
             .build();
 
-    public static DisplayImageOptions displayImageOptions_circluar = new DisplayImageOptions.Builder()
-            .showImageOnLoading(R.drawable.ic_launcher_foreground)
-            .showImageForEmptyUri(R.drawable.ic_launcher_foreground)
-            .showImageOnFail(R.drawable.ic_launcher_foreground)
+    public static DisplayImageOptions displayProfileOptions_circluar = new DisplayImageOptions.Builder()
+            .showImageOnLoading(R.drawable.ic_profile_person)
+            .showImageForEmptyUri(R.drawable.ic_profile_person)
+            .showImageOnFail(R.drawable.ic_profile_person)
             .cacheInMemory(true)
             .cacheOnDisk(true)
             .considerExifParams(true)
@@ -89,13 +89,14 @@ public class Util {
     }
 
     public static void setProfileImage(String url, ImageView imgView){
-        ImageLoader.getInstance().displayImage(url, imgView, Util.displayImageOptions_circluar, new Util.AnimateSecondDisplayListener());
+        if (url != null)
+            ImageLoader.getInstance().displayImage(url, imgView, Util.displayProfileOptions_circluar, new Util.AnimateSecondDisplayListener());
     }
 
     public static void setProfileImage(String url, ImageView imgView, ImageLoadingListener listener) {
         if (url != null) {
             if (ImageLoader.getInstance() != null) {
-                ImageLoader.getInstance().displayImage(url, imgView, Util.displayImageOptions_circluar, listener);
+                ImageLoader.getInstance().displayImage(url, imgView, Util.displayProfileOptions_circluar, listener);
             }
         }
     }

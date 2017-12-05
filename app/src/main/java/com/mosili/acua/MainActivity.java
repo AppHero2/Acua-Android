@@ -3,6 +3,8 @@ package com.mosili.acua;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,15 +18,29 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.mosili.acua.adapters.ViewPagerAdapter;
 import com.mosili.acua.classes.AppManager;
+import com.mosili.acua.fragments.AppointmentsFragment;
+import com.mosili.acua.fragments.BookingFragment;
 import com.mosili.acua.interfaces.UserValueListener;
 import com.mosili.acua.models.User;
+import com.mosili.acua.utils.Util;
 
 public class MainActivity extends AppCompatActivity
         implements View.OnClickListener, UserValueListener{
 
+    private static final String TAG = "MainActivity";
+
     private ImageView nav_header_Profile;
     private TextView nav_header_Username, nav_header_Useremail;
+
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private String[] tabTitle = new String[2];
+    int[] unreadData ={0, 0};
+
+    private BookingFragment bookingFragment;
+    private AppointmentsFragment appointmentsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +83,42 @@ public class MainActivity extends AppCompatActivity
         Button btnFeedback = (Button) findViewById(R.id.btn_menu_feedback); btnFeedback.setOnClickListener(this);
 
         AppManager.getInstance().setUserValueListenerMain(this);
+
+        //Initializing viewPager
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.setOffscreenPageLimit(3);
+        setupViewPager(viewPager);
+
+        //Initializing the tablayout
+        tabLayout = (TabLayout) findViewById(R.id.tablayout);
+        tabLayout.setupWithViewPager(viewPager);
+
+        try{
+            setupTabIcons();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                viewPager.setCurrentItem(position,false);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        viewPager.setCurrentItem(0);
     }
 
     @Override
@@ -116,30 +168,72 @@ public class MainActivity extends AppCompatActivity
     private void updateUserInfoOnNavHeader(User user){
         nav_header_Username.setText(user.getFirstname() + " " + user.getLastname());
         nav_header_Useremail.setText(user.getEmail());
+        Util.setProfileImage(user.getPhoto(), nav_header_Profile);
     }
 
-    //    @SuppressWarnings("StatementWithEmptyBody")
-//    @Override
-//    public boolean onNavigationItemSelected(MenuItem item) {
-//        // Handle navigation view item clicks here.
-//        int id = item.getItemId();
-//
-//        if (id == R.id.nav_camera) {
-//            // Handle the camera action
-//        } else if (id == R.id.nav_gallery) {
-//
-//        } else if (id == R.id.nav_slideshow) {
-//
-//        } else if (id == R.id.nav_manage) {
-//
-//        } else if (id == R.id.nav_share) {
-//
-//        } else if (id == R.id.nav_send) {
-//
-//        }
-//
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        drawer.closeDrawer(GravityCompat.START);
-//        return true;
-//    }
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        bookingFragment = new BookingFragment();
+        appointmentsFragment = new AppointmentsFragment();
+        adapter.addFragment(bookingFragment,"BOOKING");
+        adapter.addFragment(appointmentsFragment, "APPOINTMENT");
+        viewPager.setAdapter(adapter);
+    }
+
+    private View prepareTabView(int pos) {
+        View view = getLayoutInflater().inflate(R.layout.custom_tab,null);
+        TextView tv_title = (TextView) view.findViewById(R.id.tv_title);
+        TextView tv_count = (TextView) view.findViewById(R.id.tv_count);
+        tv_title.setText(tabTitle[pos]);
+        if(unreadData[pos] > 0)
+        {
+            tv_count.setVisibility(View.VISIBLE);
+            tv_count.setText(""+ unreadData[pos]);
+        }
+        else
+            tv_count.setVisibility(View.GONE);
+
+        return view;
+    }
+
+    private void setupTabIcons()
+    {
+        tabTitle[0] = getString(R.string.tab_title_booking);
+        tabTitle[1] = getString(R.string.tab_title_appoint);
+
+        for(int i = 0; i < tabTitle.length; i++)
+        {
+            /*TabLayout.Tab tabitem = tabLayout.newTab();
+            tabitem.setCustomView(prepareTabView(i));
+            tabLayout.addTab(tabitem);*/
+
+            tabLayout.getTabAt(i).setCustomView(prepareTabView(i));
+        }
+
+    }
+
+    /*@SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }*/
 }
