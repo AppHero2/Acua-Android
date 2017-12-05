@@ -70,7 +70,7 @@ public class RegisterUserActivity extends AppCompatActivity {
     private EditText etFistName, etLastName, etEmail;
     private ImageView imgProfile;
     private ProgressBar bar;
-    private Button btnNext;
+    private AppCompatButton btnNext;
 
     private KProgressHUD hud;
 
@@ -115,7 +115,6 @@ public class RegisterUserActivity extends AppCompatActivity {
         });
 
         btnNext = (AppCompatButton) findViewById(R.id.btnNext);
-        ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0x6fc2d1});
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

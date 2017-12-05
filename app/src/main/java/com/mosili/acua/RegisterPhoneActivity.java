@@ -171,8 +171,6 @@ public class RegisterPhoneActivity extends AppCompatActivity {
         });
 
         btnNext = (AppCompatButton) findViewById(R.id.btnNext);
-        ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0x6fc2d1});
-        btnNext.setSupportBackgroundTintList(csl);
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -316,8 +314,6 @@ public class RegisterPhoneActivity extends AppCompatActivity {
         timer.schedule(new WaitingTask(), 0, 1000);
 
         btnNext.setText(getString(R.string.register_button_resend));
-        ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0x6fc2d1}); // primary
-        btnNext.setSupportBackgroundTintList(csl);
         btnNext.setEnabled(false);
 
         layout_middle.setVisibility(View.GONE);
@@ -330,8 +326,6 @@ public class RegisterPhoneActivity extends AppCompatActivity {
         timer.cancel();
 
         btnNext.setText(getString(R.string.register_button_next));
-        ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0x6fc2d1}); // primary
-        btnNext.setSupportBackgroundTintList(csl);
         btnNext.setEnabled(true);
 
         layout_middle.setVisibility(View.VISIBLE);

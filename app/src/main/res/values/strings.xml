@@ -63,6 +63,15 @@
     <string name="register_user_field_empty">This field should not be empty!</string>
     <string name="register_user_invalid_email">Invalid Email</string>
 
+    <!-- Side Menu -->
+    <string name="side_menu_profile">Profile</string>
+    <string name="side_menu_notification">Notifications</string>
+    <string name="side_menu_payment">Payment</string>
+    <string name="side_menu_share">Share app with friends</string>
+    <string name="side_menu_feedback">Feedback</string>
+    <string name="side_menu_terms">Terms &amp; conditions</string>
+    <string name="side_menu_copyright">Acua v.0.1. Copyright © 2017 Acua Co., Ltd</string>
+
     <!-- Country Picker -->
     <string name="country_picker_search">Search</string>
 

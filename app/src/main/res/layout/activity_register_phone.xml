@@ -115,18 +115,19 @@
         android:id="@+id/btnNext"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:text="@string/register_button_done"
-        android:textColor="@color/colorPrimary"
+        android:text="@string/register_button_next"
+        android:textColor="@color/colorWhite"
         android:layout_below="@+id/layout_auth"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        app:backgroundTint="@color/colorPrimary"/>
 
     <TextView
         android:id="@+id/txtTimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Resend in 00:58"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorGrey"
         android:layout_below="@+id/btnNext"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"

@@ -126,7 +126,7 @@
             android:textColor="@color/colorGrey" />
     </android.support.design.widget.TextInputLayout>
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:text="@string/register_button_done"
@@ -134,6 +134,7 @@
         android:id="@+id/btnNext"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="37dp" />
+        android:layout_marginBottom="37dp"
+        app:backgroundTint="@color/colorPrimary"/>
 
 </RelativeLayout>
