@@ -119,6 +119,9 @@ public class RegisterUserActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (isValidatedRegisterInfo()){
+                    References.getInstance().usersRef.child(userId).child("firstname").setValue(etFistName.getText().toString());
+                    References.getInstance().usersRef.child(userId).child("lastname").setValue(etLastName.getText().toString());
+                    References.getInstance().usersRef.child(userId).child("email").setValue(etEmail.getText().toString());
                     startActivity(new Intent(RegisterUserActivity.this, MainActivity.class));
                 }
             }

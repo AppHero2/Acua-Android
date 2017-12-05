@@ -18,11 +18,17 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.mosili.acua.country.Country;
+import com.mosili.acua.interfaces.UserValueListener;
 import com.mosili.acua.models.User;
+import com.mosili.acua.utils.References;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,9 +41,14 @@ public class AppManager {
     private static final AppManager ourInstance = new AppManager();
     private Context context;
     private Country country;
+
+    private ValueEventListener trackUserListener;
+    private UserValueListener userValueListenerMain;
+
     public static AppManager getInstance() {
         return ourInstance;
     }
+
     private AppManager() {
     }
 
@@ -111,6 +122,43 @@ public class AppManager {
         return country;
     }
 
+    public void setUserValueListenerMain(UserValueListener userValueListenerMain) {
+        this.userValueListenerMain = userValueListenerMain;
+    }
+    
+    /**
+     * this method is used to track user
+     * @param uid : user identity
+     */
+    public void startTrackingUser(String uid) {
+        if (trackUserListener != null)
+            return;
+        trackUserListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null){
+                    Map<String, Object> userData = (Map<String, Object>) dataSnapshot.getValue();
+                    User user = new User(userData);
+                    AppManager.saveSession(user);
+                    if (userValueListenerMain != null) {
+                        userValueListenerMain.onLoadedUser(user);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("TrackUser", databaseError.toString());
+            }
+        };
+        References.getInstance().usersRef.child(uid).addValueEventListener(trackUserListener);
+    }
+
+    public void stopTrackingUser(String uid){
+        if (trackUserListener != null)
+            References.getInstance().usersRef.child(uid).removeEventListener(trackUserListener);
+    }
+
     /**
      * save user data to local storage
      * @param user
@@ -138,7 +186,9 @@ public class AppManager {
         Context context = AppManager.getInstance().context;
         SharedPreferences sharedPreferences = context.getSharedPreferences("AppSession", Context.MODE_PRIVATE);
         String uid = sharedPreferences.getString("uid", null);
-        String name = sharedPreferences.getString("name", "?");
+        String firstname = sharedPreferences.getString("firstname", "?");
+        String lastname = sharedPreferences.getString("lastname", "?");
+        String email = sharedPreferences.getString("email", "?");
         String photo = sharedPreferences.getString("photo", "?");
         String phone = sharedPreferences.getString("phone", "");
         String bio = sharedPreferences.getString("bio", "?");
@@ -147,7 +197,9 @@ public class AppManager {
         if (uid != null) {
             Map<String, Object> data = new HashMap<>();
             data.put("uid", uid);
-            data.put("name", name);
+            data.put("firstname", firstname);
+            data.put("lastname", lastname);
+            data.put("email", email);
             data.put("photo", photo);
             data.put("phone", phone);
             data.put("bio", bio);
