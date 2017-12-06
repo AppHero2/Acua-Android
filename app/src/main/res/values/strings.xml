@@ -76,6 +76,20 @@
     <string name="tab_title_booking">BOOKING</string>
     <string name="tab_title_appoint">APPOINTMENT</string>
 
+    <!-- BOOKING -->
+    <string name="book_wash_type">Wash Type : </string>
+    <string name="book_car_type">Car Type :</string>
+    <string name="book_question_tap">Do you have an accessible tap?</string>
+    <string name="book_question_plug">Do you have an accessible plug?</string>
+    <string name="book_answer_yes">Yes</string>
+    <string name="book_answer_no">No</string>
+    <string name="book_answer_na">N/A</string>
+    <string name="book_schedule">Schedule</string>
+    <string name="book_location">Location</string>
+    <string name="book_button_confirm">Confirm</string>
+
+    <!-- Place Picker -->
+    <string name="map_api_key">AIzaSyC6IrVi3PSVo_GzG-0Gx9LvtSvTlQogCGw</string>
     <!-- Country Picker -->
     <string name="country_picker_search">Search</string>
 

@@ -2,12 +2,273 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.mosili.acua.fragments.BookingFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical|start"
+                android:text="@string/book_wash_type"/>
+
+            <Spinner
+                android:id="@+id/spinerWashTypes"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical|start"
+                android:text="@string/book_car_type"/>
+
+            <Spinner
+                android:id="@+id/spinerCarTypes"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center|left"
+                android:text="@string/book_question_tap"/>
+
+            <RadioGroup
+                android:id="@+id/radioTap"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:checkedButton="@id/rb_tap_yes"
+                android:orientation="horizontal">
+                <RadioButton
+                    android:id="@+id/rb_tap_yes"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/book_answer_yes"/>
+                <RadioButton
+                    android:id="@+id/rb_tap_no"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/book_answer_no"/>
+                <RadioButton
+                    android:id="@+id/rb_tap_na"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/book_answer_na"/>
+            </RadioGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center|left"
+                android:text="@string/book_question_plug"/>
+
+            <RadioGroup
+                android:id="@+id/radioPlug"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:checkedButton="@id/rb_plug_yes"
+                android:orientation="horizontal">
+                <RadioButton
+                    android:id="@+id/rb_plug_yes"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/book_answer_yes"/>
+                <RadioButton
+                    android:id="@+id/rb_plug_no"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/book_answer_no"/>
+            </RadioGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="2"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp">
+
+                <TextView
+                    android:id="@+id/txtDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentTop="true"
+                    android:layout_toLeftOf="@+id/imgDay"
+                    android:layout_toStartOf="@+id/imgDay"
+                    android:gravity="center_vertical"
+                    android:text="2017-09-08"
+                    android:textSize="18sp"
+                    android:textAlignment="center"/>
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="5dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:tint="@color/colorGrey"
+                    android:src="@drawable/ic_calendar"
+                    android:id="@+id/imgDay" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp">
+
+                <TextView
+                    android:id="@+id/txtTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentTop="true"
+                    android:layout_toLeftOf="@+id/imgTime"
+                    android:layout_toStartOf="@+id/imgTime"
+                    android:gravity="center_vertical"
+                    android:text="12:23"
+                    android:textSize="18sp"
+                    android:textAlignment="center"/>
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="5dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:tint="@color/colorGrey"
+                    android:src="@drawable/ic_timer"
+                    android:id="@+id/imgTime" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp">
+
+            <TextView
+                android:id="@+id/txtAddress"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_toLeftOf="@+id/imgAddress"
+                android:layout_toStartOf="@+id/imgAddress"
+                android:gravity="center_vertical"
+                android:text="address"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="5dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:tint="@color/colorGrey"
+                android:src="@drawable/ic_location"
+                android:id="@+id/imgAddress" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:layout_gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                android:text="ZAR"
+                android:textStyle="bold"
+                android:textSize="24sp"
+                android:id="@+id/txtCurrencyUnit" />
+
+            <TextView
+                android:id="@+id/txtPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                android:text="10.00"
+                android:textStyle="bold"
+                android:textSize="20dp"/>
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btnOrder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="@string/book_button_confirm"
+                android:textColor="@color/colorTextPrimary"
+                app:backgroundTint="@color/colorPrimary" />
+
+        </LinearLayout>
+    </LinearLayout>
 
 </FrameLayout>

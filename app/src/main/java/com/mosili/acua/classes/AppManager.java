@@ -19,18 +19,24 @@ import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.mosili.acua.country.Country;
+import com.mosili.acua.interfaces.CarTypeValueListener;
+import com.mosili.acua.interfaces.CostValueListener;
 import com.mosili.acua.interfaces.UserValueListener;
+import com.mosili.acua.interfaces.WashTypeValueListener;
+import com.mosili.acua.models.CarType;
+import com.mosili.acua.models.Cost;
 import com.mosili.acua.models.User;
+import com.mosili.acua.models.WashType;
 import com.mosili.acua.utils.References;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,14 +48,22 @@ public class AppManager {
     private Context context;
     private Country country;
 
-    private ValueEventListener trackUserListener;
+    private ValueEventListener trackUserListener, trackCarTypeListener, trackWashTypeListener, trackCostsListener;
     private UserValueListener userValueListenerMain;
+    private CarTypeValueListener carTypeValueListener;
+    private WashTypeValueListener washTypeValueListener;
+    private CostValueListener costValueListener;
+
+    public List<CarType> carTypes = new ArrayList<>();
+    public List<WashType> washTypes = new ArrayList<>();
+    public List<Cost> costList = new ArrayList<>();
 
     public static AppManager getInstance() {
         return ourInstance;
     }
 
     private AppManager() {
+
     }
 
     public void setContext(Context context) {
@@ -125,7 +139,19 @@ public class AppManager {
     public void setUserValueListenerMain(UserValueListener userValueListenerMain) {
         this.userValueListenerMain = userValueListenerMain;
     }
-    
+
+    public void setCarTypeValueListener(CarTypeValueListener carTypeValueListener) {
+        this.carTypeValueListener = carTypeValueListener;
+    }
+
+    public void setWashTypeValueListener(WashTypeValueListener washTypeValueListener) {
+        this.washTypeValueListener = washTypeValueListener;
+    }
+
+    public void setCostValueListener(CostValueListener costValueListener) {
+        this.costValueListener = costValueListener;
+    }
+
     /**
      * this method is used to track user
      * @param uid : user identity
@@ -157,6 +183,89 @@ public class AppManager {
     public void stopTrackingUser(String uid){
         if (trackUserListener != null)
             References.getInstance().usersRef.child(uid).removeEventListener(trackUserListener);
+    }
+
+    public void startTrackingCarType(){
+        if (trackCarTypeListener != null) return;
+
+        trackCarTypeListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    carTypes.clear();
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        CarType type = new CarType(child.getKey(), (String)child.getValue());
+                        carTypes.add(type);
+                    }
+                    if (carTypeValueListener != null) {
+                        carTypeValueListener.onLoadedCarTypes(carTypes);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("TrackCarType", databaseError.toString());
+            }
+        };
+
+        References.getInstance().carTypeRef.addValueEventListener(trackCarTypeListener);
+    }
+
+    public void startTrackingWashType(){
+        if (trackWashTypeListener != null) return;
+
+        trackWashTypeListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    washTypes.clear();
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        WashType type = new WashType(child.getKey(), (String)child.getValue());
+                        washTypes.add(type);
+                    }
+                    if (washTypeValueListener != null) {
+                        washTypeValueListener.onLoadedWashTypes(washTypes);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("TrackWashType", databaseError.toString());
+            }
+        };
+
+        References.getInstance().washTypeRef.addValueEventListener(trackWashTypeListener);
+    }
+
+    public void startTrackingCosts(){
+        if (trackCostsListener != null) return;
+
+        trackCostsListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    costList.clear();
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        String key = child.getKey();
+                        Number value = (Number) child.getValue();
+                        Cost cost = new Cost(key, value.doubleValue());
+                        costList.add(cost);
+                    }
+                    if (costValueListener != null) {
+                        costValueListener.onLoadedCosts(costList);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("TrackCost", databaseError.toString());
+            }
+        };
+
+        References.getInstance().costsRef.addValueEventListener(trackCostsListener);
     }
 
     /**
