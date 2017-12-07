@@ -250,7 +250,7 @@
                 android:id="@+id/txtCurrencyUnit" />
 
             <TextView
-                android:id="@+id/txtPrice"
+                android:id="@+id/txtCost"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="10dp"

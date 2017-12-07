@@ -29,6 +29,7 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import com.mosili.acua.R;
 import com.mosili.acua.classes.AppManager;
 import com.mosili.acua.models.CarType;
+import com.mosili.acua.models.Cost;
 import com.mosili.acua.models.OrderLocation;
 import com.mosili.acua.models.WashType;
 
@@ -48,11 +49,14 @@ public class BookingFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private Calendar calendar = Calendar.getInstance();
-    private TextView txtDate, txtTime;
+    private TextView txtDate, txtTime,  txtCost;
     private int year, month, day, hour, minute;
 
     private TextView txtAddress;
     private OrderLocation location;
+    private CarType carType;
+    private WashType washType;
+    private Cost currentCost;
 
     public BookingFragment() {
         // Required empty public constructor
@@ -78,10 +82,14 @@ public class BookingFragment extends Fragment {
         for (WashType washType : AppManager.getInstance().washTypes) {
             washNames.add(washType.getName());
         }
+        if (AppManager.getInstance().washTypes.size()>0)
+            washType = AppManager.getInstance().washTypes.get(0);
         List<String> carNames = new ArrayList<>();
         for (CarType carType : AppManager.getInstance().carTypes) {
             carNames.add(carType.getName());
         }
+        if (AppManager.getInstance().carTypes.size()>0)
+            carType = AppManager.getInstance().carTypes.get(0);
 
         ArrayAdapter<String>adapterWashType = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, washNames);
         adapterWashType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -89,7 +97,15 @@ public class BookingFragment extends Fragment {
         spinnerWashType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("BOOKING", adapterView.getItemAtPosition(i).toString());
+                String washName = adapterView.getItemAtPosition(i).toString();
+                for (WashType type : AppManager.getInstance().washTypes){
+                    if (type.getName().equals(washName)) {
+                        washType = type;
+                        break;
+                    }
+                }
+
+                updateCost();
             }
 
             @Override
@@ -98,14 +114,21 @@ public class BookingFragment extends Fragment {
             }
         });
 
-        ArrayAdapter<String>adapterCarType = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_spinner_item, carNames);
+        ArrayAdapter<String>adapterCarType = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, carNames);
         adapterWashType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCarType.setAdapter(adapterCarType);
         spinnerCarType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("BOOKING", adapterView.getItemAtPosition(i).toString());
+                String carName = adapterView.getItemAtPosition(i).toString();
+                for (CarType type : AppManager.getInstance().carTypes){
+                    if (type.getName().equals(carName)) {
+                        carType = type;
+                        break;
+                    }
+                }
+
+                updateCost();
             }
 
             @Override
@@ -178,7 +201,10 @@ public class BookingFragment extends Fragment {
             }
         });
 
+        txtCost = (TextView) view.findViewById(R.id.txtCost);
         AppCompatButton btnConfirm = (AppCompatButton) view.findViewById(R.id.btnOrder);
+
+        updateCost();
 
         return view;
     }
@@ -190,6 +216,24 @@ public class BookingFragment extends Fragment {
 
     private void showTime() {
         txtTime.setText(hour + ":" + minute);
+    }
+
+    private void updateCost(){
+        if (carType!=null && washType!=null){
+            String key = carType.getIdx() + "_" + washType.getIdx();
+            for (Cost cost : AppManager.getInstance().costList) {
+                if (cost.getIdx().equals(key)) {
+                    currentCost = cost;
+                    break;
+                }
+            }
+
+            if (currentCost != null) {
+                txtCost.setText(String.valueOf(currentCost.getPrice()));
+            } else {
+                txtCost.setText(0);
+            }
+        }
     }
 
     @Override
