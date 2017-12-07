@@ -88,6 +88,9 @@
     <string name="book_location">Location</string>
     <string name="book_button_confirm">Confirm</string>
 
+    <!-- APPOINTMENT -->
+    <string name="order_list_empty">No Appointments</string>
+
     <!-- Place Picker -->
     <string name="map_api_key">AIzaSyC6IrVi3PSVo_GzG-0Gx9LvtSvTlQogCGw</string>
     <!-- Country Picker -->
@@ -97,8 +100,5 @@
     <string name="alert_title_notice">Notice</string>
     <string name="alert_button_okay">Ok</string>
     <string name="alert_button_cancel">Cancel</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

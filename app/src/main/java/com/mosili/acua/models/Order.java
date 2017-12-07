@@ -47,5 +47,8 @@ public class Order {
 
         this.payStatus = OrderPayStatus.valueOf(String.valueOf(data.get("payStatus")));
         this.serviceStatus = OrderServiceStatus.valueOf(String.valueOf(data.get("serviceStatus")));
+
+        this.beginAt = ((Number) data.get("beginAt")).longValue();
+        this.endAt = ((Number) data.get("endAt")).longValue();
     }
 }

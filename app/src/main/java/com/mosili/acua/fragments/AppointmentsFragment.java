@@ -4,27 +4,24 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.mosili.acua.R;
+import com.mosili.acua.adapters.OrderListRecyclerViewAdapter;
+import com.mosili.acua.classes.AppManager;
+import com.mosili.acua.interfaces.OrderValueListener;
+import com.mosili.acua.models.Order;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link AppointmentsFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link AppointmentsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class AppointmentsFragment extends Fragment {
-
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -35,8 +32,6 @@ public class AppointmentsFragment extends Fragment {
     public static AppointmentsFragment newInstance(String param1, String param2) {
         AppointmentsFragment fragment = new AppointmentsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -45,19 +40,54 @@ public class AppointmentsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+
         }
     }
+
+    List<Order> orderList = new ArrayList<>();
+
+    RecyclerView rvOrders;
+    TextView tvEmpty;
+
+    OrderListRecyclerViewAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_appointments, container, false);
+        View view = inflater.inflate(R.layout.fragment_appointments, container, false);
+
+        rvOrders = (RecyclerView) view.findViewById(R.id.rv_orders);
+        rvOrders.setLayoutManager(new LinearLayoutManager(getActivity()));
+        tvEmpty = (TextView) view.findViewById(R.id.tv_empty);
+        orderList = AppManager.getInstance().orderList;
+        adapter = new OrderListRecyclerViewAdapter(orderList);
+        rvOrders.setAdapter(adapter);
+        updateStatus();
+
+        AppManager.getInstance().setOrderValueListener(new OrderValueListener() {
+            @Override
+            public void onLoadedOrder(List<Order> orders) {
+                orderList = orders;
+                adapter.setOrderList(orderList);
+                adapter.notifyDataSetChanged();
+                updateStatus();
+            }
+        });
+
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    private void updateStatus(){
+        if (orderList.size() == 0) {
+            rvOrders.setVisibility(View.GONE);
+            tvEmpty.setVisibility(View.VISIBLE);
+        } else {
+            rvOrders.setVisibility(View.VISIBLE);
+            tvEmpty.setVisibility(View.GONE);
+        }
+    }
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -80,7 +110,6 @@ public class AppointmentsFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
-
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name

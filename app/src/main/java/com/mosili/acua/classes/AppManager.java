@@ -22,6 +22,7 @@ import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.mosili.acua.country.Country;
 import com.mosili.acua.interfaces.CarTypeValueListener;
@@ -139,6 +140,33 @@ public class AppManager {
         return country;
     }
 
+    public static void getUser(String userId, final UserValueListener listener) {
+        if (userId != null) {
+            Query query = References.getInstance().usersRef.child(userId);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue() != null){
+                        Map<String, Object> userData = (Map<String, Object>) dataSnapshot.getValue();
+                        User user = new User(userData);
+                        if (listener != null) {
+                            listener.onLoadedUser(user);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.d("TrackUser", databaseError.toString());
+                }
+            });
+        } else {
+            if (listener != null) {
+                listener.onLoadedUser(null);
+            }
+        }
+    }
+
     public void setUserValueListenerMain(UserValueListener userValueListenerMain) {
         this.userValueListenerMain = userValueListenerMain;
     }
@@ -153,6 +181,10 @@ public class AppManager {
 
     public void setMenuValueListener(MenuValueListener menuValueListener) {
         this.menuValueListener = menuValueListener;
+    }
+
+    public void setOrderValueListener(OrderValueListener orderValueListener) {
+        this.orderValueListener = orderValueListener;
     }
 
     /**
