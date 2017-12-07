@@ -285,6 +285,7 @@ public class AppManager {
                         String key = child.getKey();
                         Map<String, Object> value = (Map<String, Object>) child.getValue();
                         Order order = new Order(value);
+                        order.idx = key;
                         orderList.add(order);
                     }
                     if (orderValueListener != null) {
@@ -298,6 +299,8 @@ public class AppManager {
                 Log.d("Track Orders", databaseError.toString());
             }
         };
+
+        References.getInstance().ordersRef.addValueEventListener(trackOrdersListener);
     }
 
     /**

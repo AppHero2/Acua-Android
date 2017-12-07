@@ -5,8 +5,6 @@ import java.util.Map;
 
 import static com.mosili.acua.models.OrderPayStatus.UNPAID;
 import static com.mosili.acua.models.OrderServiceStatus.PENDING;
-import static com.mosili.acua.utils.Util.getDateFromData;
-import static com.mosili.acua.utils.Util.getIntFromData;
 import static com.mosili.acua.utils.Util.getMapDataFromData;
 import static com.mosili.acua.utils.Util.getStringFromData;
 
@@ -22,6 +20,10 @@ public class Order {
     public long beginAt, endAt;
     public OrderServiceStatus serviceStatus = PENDING;
     public OrderPayStatus payStatus = UNPAID;
+
+    public Order() {
+
+    }
 
     public Order(Map<String, Object> data){
         this.updateData(data);

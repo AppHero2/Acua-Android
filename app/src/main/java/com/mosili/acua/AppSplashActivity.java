@@ -84,6 +84,7 @@ public class AppSplashActivity extends AppCompatActivity {
             AppManager.getInstance().startTrackingCarType();
             AppManager.getInstance().startTrackingWashType();
             AppManager.getInstance().startTrackingMenus();
+            AppManager.getInstance().startTrackingOrders();
             if (user != null) {
                 startActivity(new Intent(AppSplashActivity.this, MainActivity.class));
             } else {
