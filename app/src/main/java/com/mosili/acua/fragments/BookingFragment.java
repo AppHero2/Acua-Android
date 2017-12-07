@@ -227,6 +227,7 @@ public class BookingFragment extends Fragment {
                         public void onComplete(@NonNull Task<Void> task) {
                             // TODO: send notification to service
                             Log.d("BOOKING", "Booked successfully");
+                            Toast.makeText(getActivity(), "Booked successfully", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -239,7 +240,7 @@ public class BookingFragment extends Fragment {
     }
 
     private void showDate() {
-        txtDate.setText(day + "/" + month + "/" + year);
+        txtDate.setText(day + "/" + (month+1) + "/" + year);
     }
 
     private void showTime() {
@@ -272,6 +273,12 @@ public class BookingFragment extends Fragment {
             return false;
         }
 
+        for (Order theOrder: AppManager.getInstance().orderList) {
+            if (theOrder.beginAt <= order.beginAt && order.beginAt <= theOrder.endAt) {
+                Util.showAlert("Note!", "You could not book at the moment because another customer made already booking before you.", getActivity());
+                return false;
+            }
+        }
 
         return true;
     }

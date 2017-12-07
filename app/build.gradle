@@ -14,7 +14,7 @@ android {
         applicationId "com.mosili.acua"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 9
+        versionCode 11
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

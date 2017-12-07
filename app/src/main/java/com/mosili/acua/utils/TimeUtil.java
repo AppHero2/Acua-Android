@@ -62,7 +62,7 @@ public class TimeUtil {
     }
 
     public static String getSimpleTimeString(Date date) {
-        SimpleDateFormat format = new SimpleDateFormat("hh:mm", Locale.getDefault());
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.getDefault());
         return format.format(date);
     }
 
@@ -73,7 +73,7 @@ public class TimeUtil {
     }
 
     public static String getSimpleDateString(Date date) {
-        SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy hh:mm", Locale.getDefault());
+        SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy HH:mm", Locale.getDefault());
         return format.format(date);
     }
 
