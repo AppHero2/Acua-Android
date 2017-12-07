@@ -25,11 +25,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.mosili.acua.country.Country;
 import com.mosili.acua.interfaces.CarTypeValueListener;
-import com.mosili.acua.interfaces.CostValueListener;
+import com.mosili.acua.interfaces.MenuValueListener;
+import com.mosili.acua.interfaces.OrderValueListener;
 import com.mosili.acua.interfaces.UserValueListener;
 import com.mosili.acua.interfaces.WashTypeValueListener;
 import com.mosili.acua.models.CarType;
-import com.mosili.acua.models.Cost;
+import com.mosili.acua.models.Order;
+import com.mosili.acua.models.WashMenu;
 import com.mosili.acua.models.User;
 import com.mosili.acua.models.WashType;
 import com.mosili.acua.utils.References;
@@ -48,15 +50,17 @@ public class AppManager {
     private Context context;
     private Country country;
 
-    private ValueEventListener trackUserListener, trackCarTypeListener, trackWashTypeListener, trackCostsListener;
+    private ValueEventListener trackUserListener, trackCarTypeListener, trackWashTypeListener, trackMenuListener, trackOrdersListener;
     private UserValueListener userValueListenerMain;
     private CarTypeValueListener carTypeValueListener;
     private WashTypeValueListener washTypeValueListener;
-    private CostValueListener costValueListener;
+    private MenuValueListener menuValueListener;
+    private OrderValueListener orderValueListener;
 
     public List<CarType> carTypes = new ArrayList<>();
     public List<WashType> washTypes = new ArrayList<>();
-    public List<Cost> costList = new ArrayList<>();
+    public List<WashMenu> menuList = new ArrayList<>();
+    public List<Order> orderList = new ArrayList<>();
 
     public static AppManager getInstance() {
         return ourInstance;
@@ -74,8 +78,7 @@ public class AppManager {
         return context;
     }
 
-    public static boolean checkPermission(final Context context, final String permission, final int key)
-    {
+    public static boolean checkPermission(final Context context, final String permission, final int key) {
         int currentAPIVersion = Build.VERSION.SDK_INT;
         if(currentAPIVersion>= Build.VERSION_CODES.M)
         {
@@ -148,8 +151,8 @@ public class AppManager {
         this.washTypeValueListener = washTypeValueListener;
     }
 
-    public void setCostValueListener(CostValueListener costValueListener) {
-        this.costValueListener = costValueListener;
+    public void setMenuValueListener(MenuValueListener menuValueListener) {
+        this.menuValueListener = menuValueListener;
     }
 
     /**
@@ -239,33 +242,62 @@ public class AppManager {
         References.getInstance().washTypeRef.addValueEventListener(trackWashTypeListener);
     }
 
-    public void startTrackingCosts(){
-        if (trackCostsListener != null) return;
+    public void startTrackingMenus(){
+        if (trackMenuListener != null) return;
 
-        trackCostsListener = new ValueEventListener() {
+        trackMenuListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    costList.clear();
+                    menuList.clear();
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         String key = child.getKey();
-                        Number value = (Number) child.getValue();
-                        Cost cost = new Cost(key, value.doubleValue());
-                        costList.add(cost);
+                        Map<String, Object> value = (Map<String, Object>) child.getValue();
+                        Number price = (Number) value.get("price");
+                        Number duration = (Number) value.get("duration");
+                        WashMenu menu = new WashMenu(key, price.doubleValue(), duration.longValue());
+                        menuList.add(menu);
                     }
-                    if (costValueListener != null) {
-                        costValueListener.onLoadedCosts(costList);
+                    if (menuValueListener != null) {
+                        menuValueListener.onLoadedMenu(menuList);
                     }
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d("TrackCost", databaseError.toString());
+                Log.d("TrackMenu", databaseError.toString());
             }
         };
 
-        References.getInstance().costsRef.addValueEventListener(trackCostsListener);
+        References.getInstance().washMenuRef.addValueEventListener(trackMenuListener);
+    }
+
+    public void startTrackingOrders(){
+        if (trackOrdersListener != null) return;
+
+        trackOrdersListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    orderList.clear();
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        String key = child.getKey();
+                        Map<String, Object> value = (Map<String, Object>) child.getValue();
+                        Order order = new Order(value);
+                        orderList.add(order);
+                    }
+                    if (orderValueListener != null) {
+                        orderValueListener.onLoadedOrder(orderList);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("Track Orders", databaseError.toString());
+            }
+        };
     }
 
     /**
@@ -284,6 +316,7 @@ public class AppManager {
         editor.putString("photo", user.getPhoto());
         editor.putString("phone", user.getPhone());
         editor.putString("pushToken", user.getPushToken());
+        editor.putInt("userType", user.getUserType());
         editor.commit();
     }
 
@@ -302,6 +335,7 @@ public class AppManager {
         String phone = sharedPreferences.getString("phone", "");
         String bio = sharedPreferences.getString("bio", "?");
         String pushToken = sharedPreferences.getString("pushToken", "?");
+        int userType = sharedPreferences.getInt("userType", 0);
 
         if (uid != null) {
             Map<String, Object> data = new HashMap<>();
@@ -313,6 +347,7 @@ public class AppManager {
             data.put("phone", phone);
             data.put("bio", bio);
             data.put("pushToken", pushToken);
+            data.put("userType", userType);
             User user = new User(data);
             return user;
         } else {

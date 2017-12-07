@@ -2,6 +2,7 @@ package com.mosili.acua.models;
 
 import java.util.Map;
 
+import static com.mosili.acua.utils.Util.getIntFromData;
 import static com.mosili.acua.utils.Util.getStringFromData;
 
 /**
@@ -11,7 +12,7 @@ import static com.mosili.acua.utils.Util.getStringFromData;
 public class User {
 
     private String idx, firstname, lastname, email, photo, phone, bio, pushToken;
-
+    private int userType = 0; //0 = customer, 1 = service, 2 = admin
     public User(Map<String, Object> data){
         updateData(data);
     }
@@ -25,6 +26,7 @@ public class User {
         this.phone = getStringFromData("phone", data);
         this.bio = getStringFromData("bio", data);
         this.pushToken = getStringFromData("pushToken", data);
+        this.userType = getIntFromData("userType", data);
     }
 
     public String getBio() {
@@ -33,6 +35,10 @@ public class User {
 
     public String getIdx() {
         return idx;
+    }
+
+    public int getUserType() {
+        return userType;
     }
 
     public String getEmail() {

@@ -122,6 +122,7 @@ public class RegisterUserActivity extends AppCompatActivity {
                     References.getInstance().usersRef.child(userId).child("firstname").setValue(etFistName.getText().toString());
                     References.getInstance().usersRef.child(userId).child("lastname").setValue(etLastName.getText().toString());
                     References.getInstance().usersRef.child(userId).child("email").setValue(etEmail.getText().toString());
+                    References.getInstance().usersRef.child(userId).child("userType").setValue(0);
                     startActivity(new Intent(RegisterUserActivity.this, MainActivity.class));
                 }
             }

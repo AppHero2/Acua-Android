@@ -14,7 +14,7 @@ public class References {
     private FirebaseDatabase database;
     private Context context;
 
-    public DatabaseReference usersRef, carTypeRef, washTypeRef, costsRef, ordersRef;
+    public DatabaseReference usersRef, carTypeRef, washTypeRef, ordersRef, washMenuRef;
 
     public static void init(Context context, FirebaseDatabase database) {
         instance = new References(context, database);
@@ -30,18 +30,17 @@ public class References {
 
         usersRef = database.getReference(Constant.USER);
         carTypeRef = database.getReference(Constant.CARS);
-        washTypeRef = database.getReference(Constant.WASH);
-        costsRef = database.getReference(Constant.COST);
         ordersRef = database.getReference(Constant.ORDER);
+        washTypeRef = database.getReference(Constant.WASH_TYPE);
+        washMenuRef = database.getReference(Constant.WASH_MENU);
     }
 
     private class Constant {
-
         public static final String USER = "Users";
         public static final String CARS = "CarType";
-        public static final String WASH = "WashType";
-        public static final String COST = "Costs";
         public static final String ORDER = "Orders";
+        public static final String WASH_TYPE = "WashType";
+        public static final String WASH_MENU = "WashMenu";
     }
 }
 

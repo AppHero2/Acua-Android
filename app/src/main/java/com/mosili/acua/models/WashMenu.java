@@ -4,13 +4,15 @@ package com.mosili.acua.models;
  * Created by BKing on 12/6/2017.
  */
 
-public class Cost {
+public class WashMenu {
     String idx;
-    Double price;
+    double price;
+    long duration;
 
-    public Cost(String idx, Double price){
+    public WashMenu(String idx, double price, long duration){
         this.idx = idx;
         this.price = price;
+        this.duration = duration;
     }
 
     public String getIdx() {
@@ -19,5 +21,9 @@ public class Cost {
 
     public double getPrice() {
         return price;
+    }
+
+    public long getDuration() {
+        return duration;
     }
 }
