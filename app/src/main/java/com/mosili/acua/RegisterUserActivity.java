@@ -92,6 +92,12 @@ public class RegisterUserActivity extends AppCompatActivity {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final String phone = firebaseUser.getPhoneNumber();
         userId = firebaseUser.getUid();
+        AppManager.getInstance().startTrackingUser(userId);
+        AppManager.getInstance().startTrackingCarType();
+        AppManager.getInstance().startTrackingWashType();
+        AppManager.getInstance().startTrackingMenus();
+        AppManager.getInstance().startTrackingOrders();
+
         mAuth = FirebaseAuth.getInstance();
         References.getInstance().usersRef.child(userId).child("uid").setValue(userId);
         References.getInstance().usersRef.child(userId).child("phone").setValue(phone);

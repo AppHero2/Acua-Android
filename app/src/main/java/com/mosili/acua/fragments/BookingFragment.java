@@ -29,7 +29,6 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
 import com.mosili.acua.R;
 import com.mosili.acua.classes.AppManager;
 import com.mosili.acua.models.CarType;
@@ -266,6 +265,11 @@ public class BookingFragment extends Fragment {
     }
 
     private Boolean isValidBooking(Order order) {
+
+        if (curMenu == null) {
+            Util.showAlert("Note!", "Please check your network, and reopen acua", getActivity());
+            return false;
+        }
 
         if (order.location == null) {
             txtAddress.setError("Please select location.");

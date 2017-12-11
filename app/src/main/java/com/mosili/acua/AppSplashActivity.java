@@ -51,6 +51,16 @@ public class AppSplashActivity extends AppCompatActivity {
                 dismissSplash();
             }
         });
+
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null){
+            User user = AppManager.getSession();
+            AppManager.getInstance().startTrackingUser(firebaseUser.getUid());
+            AppManager.getInstance().startTrackingCarType();
+            AppManager.getInstance().startTrackingWashType();
+            AppManager.getInstance().startTrackingMenus();
+            AppManager.getInstance().startTrackingOrders();
+        }
     }
 
     public static void initImageLoader(Context context) {
@@ -80,18 +90,13 @@ public class AppSplashActivity extends AppCompatActivity {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser != null){
             User user = AppManager.getSession();
-            AppManager.getInstance().startTrackingUser(firebaseUser.getUid());
-            AppManager.getInstance().startTrackingCarType();
-            AppManager.getInstance().startTrackingWashType();
-            AppManager.getInstance().startTrackingMenus();
-            AppManager.getInstance().startTrackingOrders();
             if (user != null) {
                 startActivity(new Intent(AppSplashActivity.this, MainActivity.class));
             } else {
                 startActivity(new Intent(this, RegisterUserActivity.class));
             }
         } else {
-            startActivity(new Intent(this, RegisterPhoneActivity.class));
+            startActivity(new Intent(this, RegisterTermsActivity.class));
         }
         this.finish();
     }
