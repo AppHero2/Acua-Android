@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mosili.acua.R;
+import com.mosili.acua.alertView.AlertView;
+import com.mosili.acua.alertView.OnItemClickListener;
 import com.mosili.acua.classes.AppManager;
 import com.mosili.acua.interfaces.UserValueListener;
 import com.mosili.acua.models.CarType;
@@ -93,7 +95,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             case 0:{
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.row_order_self, parent, false);
-                ViewHolder0 viewholder  =new ViewHolder0(view);
+                ViewHolder0 viewholder  = new ViewHolder0(view);
                 synchronized (holders) {
                     holders.add(viewholder);
                 }
@@ -162,6 +164,31 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         public ViewHolder1(View view) {
             super(view);
             mView = view;
+            mView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    new AlertView.Builder().setContext(view.getContext())
+                            .setStyle(AlertView.Style.ActionSheet)
+                            .setTitle("Please confirm customer service")
+                            .setMessage(null)
+                            .setCancelText("Cancel")
+                            .setDestructive("Refund", "Remove")
+                            .setOthers(null)
+                            .setOnItemClickListener(new OnItemClickListener() {
+                                @Override
+                                public void onItemClick(Object o, int position) {
+                                    if (position == 0){
+
+                                    }else if (position == 1){
+
+                                    }
+                                }
+                            })
+                            .build()
+                            .show();
+                    return true;
+                }
+            });
             tvUsername = (TextView) view.findViewById(R.id.tv_username);
             tvTypes = (TextView) view.findViewById(R.id.tv_types);
             tvAddress = (TextView) view.findViewById(R.id.tv_address);
@@ -220,7 +247,6 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                 this.isExpired = true;
             }
         }
-
     }
 
     public class ViewHolder0 extends RecyclerView.ViewHolder {
@@ -235,6 +261,31 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         public ViewHolder0(View view) {
             super(view);
             mView = view;
+            mView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    new AlertView.Builder().setContext(view.getContext())
+                            .setStyle(AlertView.Style.ActionSheet)
+                            .setTitle("Please confirm your booking")
+                            .setMessage(null)
+                            .setCancelText("Cancel")
+                            .setDestructive("Reschedule", "Remove")
+                            .setOthers(null)
+                            .setOnItemClickListener(new OnItemClickListener() {
+                                @Override
+                                public void onItemClick(Object o, int position) {
+                                    if (position == 0){
+
+                                    }else if (position == 1){
+
+                                    }
+                                }
+                            })
+                            .build()
+                            .show();
+                    return true;
+                }
+            });
             tvTypes = (TextView) view.findViewById(R.id.tv_types);
             tvAddress = (TextView) view.findViewById(R.id.tv_address);
             tvRemain = (TextView) view.findViewById(R.id.tv_remain);
