@@ -23,7 +23,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical|start"
-                android:text="@string/book_wash_type"/>
+                android:text="@string/book_wash_type"
+                android:textStyle="bold"/>
 
             <Spinner
                 android:id="@+id/spinerWashTypes"
@@ -46,7 +47,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical|start"
-                android:text="@string/book_car_type"/>
+                android:text="@string/book_car_type"
+                android:textStyle="bold"/>
 
             <Spinner
                 android:id="@+id/spinerCarTypes"
@@ -69,7 +71,8 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center|left"
-                android:text="@string/book_question_tap"/>
+                android:text="@string/book_question_tap"
+                android:textStyle="bold"/>
 
             <RadioGroup
                 android:id="@+id/radioTap"
@@ -90,12 +93,6 @@
                     android:layout_height="wrap_content"
                     android:text="@string/book_answer_no"
                     app:buttonTint="@color/colorPrimary"/>
-                <android.support.v7.widget.AppCompatRadioButton
-                    android:id="@+id/rb_tap_na"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/book_answer_na"
-                    app:buttonTint="@color/colorPrimary"/>
             </RadioGroup>
         </LinearLayout>
 
@@ -112,7 +109,8 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center|left"
-                android:text="@string/book_question_plug"/>
+                android:text="@string/book_question_plug"
+                android:textStyle="bold"/>
 
             <RadioGroup
                 android:id="@+id/radioPlug"
@@ -271,7 +269,7 @@
                     android:gravity="center_vertical"
                     android:text="10.00"
                     android:textStyle="bold"
-                    android:textSize="20dp"/>
+                    android:textSize="22sp"/>
             </LinearLayout>
 
             <android.support.v7.widget.AppCompatButton

@@ -77,5 +77,15 @@ public class TimeUtil {
         return format.format(date);
     }
 
-
+    public static boolean checkAvailableTimeRange(long millis){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        if (6 <= hour && hour < 18) {
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import static com.mosili.acua.models.OrderPayStatus.UNPAID;
 import static com.mosili.acua.models.OrderServiceStatus.PENDING;
+import static com.mosili.acua.utils.Util.getBooleanFromData;
 import static com.mosili.acua.utils.Util.getMapDataFromData;
 import static com.mosili.acua.utils.Util.getStringFromData;
 
@@ -20,6 +21,8 @@ public class Order {
     public long beginAt, endAt;
     public OrderServiceStatus serviceStatus = PENDING;
     public OrderPayStatus payStatus = UNPAID;
+    public boolean hasTap = true;
+    public boolean hasPlug = true;
 
     public Order() {
 
@@ -50,5 +53,8 @@ public class Order {
 
         this.beginAt = ((Number) data.get("beginAt")).longValue();
         this.endAt = ((Number) data.get("endAt")).longValue();
+
+        this.hasTap = getBooleanFromData("hasTap", data);
+        this.hasPlug = getBooleanFromData("hasPlug", data);
     }
 }

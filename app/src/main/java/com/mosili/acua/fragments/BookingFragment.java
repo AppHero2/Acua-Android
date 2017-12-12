@@ -36,7 +36,9 @@ import com.mosili.acua.models.WashMenu;
 import com.mosili.acua.models.Order;
 import com.mosili.acua.models.OrderLocation;
 import com.mosili.acua.models.WashType;
+import com.mosili.acua.utils.IntervalTimePickerDialog;
 import com.mosili.acua.utils.References;
+import com.mosili.acua.utils.TimeUtil;
 import com.mosili.acua.utils.Util;
 
 import java.util.ArrayList;
@@ -50,6 +52,7 @@ import static android.app.Activity.RESULT_OK;
 public class BookingFragment extends Fragment {
 
     private final int PLACE_PICKER_REQUEST = 999;
+
 
     private Spinner spinnerCarType, spinnerWashType;
     private RadioGroup radioTap, radioPlug;
@@ -65,6 +68,7 @@ public class BookingFragment extends Fragment {
     private CarType carType;
     private WashType washType;
     private WashMenu curMenu;
+    private boolean hasTap = true, hasPlug = true;
 
     public BookingFragment() {
         // Required empty public constructor
@@ -123,7 +127,7 @@ public class BookingFragment extends Fragment {
         });
 
         ArrayAdapter<String>adapterCarType = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, carNames);
-        adapterWashType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterCarType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCarType.setAdapter(adapterCarType);
         spinnerCarType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -146,7 +150,33 @@ public class BookingFragment extends Fragment {
         });
 
         radioTap = (RadioGroup) view.findViewById(R.id.radioTap);
+        radioTap.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.rb_tap_yes:
+                        hasTap = true;
+                        break;
+                    case R.id.rb_tap_no:
+                        hasTap = false;
+                        break;
+                }
+            }
+        });
         radioPlug = (RadioGroup) view.findViewById(R.id.radioPlug);
+        radioPlug.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.rb_plug_yes:
+                        hasPlug = true;
+                        break;
+                    case R.id.rb_plug_no:
+                        hasPlug = false;
+                        break;
+                }
+            }
+        });
 
         txtDate = (TextView) view.findViewById(R.id.txtDate);
         txtTime = (TextView) view.findViewById(R.id.txtTime);
@@ -169,7 +199,7 @@ public class BookingFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 // Launch Time Picker Dialog
-                TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
+                IntervalTimePickerDialog timePickerDialog = new IntervalTimePickerDialog(getActivity(),
                         new TimePickerDialog.OnTimeSetListener() {
 
                             @Override
@@ -180,6 +210,7 @@ public class BookingFragment extends Fragment {
                             }
                         }, hour, minute, true);
                 timePickerDialog.show();
+
             }
         });
 
@@ -192,13 +223,26 @@ public class BookingFragment extends Fragment {
         showTime();
 
         txtAddress = (TextView) view.findViewById(R.id.txtAddress);
+        txtAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                try {
+                    startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST); // for activity
+                } catch (GooglePlayServicesRepairableException e) {
+                    e.printStackTrace();
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         ImageView btnAddress = (ImageView) view.findViewById(R.id.imgAddress);
         btnAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
                 try {
-                    startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST); // for activty
+                    startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST); // for activity
                 } catch (GooglePlayServicesRepairableException e) {
                     e.printStackTrace();
                 } catch (GooglePlayServicesNotAvailableException e) {
@@ -219,6 +263,8 @@ public class BookingFragment extends Fragment {
                 Date bookedAt = Util.getDate(year, month, day, hour, minute, 0);
                 order.beginAt = bookedAt.getTime();
                 order.endAt = bookedAt.getTime() + curMenu.getDuration()*1000;
+                order.hasTap = hasTap;
+                order.hasPlug = hasPlug;
 
                 if (isValidBooking(order)) {
                     References.getInstance().ordersRef.child(String.valueOf(order.beginAt)).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -284,22 +330,26 @@ public class BookingFragment extends Fragment {
             }
         }
 
+        if (!TimeUtil.checkAvailableTimeRange(order.beginAt)) {
+            Toast.makeText(getActivity(), "The operating hours for the car wash is 6:00 to 18:00.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         return true;
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-//        checkPermissionOnActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
             switch (requestCode){
                 case PLACE_PICKER_REQUEST:
                     Place place = PlacePicker.getPlace(getActivity(), data);
-                    txtAddress.setText(place.getName());
+                    txtAddress.setText(place.getAddress());
                     txtAddress.setError(null);
                     double latitude = place.getLatLng().latitude;
                     double longitude = place.getLatLng().longitude;
-                    curLocation = new OrderLocation(place.getName().toString(), latitude, longitude);
+                    curLocation = new OrderLocation(place.getAddress().toString(), latitude, longitude);
                 break;
                 default:
                     break;
