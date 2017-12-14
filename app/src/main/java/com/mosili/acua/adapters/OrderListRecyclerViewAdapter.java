@@ -103,7 +103,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             }
             case 1:{
                 View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.row_order, parent, false);
+                        .inflate(R.layout.row_order_admin, parent, false);
                 ViewHolder1 viewholder  = new ViewHolder1(view);
                 synchronized (holders) {
                     holders.add(viewholder);
@@ -112,7 +112,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             }
             default:{
                 View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.row_order, parent, false);
+                        .inflate(R.layout.row_order_admin, parent, false);
                 ViewHolder0 viewholder  = new ViewHolder0(view);
                 synchronized (holders) {
                     holders.add(viewholder);

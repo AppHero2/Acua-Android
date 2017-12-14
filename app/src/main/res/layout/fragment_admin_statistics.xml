@@ -1,0 +1,117 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.mosili.acua.fragments.AdminStatisticsFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:text="Today"
+            android:textStyle="bold"
+            android:textSize="22sp"
+            android:textColor="@color/colorTextBlue" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Total appointments:"
+                android:textSize="18sp"
+                android:textColor="@color/colorTextBlue"
+                android:id="@+id/tv_total" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_total"
+                android:layout_centerHorizontal="true"
+                android:text="20"
+                android:textColor="@color/colorTextBlue"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Completed appointments:"
+                android:textSize="18sp"
+                android:textColor="@color/colorTextBlue"
+                android:id="@+id/tv_completed" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_completed"
+                android:layout_centerHorizontal="true"
+                android:text="15"
+                android:textColor="@color/colorTextBlue"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Remaining appointments:"
+                android:textSize="18sp"
+                android:textColor="@color/colorTextBlue"
+                android:id="@+id/tv_remain" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_remain"
+                android:layout_centerHorizontal="true"
+                android:text="10"
+                android:textColor="@color/colorTextBlue"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Cancelled appointments:"
+                android:textSize="18sp"
+                android:textColor="@color/colorTextBlue"
+                android:id="@+id/tv_cancelled" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_cancelled"
+                android:layout_centerHorizontal="true"
+                android:text="2"
+                android:textColor="@color/colorTextBlue"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</FrameLayout>

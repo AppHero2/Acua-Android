@@ -19,6 +19,6 @@
         android:layout_height="match_parent"
         app:layoutManager="LinearLayoutManager"
         tools:context="com.mosili.acua.fragments.AppointmentsFragment"
-        tools:listitem="@layout/row_order" />
+        tools:listitem="@layout/row_order_admin" />
 
 </FrameLayout>

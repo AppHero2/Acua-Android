@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Acua</string>
+    <string name="app_name">acua</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -12,7 +12,7 @@
     <string name="get_started_tur1">Get your car washed in the \nconvenience of your own home</string>
     <string name="get_started_tur2">Book an appointment between\n 06:00 and 18:00 7 days a week</string>
     <string name="get_started_tur3">Enjoy convenience</string>
-    <string name="terms_title">Auca terms and conditions</string>
+    <string name="terms_title">auca terms and conditions</string>
     <string name="terms_content">You are about to sign up to be an acua end user (the "service").
         \n\n
         By clicking \'Accept\' you confirm that:
@@ -47,7 +47,7 @@
 
     <!-- Register Phone -->
     <string name="register_verify_phone">Verify your phone number</string>
-    <string name="register_verify_content">Acua will send SMS message to verify your phone\nnumber.Enter your country code and phone number.</string>
+    <string name="register_verify_content">acua will send SMS message to verify your phone\nnumber.Enter your country code and phone number.</string>
     <string name="register_verify_note">Carrier SMS charges may apply</string>
     <string name="register_verify_sent">Verification code sent</string>
     <string name="register_button_resend">Resend</string>
@@ -70,9 +70,10 @@
     <string name="side_menu_share">Share app with friends</string>
     <string name="side_menu_feedback">Feedback</string>
     <string name="side_menu_terms">Terms &amp; conditions</string>
-    <string name="side_menu_copyright">Acua v.0.1. Copyright © 2017 Acua Co., Ltd</string>
+    <string name="side_menu_copyright">acua v13 Copyright © 2017 acua Co., Ltd</string>
 
     <!-- Tab -->
+    <string name="tab_title_statistics">DAILY STATISTICS</string>
     <string name="tab_title_booking">BOOKING</string>
     <string name="tab_title_appoint">APPOINTMENT</string>
 

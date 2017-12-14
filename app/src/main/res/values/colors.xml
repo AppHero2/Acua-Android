@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6fc2d1</color>
-    <color name="colorPrimaryDark">#4d858f</color>
+    <color name="colorPrimary">#2189be</color>
+    <color name="colorPrimaryDark">#FF145170</color>
     <color name="colorAccent">#808080</color>
 
     <!-- App Color -->
@@ -15,6 +15,15 @@
     <!-- Text colors -->
     <color name="colorTextPrimary">#FFFFFF</color>
     <color name="colorTextDisable">#66FFFFFF</color>
+    <color name="colorTextBlue">#002060</color>
+
+    <!-- Gradient Color -->
+    <color name="colorGradientBlueStart">#2189be</color>
+    <color name="colorGradientBlueCenter">#51b2d5</color>
+    <color name="colorGradientBlueEnd">#7ce5e1</color>
+    <color name="colorGradientBlue0Start">#a02189be</color>
+    <color name="colorGradientBlue0Center">#a051b2d5</color>
+    <color name="colorGradientBlue0End">#a07ce5e1</color>
 
     <!--AlertView-->
     <color name="bgColor_overlay">#60000000</color>

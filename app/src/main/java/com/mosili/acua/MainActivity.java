@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.mosili.acua.adapters.ViewPagerAdapter;
 import com.mosili.acua.classes.AppManager;
+import com.mosili.acua.fragments.AdminStatisticsFragment;
 import com.mosili.acua.fragments.AppointmentsFragment;
 import com.mosili.acua.fragments.BookingFragment;
 import com.mosili.acua.interfaces.UserValueListener;
@@ -31,6 +32,8 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "MainActivity";
 
+    private User session;
+
     private ImageView nav_header_Profile;
     private TextView nav_header_Username, nav_header_Useremail;
 
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity
     private String[] tabTitle = new String[2];
     int[] unreadData ={0, 0};
 
+    private AdminStatisticsFragment adminStatisticsFragment;
     private BookingFragment bookingFragment;
     private AppointmentsFragment appointmentsFragment;
 
@@ -46,18 +50,21 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        this.session = AppManager.getSession();
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fab_contact = (FloatingActionButton) findViewById(R.id.fab_contact);
+        fab_contact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
+        if (this.session.getUserType()==1) fab_contact.setVisibility(View.GONE);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -74,8 +81,6 @@ public class MainActivity extends AppCompatActivity
 
         User session = AppManager.getSession();
         updateUserInfoOnNavHeader(session);
-//        navigationView.setNavigationItemSelectedListener(this);
-
 
         Button btnProfile = (Button) findViewById(R.id.btn_menu_profile); btnProfile.setOnClickListener(this);
         Button btnNotification = (Button) findViewById(R.id.btn_menu_notification); btnNotification.setOnClickListener(this);
@@ -87,7 +92,7 @@ public class MainActivity extends AppCompatActivity
 
         //Initializing viewPager
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        viewPager.setOffscreenPageLimit(3);
+        viewPager.setOffscreenPageLimit(2);
         setupViewPager(viewPager);
 
         //Initializing the tablayout
@@ -162,7 +167,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoadedUser(User user) {
         if (user != null) {
-            updateUserInfoOnNavHeader(user);
+            this.session = user;
+            updateUserInfoOnNavHeader(this.session);
         }
     }
 
@@ -174,10 +180,21 @@ public class MainActivity extends AppCompatActivity
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        bookingFragment = new BookingFragment();
-        appointmentsFragment = new AppointmentsFragment();
-        adapter.addFragment(bookingFragment,"BOOKING");
-        adapter.addFragment(appointmentsFragment, "APPOINTMENT");
+        if (this.session.getUserType() == 0)
+        {
+            bookingFragment = new BookingFragment();
+            appointmentsFragment = new AppointmentsFragment();
+            adapter.addFragment(bookingFragment, getString(R.string.tab_title_booking));
+            adapter.addFragment(appointmentsFragment, getString(R.string.tab_title_appoint));
+        }
+        else if (this.session.getUserType() == 1)
+        {
+            adminStatisticsFragment = new AdminStatisticsFragment();
+            appointmentsFragment = new AppointmentsFragment();
+            adapter.addFragment(adminStatisticsFragment, getString(R.string.tab_title_statistics));
+            adapter.addFragment(appointmentsFragment, getString(R.string.tab_title_appoint));
+        }
+
         viewPager.setAdapter(adapter);
     }
 
@@ -199,42 +216,18 @@ public class MainActivity extends AppCompatActivity
 
     private void setupTabIcons()
     {
-        tabTitle[0] = getString(R.string.tab_title_booking);
-        tabTitle[1] = getString(R.string.tab_title_appoint);
+        if (this.session.getUserType() == 0) {
+            tabTitle[0] = getString(R.string.tab_title_booking);
+            tabTitle[1] = getString(R.string.tab_title_appoint);
+        } else if (this.session.getUserType() == 1) {
+            tabTitle[0] = getString(R.string.tab_title_statistics);
+            tabTitle[1] = getString(R.string.tab_title_appoint);
+        }
 
         for(int i = 0; i < tabTitle.length; i++)
         {
-            /*TabLayout.Tab tabitem = tabLayout.newTab();
-            tabitem.setCustomView(prepareTabView(i));
-            tabLayout.addTab(tabitem);*/
-
             tabLayout.getTabAt(i).setCustomView(prepareTabView(i));
         }
 
     }
-
-    /*@SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }*/
 }

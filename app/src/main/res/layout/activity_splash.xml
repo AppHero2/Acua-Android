@@ -14,7 +14,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp"
-        android:text="version 1.0 b5"
+        android:text="@string/side_menu_copyright"
         android:textColor="@color/colorPrimary"
         android:textSize="16sp"
         android:textStyle="bold"
