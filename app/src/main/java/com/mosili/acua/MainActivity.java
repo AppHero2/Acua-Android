@@ -1,10 +1,14 @@
 package com.mosili.acua;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,6 +22,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.database.FirebaseDatabase;
 import com.mosili.acua.adapters.ViewPagerAdapter;
 import com.mosili.acua.classes.AppManager;
 import com.mosili.acua.fragments.AdminStatisticsFragment;
@@ -25,7 +30,17 @@ import com.mosili.acua.fragments.AppointmentsFragment;
 import com.mosili.acua.fragments.BookingFragment;
 import com.mosili.acua.interfaces.UserValueListener;
 import com.mosili.acua.models.User;
+import com.mosili.acua.utils.References;
 import com.mosili.acua.utils.Util;
+import com.onesignal.OSNotification;
+import com.onesignal.OSNotificationOpenResult;
+import com.onesignal.OSPermissionObserver;
+import com.onesignal.OSPermissionStateChanges;
+import com.onesignal.OneSignal;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements View.OnClickListener, UserValueListener{
@@ -125,6 +140,16 @@ public class MainActivity extends AppCompatActivity
         });
 
         viewPager.setCurrentItem(0);
+
+        initPushNotification();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Clear all notification
+        OneSignal.clearOneSignalNotifications();
     }
 
     @Override
@@ -170,6 +195,72 @@ public class MainActivity extends AppCompatActivity
             this.session = user;
             updateUserInfoOnNavHeader(this.session);
         }
+    }
+
+    private void initPushNotification(){
+
+        OneSignal.startInit(this)
+                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
+                .unsubscribeWhenNotificationsAreDisabled(false)
+                .setNotificationOpenedHandler(new OneSignal.NotificationOpenedHandler() {
+                    @Override
+                    public void notificationOpened(OSNotificationOpenResult result) {
+                        Log.d("Notification", result.toString());
+                    }
+                })
+                .setNotificationReceivedHandler(new OneSignal.NotificationReceivedHandler() {
+                    @Override
+                    public void notificationReceived(OSNotification notification) {
+                        if (isAppOnForeground(MainActivity.this)){
+                            // Clear all notification
+                            OneSignal.clearOneSignalNotifications();
+                        }else{
+                            Log.d("Notification", notification.toString());
+                        }
+                    }
+                })
+                .init();
+
+        OneSignal.addPermissionObserver(new OSPermissionObserver() {
+            @Override
+            public void onOSPermissionChanged(OSPermissionStateChanges stateChanges) {
+                if (stateChanges.getFrom().getEnabled() &&
+                        !stateChanges.getTo().getEnabled()) {
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setMessage("Notifications Disabled!")
+                            .show();
+                }
+                Log.i(TAG, "onOSPermissionChanged: " + stateChanges);
+            }
+        });
+
+        OneSignal.setSubscription(true);
+        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+            @Override
+            public void idsAvailable(String userId, String registrationId) {
+                Log.d("OneSignal", "PlayerID: " + userId + "\nPushToken: " + registrationId);
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                Map<String, Object> pushToken = new HashMap<>();
+                pushToken.put("pushToken", userId);
+                References.getInstance().usersRef.child(session.getIdx()).updateChildren(pushToken);
+                database.getReference("PushTokens").child(session.getIdx()).setValue(userId);
+            }
+        });
+    }
+
+    private boolean isAppOnForeground(Context context) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+        if (appProcesses == null) {
+            return false;
+        }
+        final String packageName = context.getPackageName();
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND && appProcess.processName.equals(packageName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void updateUserInfoOnNavHeader(User user){
