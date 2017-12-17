@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -32,6 +34,7 @@ import com.google.android.gms.tasks.Task;
 import com.mosili.acua.R;
 import com.mosili.acua.classes.AppManager;
 import com.mosili.acua.models.CarType;
+import com.mosili.acua.models.User;
 import com.mosili.acua.models.WashMenu;
 import com.mosili.acua.models.Order;
 import com.mosili.acua.models.OrderLocation;
@@ -53,9 +56,8 @@ public class BookingFragment extends Fragment {
 
     private final int PLACE_PICKER_REQUEST = 999;
 
-
     private Spinner spinnerCarType, spinnerWashType;
-    private RadioGroup radioTap, radioPlug;
+    private RadioGroup groupTap, groupPlug;
     private OnFragmentInteractionListener mListener;
 
     private Calendar calendar = Calendar.getInstance();
@@ -69,6 +71,8 @@ public class BookingFragment extends Fragment {
     private WashType washType;
     private WashMenu curMenu;
     private boolean hasTap = true, hasPlug = true;
+    private List<String> washNames = new ArrayList<>();
+    private List<String> carNames = new ArrayList<>();
 
     public BookingFragment() {
         // Required empty public constructor
@@ -90,13 +94,13 @@ public class BookingFragment extends Fragment {
         spinnerWashType = (Spinner) view.findViewById(R.id.spinerWashTypes);
         spinnerCarType = (Spinner) view.findViewById(R.id.spinerCarTypes);
 
-        final List<String> washNames = new ArrayList<>();
+        washNames.clear();
         for (WashType washType : AppManager.getInstance().washTypes) {
             washNames.add(washType.getName());
         }
         if (AppManager.getInstance().washTypes.size()>0)
             washType = AppManager.getInstance().washTypes.get(0);
-        List<String> carNames = new ArrayList<>();
+        carNames.clear();
         for (CarType carType : AppManager.getInstance().carTypes) {
             carNames.add(carType.getName());
         }
@@ -149,8 +153,8 @@ public class BookingFragment extends Fragment {
             }
         });
 
-        radioTap = (RadioGroup) view.findViewById(R.id.radioTap);
-        radioTap.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        groupTap = (RadioGroup) view.findViewById(R.id.groupTap);
+        groupTap.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i) {
@@ -161,10 +165,12 @@ public class BookingFragment extends Fragment {
                         hasTap = false;
                         break;
                 }
+
+                checkRadioButtons();
             }
         });
-        radioPlug = (RadioGroup) view.findViewById(R.id.radioPlug);
-        radioPlug.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        groupPlug = (RadioGroup) view.findViewById(R.id.groupPlug);
+        groupPlug.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i) {
@@ -175,6 +181,8 @@ public class BookingFragment extends Fragment {
                         hasPlug = false;
                         break;
                 }
+
+                checkRadioButtons();
             }
         });
 
@@ -256,6 +264,7 @@ public class BookingFragment extends Fragment {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Order order = new Order();
                 order.menu = curMenu;
                 order.location = curLocation;
@@ -266,6 +275,11 @@ public class BookingFragment extends Fragment {
                 order.hasTap = hasTap;
                 order.hasPlug = hasPlug;
 
+                User session = AppManager.getSession();
+                final String push_title = session.getFullName() + " has made an offer.";
+                final String push_message = carType.getName() + ", " + washType.getName() + " at " + TimeUtil.getSimpleDateString(order.beginAt);
+
+
                 if (isValidBooking(order)) {
                     References.getInstance().ordersRef.child(String.valueOf(order.beginAt)).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -273,8 +287,10 @@ public class BookingFragment extends Fragment {
                             // TODO: send notification to service
                             Log.d("BOOKING", "Booked successfully");
                             Toast.makeText(getActivity(), "Booked successfully", Toast.LENGTH_SHORT).show();
+                            AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
                         }
                     });
+
                 }
             }
         });
@@ -308,6 +324,61 @@ public class BookingFragment extends Fragment {
                 txtCost.setText(String.valueOf(0));
             }
         }
+    }
+
+    private void checkRadioButtons(){
+
+        String title = "";
+        if (hasTap && hasPlug) {
+            return;
+        } else if (!hasTap && hasPlug) {
+            title = getString(R.string.book_error_tap);
+        } else if (hasTap && !hasPlug) {
+            title = getString(R.string.book_error_plug);
+        } else if (!hasTap && !hasPlug) {
+            title = getString(R.string.book_error_both);
+        }
+
+        showBottomAlert(title);
+    }
+
+    private void showBottomAlert(String title){
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.custom_bottom_alert, null);
+        final BottomSheetDialog dialog = new BottomSheetDialog(getActivity());
+        dialog.setContentView(view);
+        dialog.setCancelable(false);
+        dialog.show();
+
+        TextView txtTitle = (TextView) view.findViewById(R.id.txtTitle); txtTitle.setText(title);
+        AppCompatButton btnCancel = (AppCompatButton) view.findViewById(R.id.btnCancel);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                ((RadioButton) groupTap.getChildAt(0)).setChecked(true);
+                ((RadioButton) groupPlug.getChildAt(0)).setChecked(true);
+                spinnerWashType.setSelection(0);
+
+                dialog.dismiss();
+            }
+        });
+
+        AppCompatButton btnOkay = (AppCompatButton) view.findViewById(R.id.btnOkay);
+        btnOkay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (!hasTap && hasPlug) {
+                    spinnerWashType.setSelection(3);
+                } else if (hasTap && !hasPlug) {
+                    spinnerWashType.setSelection(0);
+                } else if (!hasTap && !hasPlug) {
+                    spinnerWashType.setSelection(3);
+                }
+                dialog.dismiss();
+            }
+        });
     }
 
     private Boolean isValidBooking(Order order) {

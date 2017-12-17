@@ -1,5 +1,7 @@
 package com.mosili.acua.adapters;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,8 +10,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.mosili.acua.EditOrderActivity;
 import com.mosili.acua.R;
 import com.mosili.acua.alertView.AlertView;
+import com.mosili.acua.alertView.OnDismissListener;
 import com.mosili.acua.alertView.OnItemClickListener;
 import com.mosili.acua.classes.AppManager;
 import com.mosili.acua.interfaces.UserValueListener;
@@ -17,6 +21,7 @@ import com.mosili.acua.models.CarType;
 import com.mosili.acua.models.Order;
 import com.mosili.acua.models.User;
 import com.mosili.acua.models.WashType;
+import com.mosili.acua.utils.References;
 import com.mosili.acua.utils.TimeUtil;
 import com.mosili.acua.utils.Util;
 
@@ -29,6 +34,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
     private List<Order> orderList = new ArrayList<>();
     private User session;
+    private Activity activity;
     private int type = 0;
     private List<RecyclerView.ViewHolder> holders = new ArrayList<>();
     private Handler mHandler = new Handler();
@@ -39,7 +45,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                 long currentTime = System.currentTimeMillis();
                 for (RecyclerView.ViewHolder holder: holders){
                     switch (holder.getItemViewType()) {
-                        case 0:{
+                        case 0: {
                             ViewHolder0 viewHolder0 = (ViewHolder0)holder;
                             viewHolder0.updateTimeRemaining(currentTime);
                         }
@@ -65,9 +71,10 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         }, 1000, 1000);
     }
 
-    public OrderListRecyclerViewAdapter(User session) {
+    public OrderListRecyclerViewAdapter(User session, Activity activity) {
         this.session = session;
         this.type = session.getUserType();
+        this.activity = activity;
     }
 
     public void setOrderList(List<Order> orders) {
@@ -255,6 +262,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         public final TextView tvAddress;
         public final TextView tvSchedule;
         public final TextView tvRemain;
+        private int alertButtonPostion = AlertView.CANCELPOSITION;
 
         public Order mItem;
 
@@ -264,25 +272,49 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             mView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    new AlertView.Builder().setContext(view.getContext())
+                    AlertView actionSheet = new AlertView.Builder().setContext(view.getContext())
                             .setStyle(AlertView.Style.ActionSheet)
                             .setTitle("Please confirm your booking")
                             .setMessage(null)
-                            .setCancelText("Cancel")
-                            .setDestructive("Reschedule", "Remove")
+                            .setCancelText("Dismiss")
+                            .setDestructive("Update Booking", "Withdraw Booking")
                             .setOthers(null)
                             .setOnItemClickListener(new OnItemClickListener() {
                                 @Override
                                 public void onItemClick(Object o, int position) {
-                                    if (position == 0){
-
-                                    }else if (position == 1){
-
-                                    }
+                                    alertButtonPostion = position;
                                 }
                             })
-                            .build()
-                            .show();
+                            .build();
+
+                    actionSheet.setOnDismissListener(new OnDismissListener() {
+                        @Override
+                        public void onDismiss(Object o) {
+                            if (alertButtonPostion != AlertView.CANCELPOSITION) {
+                                if (alertButtonPostion == 0){
+                                    activity.startActivity(new Intent(activity, EditOrderActivity.class));
+                                }else if (alertButtonPostion == 1){
+                                    activity.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            AlertView alertView = new AlertView("Are you sure?", "Do you really want to withdraw this order?", "Cancel", null, new String[]{"Okay"}, activity, AlertView.Style.Alert, new OnItemClickListener() {
+                                                @Override
+                                                public void onItemClick(Object o, int position) {
+                                                    if (position != AlertView.CANCELPOSITION){
+                                                        References.getInstance().ordersRef.child(mItem.idx).removeValue();
+                                                    }
+                                                }
+                                            });
+                                            alertView.show();
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    });
+
+                    actionSheet.show();
+
                     return true;
                 }
             });

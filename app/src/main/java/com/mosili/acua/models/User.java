@@ -64,4 +64,8 @@ public class User {
     public String getPushToken() {
         return pushToken;
     }
+
+    public String getFullName () {
+        return  this.firstname + " " + this.getLastname();
+    }
 }

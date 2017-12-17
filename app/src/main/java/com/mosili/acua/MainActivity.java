@@ -2,6 +2,7 @@ package com.mosili.acua;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.FirebaseDatabase;
 import com.mosili.acua.adapters.ViewPagerAdapter;
@@ -75,8 +77,16 @@ public class MainActivity extends AppCompatActivity
         fab_contact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("message/rfc822");
+                i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"mosili.pebane@gmail.com"});
+                i.putExtra(Intent.EXTRA_SUBJECT, "regarding to acua");
+                i.putExtra(Intent.EXTRA_TEXT   , "");
+                try {
+                    startActivity(Intent.createChooser(i, "Send mail..."));
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         if (this.session.getUserType()==1) fab_contact.setVisibility(View.GONE);
@@ -92,7 +102,6 @@ public class MainActivity extends AppCompatActivity
         nav_header_Profile = headerView.findViewById(R.id.imgProfile);
         nav_header_Username = headerView.findViewById(R.id.txtUsername);
         nav_header_Useremail = headerView.findViewById(R.id.txtUseremail);
-
 
         User session = AppManager.getSession();
         updateUserInfoOnNavHeader(session);
@@ -213,7 +222,7 @@ public class MainActivity extends AppCompatActivity
                     public void notificationReceived(OSNotification notification) {
                         if (isAppOnForeground(MainActivity.this)){
                             // Clear all notification
-                            OneSignal.clearOneSignalNotifications();
+                            //OneSignal.clearOneSignalNotifications();
                         }else{
                             Log.d("Notification", notification.toString());
                         }

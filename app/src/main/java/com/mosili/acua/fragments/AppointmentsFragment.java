@@ -28,13 +28,6 @@ public class AppointmentsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static AppointmentsFragment newInstance(String param1, String param2) {
-        AppointmentsFragment fragment = new AppointmentsFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +52,7 @@ public class AppointmentsFragment extends Fragment {
         tvEmpty = (TextView) view.findViewById(R.id.tv_empty);
 
         User session = AppManager.getSession();
-        adapter = new OrderListRecyclerViewAdapter(session);
+        adapter = new OrderListRecyclerViewAdapter(session, getActivity());
         adapter.startUpdateTimer();
         rvOrders.setAdapter(adapter);
         updateStatus(AppManager.getInstance().orderList);

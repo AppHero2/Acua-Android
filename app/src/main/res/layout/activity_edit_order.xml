@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.mosili.acua.EditOrderActivity">
+    tools:context="com.mosili.acua.fragments.BookingFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,19 +19,26 @@
             android:layout_marginTop="5dp"
             android:orientation="horizontal">
 
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="2dp"
+                android:src="@drawable/ic_washer"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical|start"
                 android:text="@string/book_wash_type"
+                android:textColor="@color/colorTextBlue"
                 android:textStyle="bold"/>
 
-            <Spinner
+            <android.support.v7.widget.AppCompatSpinner
                 android:id="@+id/spinerWashTypes"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="2"/>
+                android:layout_weight="2"
+                app:backgroundTint="@color/colorTextBlue"/>
 
         </LinearLayout>
 
@@ -43,19 +50,28 @@
             android:layout_marginTop="5dp"
             android:orientation="horizontal">
 
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="2dp"
+                android:src="@drawable/ic_car"/>
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:paddingLeft="12dp"
                 android:gravity="center_vertical|start"
                 android:text="@string/book_car_type"
+                android:textColor="@color/colorTextBlue"
                 android:textStyle="bold"/>
 
-            <Spinner
+            <android.support.v7.widget.AppCompatSpinner
                 android:id="@+id/spinerCarTypes"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="2"/>
+                android:layout_weight="2"
+                app:backgroundTint="@color/colorTextBlue"/>
 
         </LinearLayout>
 
@@ -73,10 +89,11 @@
                 android:layout_weight="1"
                 android:gravity="center|left"
                 android:text="@string/book_question_tap"
+                android:textColor="@color/colorTextBlue"
                 android:textStyle="bold"/>
 
             <RadioGroup
-                android:id="@+id/radioTap"
+                android:id="@+id/groupTap"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -87,12 +104,14 @@
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:text="@string/book_answer_yes"
+                    android:textColor="@color/colorTextBlue"
                     app:buttonTint="@color/colorPrimary"/>
                 <android.support.v7.widget.AppCompatRadioButton
                     android:id="@+id/rb_tap_no"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:text="@string/book_answer_no"
+                    android:textColor="@color/colorTextBlue"
                     app:buttonTint="@color/colorPrimary"/>
             </RadioGroup>
         </LinearLayout>
@@ -111,10 +130,11 @@
                 android:layout_weight="1"
                 android:gravity="center|left"
                 android:text="@string/book_question_plug"
+                android:textColor="@color/colorTextBlue"
                 android:textStyle="bold"/>
 
             <RadioGroup
-                android:id="@+id/radioPlug"
+                android:id="@+id/groupPlug"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -125,12 +145,14 @@
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:text="@string/book_answer_yes"
+                    android:textColor="@color/colorTextBlue"
                     app:buttonTint="@color/colorPrimary"/>
                 <android.support.v7.widget.AppCompatRadioButton
                     android:id="@+id/rb_plug_no"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:text="@string/book_answer_no"
+                    android:textColor="@color/colorTextBlue"
                     app:buttonTint="@color/colorPrimary"/>
             </RadioGroup>
         </LinearLayout>
@@ -143,7 +165,7 @@
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="40dp"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="5dp">
 
@@ -156,8 +178,8 @@
                     android:layout_toEndOf="@+id/imgDay"
                     android:gravity="center_vertical"
                     android:text="2017-09-08"
-                    android:textSize="18sp"
-                    android:textAlignment="center"/>
+                    android:textColor="@color/colorTextBlue"
+                    android:textSize="18sp" />
 
                 <ImageView
                     android:layout_width="40dp"
@@ -188,8 +210,8 @@
                     android:layout_toEndOf="@+id/imgTime"
                     android:gravity="center_vertical"
                     android:text="12:23"
-                    android:textSize="18sp"
-                    android:textAlignment="center"/>
+                    android:textColor="@color/colorTextBlue"
+                    android:textSize="18sp" />
 
                 <ImageView
                     android:layout_width="40dp"
@@ -198,8 +220,6 @@
                     android:layout_alignParentStart="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginLeft="10dp"
                     android:tint="@color/colorPrimary"
                     android:src="@drawable/ic_timer"
                     android:id="@+id/imgTime" />
@@ -225,6 +245,7 @@
                 android:layout_marginStart="10dp"
                 android:gravity="center_vertical"
                 android:text="address"
+                android:textColor="@color/colorTextBlue"
                 android:textSize="18sp" />
 
             <ImageView
@@ -258,6 +279,7 @@
                     android:layout_marginLeft="10dp"
                     android:gravity="center_vertical"
                     android:text="ZAR"
+                    android:textColor="@color/colorTextBlue"
                     android:textStyle="bold"
                     android:textSize="24sp"
                     android:id="@+id/txtCurrencyUnit" />
@@ -269,6 +291,7 @@
                     android:layout_marginLeft="10dp"
                     android:gravity="center_vertical"
                     android:text="10.00"
+                    android:textColor="@color/colorTextBlue"
                     android:textStyle="bold"
                     android:textSize="22sp"/>
             </LinearLayout>
@@ -277,9 +300,9 @@
                 android:id="@+id/btnOrder"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:layout_marginTop="10dp"
                 android:layout_gravity="center"
-                android:text="@string/book_button_confirm"
+                android:layout_marginTop="10dp"
+                android:text="@string/book_button_update"
                 android:textColor="@color/colorTextPrimary"
                 android:background="@drawable/button_background"/>
 

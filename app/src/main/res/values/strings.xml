@@ -88,6 +88,10 @@
     <string name="book_schedule">Schedule</string>
     <string name="book_location">Location</string>
     <string name="book_button_confirm">Confirm</string>
+    <string name="book_button_update">Update</string>
+    <string name="book_error_tap">Due to an inaccessible tap, we can only offer the waterless wash option.</string>
+    <string name="book_error_plug">Due to an inaccessible power source, we can only offer the wash and dry option.</string>
+    <string name="book_error_both">Due to an inaccessible tap and power source, we can only offer the waterless wash option.</string>
 
     <!-- APPOINTMENT -->
     <string name="order_list_empty">No Appointments</string>

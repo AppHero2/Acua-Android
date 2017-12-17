@@ -92,7 +92,7 @@
                 android:textStyle="bold"/>
 
             <RadioGroup
-                android:id="@+id/radioTap"
+                android:id="@+id/groupTap"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -133,7 +133,7 @@
                 android:textStyle="bold"/>
 
             <RadioGroup
-                android:id="@+id/radioPlug"
+                android:id="@+id/groupPlug"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"

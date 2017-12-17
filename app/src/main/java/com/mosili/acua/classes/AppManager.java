@@ -36,8 +36,15 @@ import com.mosili.acua.models.WashMenu;
 import com.mosili.acua.models.User;
 import com.mosili.acua.models.WashType;
 import com.mosili.acua.utils.References;
+import com.onesignal.OneSignal;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -333,6 +340,61 @@ public class AppManager {
         };
 
         References.getInstance().ordersRef.addValueEventListener(trackOrdersListener);
+    }
+
+
+    public void sendPushNotificationToService(final String title, final String message){
+        Query query = References.getInstance().usersRef.orderByChild("userType").equalTo(1); // service
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // dataSnapshot is the "issue" node with all children with id 0
+                    JSONArray receivers = new JSONArray();
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        Map<String, Object> data = (Map<String, Object>) child.getValue();
+                        User user = new User(data);
+                        String pushToken = user.getPushToken();
+                        receivers.put(pushToken);
+                    }
+
+                    sendOneSignalPush(receivers, title, message);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void sendOneSignalPush(JSONArray receivers, String title, String message){
+        try {
+
+            JSONObject pushObject = new JSONObject();
+            JSONObject contents = new JSONObject();
+            contents.put("en", message);
+            JSONObject headings = new JSONObject();
+            headings.put("en", title);
+            pushObject.put("headings", headings);
+            pushObject.put("contents", contents);
+            pushObject.put("include_player_ids", receivers);
+            OneSignal.postNotification(pushObject, new OneSignal.PostNotificationResponseHandler() {
+                @Override
+                public void onSuccess(JSONObject jsonObject) {
+                    Log.d("Push", jsonObject.toString());
+                }
+
+                @Override
+                public void onFailure(JSONObject jsonObject) {
+                    Log.d("Push", jsonObject.toString());
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
