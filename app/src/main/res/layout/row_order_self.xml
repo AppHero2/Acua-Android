@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="CarType, WashType"
-        android:textColor="@color/colorGrey"
+        android:textColor="@color/colorTextBlue"
         android:textSize="14sp"
         android:textStyle="bold"/>
 
@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:textColor="@color/colorGrey"
+            android:textColor="@color/colorTextBlue"
             android:text="address"/>
 
     </RelativeLayout>
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:autoLink="all"
             android:layout_toLeftOf="@+id/tv_remain"
-            android:textColor="@color/colorGrey"
+            android:textColor="@color/colorTextBlue"
             android:text="2017-10-23 15:10 ~ 16:30"
             android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
@@ -63,7 +63,7 @@
             android:paddingLeft="5dp"
             android:layout_alignParentRight="true"
             android:text="00:00"
-            android:textColor="@color/colorGrey"
+            android:textColor="@color/colorTextBlue"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             android:textSize="12sp" />
     </RelativeLayout>

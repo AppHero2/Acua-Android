@@ -171,14 +171,14 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         public ViewHolder1(View view) {
             super(view);
             mView = view;
-            mView.setOnLongClickListener(new View.OnLongClickListener() {
+            /*mView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
                     new AlertView.Builder().setContext(view.getContext())
                             .setStyle(AlertView.Style.ActionSheet)
                             .setTitle("Please confirm customer service")
                             .setMessage(null)
-                            .setCancelText("Cancel")
+                            .setCancelText("Dismiss")
                             .setDestructive("Refund", "Remove")
                             .setOthers(null)
                             .setOnItemClickListener(new OnItemClickListener() {
@@ -195,7 +195,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                             .show();
                     return true;
                 }
-            });
+            });*/
             tvUsername = (TextView) view.findViewById(R.id.tv_username);
             tvTypes = (TextView) view.findViewById(R.id.tv_types);
             tvAddress = (TextView) view.findViewById(R.id.tv_address);
@@ -292,6 +292,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                         public void onDismiss(Object o) {
                             if (alertButtonPostion != AlertView.CANCELPOSITION) {
                                 if (alertButtonPostion == 0){
+                                    AppManager.getInstance().currentOrder = mItem;
                                     activity.startActivity(new Intent(activity, EditOrderActivity.class));
                                 }else if (alertButtonPostion == 1){
                                     activity.runOnUiThread(new Runnable() {

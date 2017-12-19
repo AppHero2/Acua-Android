@@ -68,10 +68,22 @@ public class EditOrderActivity extends AppCompatActivity {
     private List<String> washNames = new ArrayList<>();
     private List<String> carNames = new ArrayList<>();
 
+    private Order currentOrder ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_order);
+
+        currentOrder = AppManager.getInstance().currentOrder;
+
+        ImageView btnBack = (ImageView) findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditOrderActivity.this.finish();
+            }
+        });
 
         spinnerWashType = (Spinner) findViewById(R.id.spinerWashTypes);
         spinnerCarType = (Spinner) findViewById(R.id.spinerCarTypes);
@@ -112,6 +124,15 @@ public class EditOrderActivity extends AppCompatActivity {
             }
         });
 
+        // select wash type
+        for (int i = 0; i < AppManager.getInstance().washTypes.size(); i++) {
+            WashType type = AppManager.getInstance().washTypes.get(i);
+            if (currentOrder.idx.contains(type.getIdx())){
+                spinnerWashType.setSelection(i);
+                break;
+            }
+        }
+
         ArrayAdapter<String>adapterCarType = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, carNames);
         adapterCarType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCarType.setAdapter(adapterCarType);
@@ -134,6 +155,15 @@ public class EditOrderActivity extends AppCompatActivity {
                 Log.d("BOOKING", "onNothingSelected");
             }
         });
+
+        // select car type
+        for (int i = 0; i < AppManager.getInstance().carTypes.size(); i++) {
+            CarType type = AppManager.getInstance().carTypes.get(i);
+            if (currentOrder.idx.contains(type.getIdx())){
+                spinnerCarType.setSelection(i);
+                break;
+            }
+        }
 
         groupTap = (RadioGroup) findViewById(R.id.groupTap);
         groupTap.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -167,6 +197,19 @@ public class EditOrderActivity extends AppCompatActivity {
                 checkRadioButtons();
             }
         });
+
+        // select radio group options
+        if (currentOrder.hasTap){
+            ((RadioButton) groupTap.getChildAt(0)).setChecked(true);
+        } else {
+            ((RadioButton) groupTap.getChildAt(1)).setChecked(true);
+        }
+
+        if (currentOrder.hasPlug) {
+            ((RadioButton) groupPlug.getChildAt(0)).setChecked(true);
+        } else {
+            ((RadioButton) groupPlug.getChildAt(1)).setChecked(true);
+        }
 
         txtDate = (TextView) findViewById(R.id.txtDate);
         txtTime = (TextView) findViewById(R.id.txtTime);
@@ -204,6 +247,8 @@ public class EditOrderActivity extends AppCompatActivity {
             }
         });
 
+
+        calendar.setTimeInMillis(currentOrder.beginAt);
         year = calendar.get(Calendar.YEAR);
         month = calendar.get(Calendar.MONTH);
         day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -226,6 +271,10 @@ public class EditOrderActivity extends AppCompatActivity {
                 }
             }
         });
+        // set Address of Current Order
+        txtAddress.setText(currentOrder.location.getName());
+        curLocation = currentOrder.location;
+
         ImageView btnAddress = (ImageView) findViewById(R.id.imgAddress);
         btnAddress.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -242,6 +291,8 @@ public class EditOrderActivity extends AppCompatActivity {
         });
 
         txtCost = (TextView) findViewById(R.id.txtCost);
+        // set Price of Current Order
+        txtCost.setText(String.valueOf(currentOrder.menu.getPrice()));
         AppCompatButton btnConfirm = (AppCompatButton) findViewById(R.id.btnOrder);
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -258,21 +309,18 @@ public class EditOrderActivity extends AppCompatActivity {
                 order.hasPlug = hasPlug;
 
                 User session = AppManager.getSession();
-                final String push_title = session.getFullName() + " has made an offer.";
+                final String push_title = session.getFullName() + " has updated an offer.";
                 final String push_message = carType.getName() + ", " + washType.getName() + " at " + TimeUtil.getSimpleDateString(order.beginAt);
 
-
                 if (isValidBooking(order)) {
-                    References.getInstance().ordersRef.child(String.valueOf(order.beginAt)).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    References.getInstance().ordersRef.child(currentOrder.idx).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            // TODO: send notification to service
-                            Log.d("BOOKING", "Booked successfully");
-                            Toast.makeText(EditOrderActivity.this, "Booked successfully", Toast.LENGTH_SHORT).show();
+                            Log.d("Updating", "Booked successfully");
+                            Toast.makeText(EditOrderActivity.this, "Updated successfully", Toast.LENGTH_SHORT).show();
                             AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
                         }
                     });
-
                 }
             }
         });
@@ -375,9 +423,11 @@ public class EditOrderActivity extends AppCompatActivity {
         }
 
         for (Order theOrder: AppManager.getInstance().orderList) {
-            if (theOrder.beginAt <= order.beginAt && order.beginAt <= theOrder.endAt) {
-                Util.showAlert("Note!", "You could not book at the moment because another customer made already booking before you.", this);
-                return false;
+            if (!theOrder.idx.equals(currentOrder.idx)) {
+                if (theOrder.beginAt <= order.beginAt && order.beginAt <= theOrder.endAt) {
+                    Util.showAlert("Note!", "You could not book at the moment because another customer made already booking before you.", this);
+                    return false;
+                }
             }
         }
 

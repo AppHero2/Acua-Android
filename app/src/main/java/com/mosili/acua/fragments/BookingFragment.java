@@ -279,7 +279,6 @@ public class BookingFragment extends Fragment {
                 final String push_title = session.getFullName() + " has made an offer.";
                 final String push_message = carType.getName() + ", " + washType.getName() + " at " + TimeUtil.getSimpleDateString(order.beginAt);
 
-
                 if (isValidBooking(order)) {
                     References.getInstance().ordersRef.child(String.valueOf(order.beginAt)).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override

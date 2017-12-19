@@ -70,6 +70,8 @@ public class AppManager {
     public List<WashMenu> menuList = new ArrayList<>();
     public List<Order> orderList = new ArrayList<>();
 
+    public Order currentOrder ;
+
     public static AppManager getInstance() {
         return ourInstance;
     }

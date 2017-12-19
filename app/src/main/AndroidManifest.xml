@@ -47,7 +47,10 @@
             android:name=".RegisterUserActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".EditOrderActivity"/>
+        <activity
+            android:name=".EditOrderActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <!-- OneSignal Service -->
         <service
