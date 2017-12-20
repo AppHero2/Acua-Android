@@ -202,10 +202,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onClick(View view) {
         int idx = view.getId();
-
         switch (idx) {
             case R.id.btn_menu_profile:{
-
+                startActivity(new Intent(MainActivity.this, EditProfileActivity.class));
             }
                 break;
             case R.id.btn_menu_notification:{
@@ -224,6 +223,11 @@ public class MainActivity extends AppCompatActivity
                 sendFeedback();
             }
                 break;
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
         }
     }
 

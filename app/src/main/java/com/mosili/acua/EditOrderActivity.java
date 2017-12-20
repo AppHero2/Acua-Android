@@ -77,6 +77,8 @@ public class EditOrderActivity extends AppCompatActivity {
 
         currentOrder = AppManager.getInstance().currentOrder;
 
+        TextView txtTitle = (TextView) findViewById(R.id.txtTitle);
+        txtTitle.setText(getString(R.string.book_update_title));
         ImageView btnBack = (ImageView) findViewById(R.id.btnBack);
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
