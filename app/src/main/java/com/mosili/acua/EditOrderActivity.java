@@ -127,7 +127,7 @@ public class EditOrderActivity extends AppCompatActivity {
         // select wash type
         for (int i = 0; i < AppManager.getInstance().washTypes.size(); i++) {
             WashType type = AppManager.getInstance().washTypes.get(i);
-            if (currentOrder.idx.contains(type.getIdx())){
+            if (currentOrder.menu.getIdx().contains(type.getIdx())){
                 spinnerWashType.setSelection(i);
                 break;
             }
@@ -159,7 +159,7 @@ public class EditOrderActivity extends AppCompatActivity {
         // select car type
         for (int i = 0; i < AppManager.getInstance().carTypes.size(); i++) {
             CarType type = AppManager.getInstance().carTypes.get(i);
-            if (currentOrder.idx.contains(type.getIdx())){
+            if (currentOrder.menu.getIdx().contains(type.getIdx())){
                 spinnerCarType.setSelection(i);
                 break;
             }
@@ -212,7 +212,6 @@ public class EditOrderActivity extends AppCompatActivity {
         }
 
         txtDate = (TextView) findViewById(R.id.txtDate);
-        txtTime = (TextView) findViewById(R.id.txtTime);
         ImageView btnCalendar = (ImageView) findViewById(R.id.imgDay);
         btnCalendar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -227,6 +226,7 @@ public class EditOrderActivity extends AppCompatActivity {
             }
         });
 
+        txtTime = (TextView) findViewById(R.id.txtTime);
         ImageView btnTimer = (ImageView) findViewById(R.id.imgTime);
         btnTimer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -246,7 +246,6 @@ public class EditOrderActivity extends AppCompatActivity {
 
             }
         });
-
 
         calendar.setTimeInMillis(currentOrder.beginAt);
         year = calendar.get(Calendar.YEAR);

@@ -92,6 +92,7 @@
                 android:id="@+id/textView" />
 
             <TextView
+                android:id="@+id/tv_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -131,15 +132,17 @@
             android:layout_height="40dp">
 
             <ImageView
+                android:id="@+id/btn_location"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/ic_location"
                 android:padding="8dp"
                 android:tint="@color/colorTextBlue"
                 android:background="@drawable/button_background"
-                android:id="@+id/btn_location" />
+                 />
 
             <ImageView
+                android:id="@+id/btn_phone_call"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginLeft="10dp"
@@ -158,6 +161,7 @@
             android:layout_height="wrap_content">
 
             <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_action"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_alignParentEnd="true"
@@ -166,8 +170,7 @@
                 android:background="@drawable/button_background"
                 android:text="Engage"
                 android:textStyle="bold"
-                android:textColor="@color/colorTextBlue"
-                android:id="@+id/btn_action" />
+                android:textColor="@color/colorTextBlue"/>
         </RelativeLayout>
     </LinearLayout>
     

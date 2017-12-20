@@ -3,6 +3,8 @@ package com.mosili.acua;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -63,6 +65,8 @@ public class MainActivity extends AppCompatActivity
     private BookingFragment bookingFragment;
     private AppointmentsFragment appointmentsFragment;
 
+    private String currentVersion;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,16 +81,7 @@ public class MainActivity extends AppCompatActivity
         fab_contact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("message/rfc822");
-                i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"mosili.pebane@gmail.com"});
-                i.putExtra(Intent.EXTRA_SUBJECT, "regarding to acua");
-                i.putExtra(Intent.EXTRA_TEXT   , "");
-                try {
-                    startActivity(Intent.createChooser(i, "Send mail..."));
-                } catch (android.content.ActivityNotFoundException ex) {
-                    Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
-                }
+                contactUs();
             }
         });
         if (this.session.getUserType()==1) fab_contact.setVisibility(View.GONE);
@@ -111,6 +106,17 @@ public class MainActivity extends AppCompatActivity
         Button btnPayment = (Button) findViewById(R.id.btn_menu_payment); btnPayment.setOnClickListener(this);
         Button btnShare = (Button) findViewById(R.id.btn_menu_share); btnShare.setOnClickListener(this);
         Button btnFeedback = (Button) findViewById(R.id.btn_menu_feedback); btnFeedback.setOnClickListener(this);
+
+        TextView txtCopyright = (TextView) findViewById(R.id.txtCopyright);
+        try {
+            PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
+            String versionName = pInfo.versionName;
+            String versionCode = String.valueOf(pInfo.versionCode);
+            currentVersion = versionName + "(" + versionCode + ") ";
+            txtCopyright.setText(getString(R.string.app_name) + currentVersion + getString(R.string.side_menu_copyright));
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
 
         AppManager.getInstance().setUserValueListenerMain(this);
 
@@ -195,7 +201,30 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onClick(View view) {
+        int idx = view.getId();
 
+        switch (idx) {
+            case R.id.btn_menu_profile:{
+
+            }
+                break;
+            case R.id.btn_menu_notification:{
+
+            }
+                break;
+            case R.id.btn_menu_payment:{
+
+            }
+                break;
+            case R.id.btn_menu_share:{
+                shareThisApp();
+            }
+                break;
+            case R.id.btn_menu_feedback:{
+                sendFeedback();
+            }
+                break;
+        }
     }
 
     @Override
@@ -329,5 +358,40 @@ public class MainActivity extends AppCompatActivity
             tabLayout.getTabAt(i).setCustomView(prepareTabView(i));
         }
 
+    }
+
+    private void shareThisApp(){
+        final String appPackageName = this.getPackageName();
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out acua App at: https://play.google.com/store/apps/details?id=" + appPackageName);
+        sendIntent.setType("text/plain");
+        this.startActivity(sendIntent);
+    }
+
+    private void sendFeedback(){
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("message/rfc822");
+        i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"mosili.pebane@gmail.com"});
+        i.putExtra(Intent.EXTRA_SUBJECT, "feedback for acua " + currentVersion);
+        i.putExtra(Intent.EXTRA_TEXT   , "");
+        try {
+            startActivity(Intent.createChooser(i, "Feedback"));
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void contactUs(){
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("message/rfc822");
+        i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"mosili.pebane@gmail.com"});
+        i.putExtra(Intent.EXTRA_SUBJECT, "regarding to acua");
+        i.putExtra(Intent.EXTRA_TEXT   , "");
+        try {
+            startActivity(Intent.createChooser(i, "Send mail..."));
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -5,5 +5,5 @@ package com.mosili.acua.models;
  */
 
 public enum OrderServiceStatus {
-    PENDING, STARTED, ENDED, COMPLETED
+    PENDING, ACCEPTED, STARTED, ENDED, COMPLETED
 }

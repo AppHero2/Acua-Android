@@ -2,15 +2,22 @@ package com.mosili.acua.adapters;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.mosili.acua.EditOrderActivity;
+import com.mosili.acua.MapActivity;
 import com.mosili.acua.R;
 import com.mosili.acua.alertView.AlertView;
 import com.mosili.acua.alertView.OnDismissListener;
@@ -19,6 +26,7 @@ import com.mosili.acua.classes.AppManager;
 import com.mosili.acua.interfaces.UserValueListener;
 import com.mosili.acua.models.CarType;
 import com.mosili.acua.models.Order;
+import com.mosili.acua.models.OrderServiceStatus;
 import com.mosili.acua.models.User;
 import com.mosili.acua.models.WashType;
 import com.mosili.acua.utils.References;
@@ -157,111 +165,12 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         return type;
     }
 
-    public class ViewHolder1 extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView tvUsername;
-        public final TextView tvTypes;
-        public final TextView tvAddress;
-        public final TextView tvSchedule;
-        public final TextView tvRemain;
-        private ImageView imgProfile;
 
-        public Order mItem;
-
-        public ViewHolder1(View view) {
-            super(view);
-            mView = view;
-            /*mView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    new AlertView.Builder().setContext(view.getContext())
-                            .setStyle(AlertView.Style.ActionSheet)
-                            .setTitle("Please confirm customer service")
-                            .setMessage(null)
-                            .setCancelText("Dismiss")
-                            .setDestructive("Refund", "Remove")
-                            .setOthers(null)
-                            .setOnItemClickListener(new OnItemClickListener() {
-                                @Override
-                                public void onItemClick(Object o, int position) {
-                                    if (position == 0){
-
-                                    }else if (position == 1){
-
-                                    }
-                                }
-                            })
-                            .build()
-                            .show();
-                    return true;
-                }
-            });*/
-            tvUsername = (TextView) view.findViewById(R.id.tv_username);
-            tvTypes = (TextView) view.findViewById(R.id.tv_types);
-            tvAddress = (TextView) view.findViewById(R.id.tv_address);
-            tvRemain = (TextView) view.findViewById(R.id.tv_remain);
-            tvSchedule = (TextView) view.findViewById(R.id.tv_schedule);
-            imgProfile = (ImageView) view.findViewById(R.id.img_profile);
-        }
-
-        public void updateData(){
-            String[] types = mItem.menu.getIdx().split("_");
-            String washTypeId = types[0];
-            String carTypeId = types[1];
-            String washType = "";
-            String carType = "";
-            for (WashType type : AppManager.getInstance().washTypes) {
-                if (type.getIdx().equals(washTypeId)) {
-                    washType = type.getName();
-                    break;
-                }
-            }
-            for (CarType type : AppManager.getInstance().carTypes) {
-                if (type.getIdx().equals(carTypeId)) {
-                    carType = type.getName();
-                    break;
-                }
-            }
-            tvTypes.setText(carType + ", " + washType);
-            tvAddress.setText(mItem.location.getName());
-            String userId = mItem.customerId;
-            AppManager.getUser(userId, new UserValueListener() {
-                @Override
-                public void onLoadedUser(User user) {
-                    tvUsername.setText(user.getFirstname() + " " + user.getLastname());
-                    Util.setProfileImage(user.getPhoto(), imgProfile);
-                    String startAt = TimeUtil.getSimpleDateString(mItem.beginAt);
-                    String endAt = TimeUtil.getSimpleTimeString(mItem.endAt);
-                    String schedule = startAt + " ~ " + endAt;
-                    tvSchedule.setText(schedule);
-                }
-            });
-        }
-
-        private boolean isExpired = false;
-        public boolean isExpired() {
-            return isExpired;
-        }
-
-        public void updateTimeRemaining(long currentTime) {
-            long timeDiff = mItem.endAt - currentTime;
-            if (timeDiff > 0) {
-                String remaining = TimeUtil.formatHMSM(timeDiff);
-                tvRemain.setText(remaining);
-                this.isExpired = false;
-            } else {
-                tvRemain.setText("Expired!!");
-                this.isExpired = true;
-            }
-        }
-    }
-
+    /// customer cell
     public class ViewHolder0 extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView tvTypes;
-        public final TextView tvAddress;
-        public final TextView tvSchedule;
-        public final TextView tvRemain;
+        public View mView;
+        public TextView tvTypes, tvAddress, tvSchedule, tvRemain, tvStatus;
+
         private int alertButtonPostion = AlertView.CANCELPOSITION;
 
         public Order mItem;
@@ -323,6 +232,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             tvAddress = (TextView) view.findViewById(R.id.tv_address);
             tvRemain = (TextView) view.findViewById(R.id.tv_remain);
             tvSchedule = (TextView) view.findViewById(R.id.tv_schedule);
+            tvStatus = (TextView) view.findViewById(R.id.tv_status);
         }
 
         public void updateData(){
@@ -349,6 +259,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             String endAt = TimeUtil.getSimpleTimeString(mItem.endAt);
             String schedule = startAt + " ~ " + endAt;
             tvSchedule.setText(schedule);
+            tvStatus.setText(String.valueOf(mItem.serviceStatus));
         }
 
         private boolean isExpired = false;
@@ -357,6 +268,160 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         }
 
         public void updateTimeRemaining(long currentTime) {
+
+            if (mItem != null){
+                if (mItem.serviceStatus == OrderServiceStatus.COMPLETED) {
+                    tvRemain.setText("service completed");
+                    return;
+                }
+            }
+
+            long timeDiff = mItem.endAt - currentTime;
+            if (timeDiff > 0) {
+                String remaining = TimeUtil.formatHMSM(timeDiff);
+                tvRemain.setText(remaining);
+                this.isExpired = false;
+            } else {
+                tvRemain.setText("Expired!!");
+                this.isExpired = true;
+            }
+        }
+    }
+
+    public class ViewHolder1 extends RecyclerView.ViewHolder {
+        public View mView;
+        public TextView tvUsername, tvTypes, tvAddress, tvSchedule, tvRemain, tvStatus;
+        private ImageView imgProfile;
+        private ImageView btnLocation, btnPhoneCall;
+        private AppCompatButton btnAction;
+
+        public Order mItem;
+        private User mUser;
+
+        public ViewHolder1(View view) {
+            super(view);
+            mView = view;
+            tvUsername = (TextView) view.findViewById(R.id.tv_username);
+            tvTypes = (TextView) view.findViewById(R.id.tv_types);
+            tvAddress = (TextView) view.findViewById(R.id.tv_address);
+            tvRemain = (TextView) view.findViewById(R.id.tv_remain);
+            tvSchedule = (TextView) view.findViewById(R.id.tv_schedule);
+            tvStatus = (TextView) view.findViewById(R.id.tv_status);
+            imgProfile = (ImageView) view.findViewById(R.id.img_profile);
+
+            btnLocation = (ImageView) view.findViewById(R.id.btn_location);
+            btnLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AppManager.getInstance().focusedOrder = mItem;
+                    activity.startActivity(new Intent(activity, MapActivity.class));
+                }
+            });
+            btnPhoneCall = (ImageView) view.findViewById(R.id.btn_phone_call);
+            btnPhoneCall.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mUser != null) {
+                        Intent in = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + mUser.getPhone()));
+                        try {
+                            activity.startActivity(in);
+                        } catch (SecurityException ex) {
+                            Toast.makeText(activity, ex.getMessage(), Toast.LENGTH_SHORT).show();
+                        } catch (Exception ex) {
+                            Toast.makeText(activity, ex.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            });
+
+            btnAction = (AppCompatButton) view.findViewById(R.id.btn_action);
+            btnAction.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mItem.serviceStatus == OrderServiceStatus.PENDING) {
+                        mItem.serviceStatus = OrderServiceStatus.ACCEPTED;
+                        References.getInstance().ordersRef.child(mItem.idx).setValue(mItem).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                AppManager.getInstance().sendPushNotificationToCustomer(mUser.getPushToken(), "Accepted your offer!",  session.getFullName() + " has accepted your offer!");
+                            }
+                        });
+                    } else if (mItem.serviceStatus == OrderServiceStatus.ACCEPTED) {
+                        mItem.serviceStatus = OrderServiceStatus.COMPLETED;
+                        References.getInstance().ordersRef.child(mItem.idx).setValue(mItem).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                AppManager.getInstance().sendPushNotificationToCustomer(mUser.getPushToken(), "Completed your offer!",  session.getFullName() + " has completed your offer! You need to pay for the service");
+                            }
+                        });
+                    } else {
+
+                    }
+                }
+            });
+
+        }
+
+        public void updateData(){
+            String[] types = mItem.menu.getIdx().split("_");
+            String washTypeId = types[0];
+            String carTypeId = types[1];
+            String washType = "";
+            String carType = "";
+            for (WashType type : AppManager.getInstance().washTypes) {
+                if (type.getIdx().equals(washTypeId)) {
+                    washType = type.getName();
+                    break;
+                }
+            }
+            for (CarType type : AppManager.getInstance().carTypes) {
+                if (type.getIdx().equals(carTypeId)) {
+                    carType = type.getName();
+                    break;
+                }
+            }
+            tvTypes.setText(carType + ", " + washType);
+            tvAddress.setText(mItem.location.getName());
+            String userId = mItem.customerId;
+            AppManager.getUser(userId, new UserValueListener() {
+                @Override
+                public void onLoadedUser(User user) {
+                    mUser = user;
+                    tvUsername.setText(user.getFirstname() + " " + user.getLastname());
+                    Util.setProfileImage(user.getPhoto(), imgProfile);
+                    String startAt = TimeUtil.getSimpleDateString(mItem.beginAt);
+                    String endAt = TimeUtil.getSimpleTimeString(mItem.endAt);
+                    String schedule = startAt + " ~ " + endAt;
+                    tvSchedule.setText(schedule);
+                }
+            });
+
+            if (mItem.serviceStatus == OrderServiceStatus.PENDING) {
+                tvStatus.setText("In complete");
+                btnAction.setText("Engage");
+            } else if (mItem.serviceStatus == OrderServiceStatus.ACCEPTED) {
+                tvStatus.setText("In Progress");
+                btnAction.setText("Done");
+            } else {
+                tvStatus.setText("Completed");
+                btnAction.setVisibility(View.GONE);
+            }
+        }
+
+        private boolean isExpired = false;
+        public boolean isExpired() {
+            return isExpired;
+        }
+
+        public void updateTimeRemaining(long currentTime) {
+
+            if (mItem != null){
+                if (mItem.serviceStatus == OrderServiceStatus.COMPLETED) {
+                    tvRemain.setText("service completed");
+                    return;
+                }
+            }
+
             long timeDiff = mItem.endAt - currentTime;
             if (timeDiff > 0) {
                 String remaining = TimeUtil.formatHMSM(timeDiff);

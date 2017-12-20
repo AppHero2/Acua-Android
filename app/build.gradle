@@ -18,7 +18,7 @@ android {
         applicationId "com.mosili.acua"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 17
+        versionCode 18
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [onesignal_app_id               : "1f9e701b-7709-40e6-a1b6-7dff0ee29b42",
@@ -33,8 +33,6 @@ android {
         }
     }
 }
-
-
 
 allprojects {
     repositories {

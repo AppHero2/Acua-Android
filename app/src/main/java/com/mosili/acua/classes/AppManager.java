@@ -32,6 +32,7 @@ import com.mosili.acua.interfaces.UserValueListener;
 import com.mosili.acua.interfaces.WashTypeValueListener;
 import com.mosili.acua.models.CarType;
 import com.mosili.acua.models.Order;
+import com.mosili.acua.models.OrderLocation;
 import com.mosili.acua.models.WashMenu;
 import com.mosili.acua.models.User;
 import com.mosili.acua.models.WashType;
@@ -70,7 +71,7 @@ public class AppManager {
     public List<WashMenu> menuList = new ArrayList<>();
     public List<Order> orderList = new ArrayList<>();
 
-    public Order currentOrder ;
+    public Order currentOrder, focusedOrder;
 
     public static AppManager getInstance() {
         return ourInstance;
@@ -344,6 +345,11 @@ public class AppManager {
         References.getInstance().ordersRef.addValueEventListener(trackOrdersListener);
     }
 
+    public void sendPushNotificationToCustomer(String pushToken, String title, String message) {
+        JSONArray receivers = new JSONArray();
+        receivers.put(pushToken);
+        sendOneSignalPush(receivers, title, message);
+    }
 
     public void sendPushNotificationToService(final String title, final String message){
         Query query = References.getInstance().usersRef.orderByChild("userType").equalTo(1); // service
