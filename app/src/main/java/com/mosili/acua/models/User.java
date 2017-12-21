@@ -1,8 +1,17 @@
 package com.mosili.acua.models;
 
+import android.util.Log;
+
+import com.mosili.acua.utils.Util;
+import com.stripe.android.model.Token;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import static com.mosili.acua.utils.Util.getIntFromData;
+import static com.mosili.acua.utils.Util.getMapDataFromData;
 import static com.mosili.acua.utils.Util.getStringFromData;
 
 /**
@@ -13,6 +22,7 @@ public class User {
 
     private String idx, firstname, lastname, email, photo, phone, bio, pushToken;
     private int userType = 0; //0 = customer, 1 = service, 2 = admin
+    private PayCard payCard;
     public User(Map<String, Object> data){
         updateData(data);
     }
@@ -27,6 +37,8 @@ public class User {
         this.bio = getStringFromData("bio", data);
         this.pushToken = getStringFromData("pushToken", data);
         this.userType = getIntFromData("userType", data);
+        Map<String, Object> cardData = getMapDataFromData("payCard", data);
+        this.payCard = new PayCard(cardData);
     }
 
     public String getBio() {
@@ -67,5 +79,9 @@ public class User {
 
     public String getFullName () {
         return  this.firstname + " " + this.getLastname();
+    }
+
+    public PayCard getPayCard() {
+        return payCard;
     }
 }

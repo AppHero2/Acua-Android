@@ -101,6 +101,22 @@ b) We shall not under any circumstances be liable for any indirect or consequent
     <!-- APPOINTMENT -->
     <string name="order_list_empty">No Appointments</string>
 
+    <!-- Payment -->
+    <string name="addPayment">Add Payment Method</string>
+
+    <string name="endingIn">Card ending in </string>
+    <string name="progressMessage">Creating Token&#8230;</string>
+    <string name="validationErrors">Validation Errors</string>
+
+    <string name="load_items">Load Items</string>
+    <string name="ok">OK</string>
+    <string name="verify">Verify</string>
+
+    <string name="label_source_type">Type</string>
+    <string name="label_3ds_status">3DS status</string>
+    <string name="label_source_state">Status</string>
+    <string name="label_source_id">ID Last 6</string>
+
     <!-- Place Picker -->
     <string name="map_api_key">AIzaSyC6IrVi3PSVo_GzG-0Gx9LvtSvTlQogCGw</string>
     <!-- Country Picker -->

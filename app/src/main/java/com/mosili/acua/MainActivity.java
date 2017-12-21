@@ -206,13 +206,13 @@ public class MainActivity extends AppCompatActivity
             case R.id.btn_menu_profile:{
                 startActivity(new Intent(MainActivity.this, EditProfileActivity.class));
             }
-                break;
+            break;
             case R.id.btn_menu_notification:{
 
             }
-                break;
+            break;
             case R.id.btn_menu_payment:{
-
+                startActivity(new Intent(MainActivity.this, PaymentActivity.class));
             }
                 break;
             case R.id.btn_menu_share:{

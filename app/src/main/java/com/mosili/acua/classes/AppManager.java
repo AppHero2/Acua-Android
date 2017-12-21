@@ -24,6 +24,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mosili.acua.country.Country;
 import com.mosili.acua.interfaces.CarTypeValueListener;
 import com.mosili.acua.interfaces.MenuValueListener;
@@ -422,6 +424,9 @@ public class AppManager {
         editor.putString("phone", user.getPhone());
         editor.putString("pushToken", user.getPushToken());
         editor.putInt("userType", user.getUserType());
+        Gson gson = new Gson();
+        String payCard = gson.toJson(user.getPayCard());
+        editor.putString("payCard", payCard);
         editor.commit();
     }
 
@@ -441,6 +446,8 @@ public class AppManager {
         String bio = sharedPreferences.getString("bio", "?");
         String pushToken = sharedPreferences.getString("pushToken", "?");
         int userType = sharedPreferences.getInt("userType", 0);
+        String payCardData = sharedPreferences.getString("payCard", null);
+        Map<String,Object> payCard = new Gson().fromJson(payCardData, new TypeToken<Map<String, Object>>(){}.getType());
 
         if (uid != null) {
             Map<String, Object> data = new HashMap<>();
@@ -453,6 +460,7 @@ public class AppManager {
             data.put("bio", bio);
             data.put("pushToken", pushToken);
             data.put("userType", userType);
+            data.put("payCard", payCard);
             User user = new User(data);
             return user;
         } else {
