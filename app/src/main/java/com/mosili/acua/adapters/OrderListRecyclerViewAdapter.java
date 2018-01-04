@@ -5,17 +5,21 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.kaopiz.kprogresshud.KProgressHUD;
 import com.mosili.acua.EditOrderActivity;
 import com.mosili.acua.MapActivity;
 import com.mosili.acua.R;
@@ -23,9 +27,11 @@ import com.mosili.acua.alertView.AlertView;
 import com.mosili.acua.alertView.OnDismissListener;
 import com.mosili.acua.alertView.OnItemClickListener;
 import com.mosili.acua.classes.AppManager;
+import com.mosili.acua.interfaces.ResultListener;
 import com.mosili.acua.interfaces.UserValueListener;
 import com.mosili.acua.models.CarType;
 import com.mosili.acua.models.Order;
+import com.mosili.acua.models.OrderPayStatus;
 import com.mosili.acua.models.OrderServiceStatus;
 import com.mosili.acua.models.User;
 import com.mosili.acua.models.WashType;
@@ -41,8 +47,8 @@ import java.util.TimerTask;
 public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Order> orderList = new ArrayList<>();
-    private User session;
     private Activity activity;
+    private KProgressHUD hud;
     private int type = 0;
     private List<RecyclerView.ViewHolder> holders = new ArrayList<>();
     private Handler mHandler = new Handler();
@@ -79,15 +85,19 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         }, 1000, 1000);
     }
 
-    public OrderListRecyclerViewAdapter(User session, Activity activity) {
-        this.session = session;
+    public OrderListRecyclerViewAdapter(Activity activity) {
+        User session = AppManager.getSession();
         this.type = session.getUserType();
         this.activity = activity;
+        this.hud = KProgressHUD.create(activity)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setWindowColor(ContextCompat.getColor(activity,R.color.colorTransparency))
+                .setDimAmount(0.5f);
     }
 
     public void setOrderList(List<Order> orders) {
         orderList.clear();
-
+        User session = AppManager.getSession();
         if ( type == 0) // customer
         {
             for (Order order : orders) {
@@ -170,6 +180,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     public class ViewHolder0 extends RecyclerView.ViewHolder {
         public View mView;
         public TextView tvTypes, tvAddress, tvSchedule, tvRemain, tvStatus;
+        public Button btnPay;
 
         private int alertButtonPostion = AlertView.CANCELPOSITION;
 
@@ -233,6 +244,55 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             tvRemain = (TextView) view.findViewById(R.id.tv_remain);
             tvSchedule = (TextView) view.findViewById(R.id.tv_schedule);
             tvStatus = (TextView) view.findViewById(R.id.tv_status);
+            btnPay = (Button) view.findViewById(R.id.btn_pay);
+            btnPay.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mItem.menu != null) {
+                        final User session = AppManager.getSession();
+                        if (session.getPayCard() != null) {
+
+                            hud.show();
+                            AppManager.getInstance().getCardToken(session.getPayCard(), new ResultListener() {
+                                @Override
+                                public void onResponse(boolean success, final String response) {
+                                    if (success) {
+
+                                        activity.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                int amount = (int)(mItem.menu.getPrice() * 100);
+                                                AppManager.getInstance().makePayment(session.getPhone(), response, mItem.menu.getIdx(), amount, new ResultListener() {
+                                                    @Override
+                                                    public void onResponse(boolean success, final String response) {
+                                                        activity.runOnUiThread(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                hud.dismiss();
+                                                                if (response != null) {
+                                                                    Log.d("payment", response);
+                                                                    References.getInstance().ordersRef.child(mItem.idx).child("payStatus").setValue(OrderPayStatus.PAID);
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        });
+
+                                    } else {
+                                        hud.dismiss();
+                                        Toast.makeText(activity, response, Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                        } else {
+                            // TODO: 12/22/2017  show alert
+                        }
+                    }
+                }
+            });
         }
 
         public void updateData(){
@@ -253,13 +313,26 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                     break;
                 }
             }
-            tvTypes.setText(carType + ", " + washType);
+            tvTypes.setText(carType + ", " + washType + "  ZAR " + mItem.menu.getPrice());
             tvAddress.setText(mItem.location.getName());
             String startAt = TimeUtil.getSimpleDateString(mItem.beginAt);
             String endAt = TimeUtil.getSimpleTimeString(mItem.endAt);
             String schedule = startAt + " ~ " + endAt;
             tvSchedule.setText(schedule);
             tvStatus.setText(String.valueOf(mItem.serviceStatus));
+
+            if (mItem.serviceStatus == OrderServiceStatus.COMPLETED && mItem.payStatus != OrderPayStatus.PAID) {
+                tvRemain.setVisibility(View.GONE);
+                btnPay.setVisibility(View.VISIBLE);
+            } else {
+                tvRemain.setVisibility(View.VISIBLE);
+                btnPay.setVisibility(View.GONE);
+            }
+
+            if (mItem.payStatus == OrderPayStatus.PAID) {
+                tvStatus.setText("Paid");
+                btnPay.setVisibility(View.GONE);
+            }
         }
 
         private boolean isExpired = false;
@@ -338,6 +411,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             btnAction.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    final User session = AppManager.getSession();
                     if (mItem.serviceStatus == OrderServiceStatus.PENDING) {
                         mItem.serviceStatus = OrderServiceStatus.ACCEPTED;
                         References.getInstance().ordersRef.child(mItem.idx).setValue(mItem).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -396,6 +470,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                 }
             });
 
+            btnAction.setVisibility(View.VISIBLE);
             if (mItem.serviceStatus == OrderServiceStatus.PENDING) {
                 tvStatus.setText("In complete");
                 btnAction.setText("Engage");
@@ -405,6 +480,9 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             } else {
                 tvStatus.setText("Completed");
                 btnAction.setVisibility(View.GONE);
+                if (mItem.payStatus == OrderPayStatus.PAID) {
+                    tvStatus.setText("Paid");
+                }
             }
         }
 

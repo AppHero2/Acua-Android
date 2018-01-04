@@ -7,4 +7,5 @@ package com.mosili.acua.utils;
 public class Const {
     public static final String KEY_GOOGLE_PlACE = "AIzaSyC6IrVi3PSVo_GzG-0Gx9LvtSvTlQogCGw";
     public static final String KEY_STRIPE_KEY = "pk_test_mpxfumyPzCZ9fYRJcYeupIPU"; // test
+    public static final String URL_HEROKU_BASE = "https://node-stripe-payment.herokuapp.com/";
 }

@@ -176,7 +176,7 @@ public class Util {
         return date;
     }
 
-    public static int getIntFromData(String key, Map<String, Object> data){
+    public static Integer getIntFromData(String key, Map<String, Object> data){
         Integer value = 0;
         try{
             String strValue = data.get(key).toString();

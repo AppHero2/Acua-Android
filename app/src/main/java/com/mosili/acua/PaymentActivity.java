@@ -93,7 +93,8 @@ public class PaymentActivity extends AppCompatActivity {
                                 cardData.put("token", token.getId());
                                 cardData.put("last4", cardToSave.getLast4());
                                 cardData.put("number", cardToSave.getNumber());
-                                cardData.put("endAt", cardToSave.getExpMonth() + "/"+ cardToSave.getExpYear());
+                                cardData.put("month", cardToSave.getExpMonth().toString());
+                                cardData.put("year", cardToSave.getExpYear().toString());
                                 cardData.put("cvc", cardToSave.getCVC());
                                 cardData.put("bankName", token.getBankAccount()!=null?token.getBankAccount().getBankName():"?");
                                 final PayCard card = new PayCard(cardData);

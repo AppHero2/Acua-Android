@@ -2,6 +2,7 @@ package com.mosili.acua.models;
 
 import java.util.Map;
 
+import static com.mosili.acua.utils.Util.getIntFromData;
 import static com.mosili.acua.utils.Util.getStringFromData;
 
 /**
@@ -10,7 +11,8 @@ import static com.mosili.acua.utils.Util.getStringFromData;
 
 public class PayCard {
     private String token, last4;
-    private String number, endAt, cvv;
+    private String number, cvc;
+    private String month, year;
     private String bankName;
 
     public PayCard(Map<String, Object> data){
@@ -21,8 +23,9 @@ public class PayCard {
         this.token = getStringFromData("token", data);
         this.last4 = getStringFromData("last4", data);
         this.number = getStringFromData("number", data);
-        this.endAt = getStringFromData("endAt", data);
-        this.cvv = getStringFromData("cvc", data);
+        this.month = getStringFromData("month", data);
+        this.year = getStringFromData("year", data);
+        this.cvc = getStringFromData("cvc", data);
         this.bankName = getStringFromData("bankName", data);
     }
 
@@ -30,12 +33,16 @@ public class PayCard {
         return bankName;
     }
 
-    public String getCvv() {
-        return cvv;
+    public String getCvc() {
+        return cvc;
     }
 
-    public String getEndAt() {
-        return endAt;
+    public String getMonth() {
+        return month;
+    }
+
+    public String getYear() {
+        return year;
     }
 
     public String getLast4() {

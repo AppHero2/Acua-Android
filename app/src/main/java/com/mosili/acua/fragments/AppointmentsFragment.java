@@ -51,8 +51,7 @@ public class AppointmentsFragment extends Fragment {
         rvOrders.setLayoutManager(new LinearLayoutManager(getActivity()));
         tvEmpty = (TextView) view.findViewById(R.id.tv_empty);
 
-        User session = AppManager.getSession();
-        adapter = new OrderListRecyclerViewAdapter(session, getActivity());
+        adapter = new OrderListRecyclerViewAdapter(getActivity());
         adapter.startUpdateTimer();
         rvOrders.setAdapter(adapter);
         updateStatus(AppManager.getInstance().orderList);

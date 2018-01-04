@@ -87,6 +87,17 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 android:textColor="@color/colorTextBlue"
                 android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_pay"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="2dp"
+                android:visibility="gone"
+                android:text="Pay Now"
+                android:textSize="12sp"
+                android:background="@drawable/button_background"/>
         </RelativeLayout>
 
     </LinearLayout>

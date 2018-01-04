@@ -16,41 +16,72 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.mosili.acua.PaymentActivity;
 import com.mosili.acua.country.Country;
 import com.mosili.acua.interfaces.CarTypeValueListener;
 import com.mosili.acua.interfaces.MenuValueListener;
 import com.mosili.acua.interfaces.OrderValueListener;
+import com.mosili.acua.interfaces.ResultListener;
 import com.mosili.acua.interfaces.UserValueListener;
 import com.mosili.acua.interfaces.WashTypeValueListener;
 import com.mosili.acua.models.CarType;
 import com.mosili.acua.models.Order;
-import com.mosili.acua.models.OrderLocation;
+import com.mosili.acua.models.PayCard;
 import com.mosili.acua.models.WashMenu;
 import com.mosili.acua.models.User;
 import com.mosili.acua.models.WashType;
+import com.mosili.acua.utils.Const;
 import com.mosili.acua.utils.References;
 import com.onesignal.OneSignal;
+import com.stripe.android.Stripe;
+import com.stripe.android.TokenCallback;
+import com.stripe.android.model.Card;
+import com.stripe.android.model.Token;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+//import java.util.concurrent.TimeUnit;
+//
+//import okhttp3.Call;
+//import okhttp3.Callback;
+//import okhttp3.FormBody;
+//import okhttp3.Headers;
+//import okhttp3.MediaType;
+//import okhttp3.MultipartBody;
+//import okhttp3.OkHttpClient;
+//import okhttp3.Request;
+//import okhttp3.RequestBody;
+//import okhttp3.Response;
+
+import static com.mosili.acua.utils.Const.KEY_STRIPE_KEY;
 
 /**
  * Created by Administrator on 4/7/2017.
@@ -75,12 +106,18 @@ public class AppManager {
 
     public Order currentOrder, focusedOrder;
 
+//    private OkHttpClient client;
+
     public static AppManager getInstance() {
         return ourInstance;
     }
 
     private AppManager() {
-
+//        client = new OkHttpClient.Builder()
+//                .connectTimeout(1000, TimeUnit.MINUTES)
+//                .readTimeout(1000, TimeUnit.MINUTES)
+//                .writeTimeout(1000, TimeUnit.MINUTES)
+//                .build();
     }
 
     public void setContext(Context context) {
@@ -478,6 +515,106 @@ public class AppManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("uid", null);
         editor.commit();
+    }
+
+    public void getCardToken(PayCard payCard, final ResultListener listener) {
+        Card card = new Card(
+                payCard.getNumber(),
+                Integer.valueOf(payCard.getMonth()),
+                Integer.valueOf(payCard.getYear()),
+                payCard.getCvc()
+        );
+
+        new Stripe(this.context).createToken(
+                card,
+                KEY_STRIPE_KEY,
+                new TokenCallback() {
+                    public void onSuccess(Token token) {
+                        if (listener != null) {
+                            listener.onResponse(true, token.getId());
+                        }
+                    }
+                    public void onError(Exception error) {
+                        if (listener != null) {
+                            listener.onResponse(false, error.getLocalizedMessage());
+                        }
+                    }
+                });
+    }
+
+
+    public void makePayment(String phone, String token, String type, int amount, final ResultListener listener){
+
+        String url = Const.URL_HEROKU_BASE + "payment/charge";
+
+        final Map<String, String> params = new HashMap();
+        params.put("phoneNumber", phone);
+        params.put("stripeToken", token);
+        params.put("serviceType", type);
+        params.put("serviceCost", String.valueOf(amount));
+        params.put("Content-Type", "application/x-www-form-urlencoded");
+
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+        StringRequest strRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response)
+                    {
+                        if (listener != null) {
+                            listener.onResponse(false, response);
+                        }
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        if (listener != null) {
+                            listener.onResponse(false, error.getLocalizedMessage());
+                        }
+                    }
+                })
+        {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                return params;
+            }
+        };
+
+        queue.add(strRequest);
+
+        /*RequestBody requestBody = new MultipartBody.Builder()
+                .addFormDataPart("phoneNumber", phone)
+                .addFormDataPart("serviceType", type)
+                .addFormDataPart("stripeToken", token)
+                .addFormDataPart("serviceCost", String.valueOf(amount))
+                .build();
+
+        final Request request = new Request.Builder()
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .url(Const.URL_HEROKU_BASE+"payment/charge")
+                .post(requestBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (listener != null) {
+                    listener.onResponse(false, e.getLocalizedMessage());
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (listener != null) {
+                    listener.onResponse(true, response.body().string());
+                }
+            }
+        });*/
     }
 
 }
