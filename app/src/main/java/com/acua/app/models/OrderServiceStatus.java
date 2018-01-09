@@ -1,0 +1,9 @@
+package com.acua.app.models;
+
+/**
+ * Created by Ghost on 9/14/2017.
+ */
+
+public enum OrderServiceStatus {
+    PENDING, ACCEPTED, STARTED, ENDED, COMPLETED
+}

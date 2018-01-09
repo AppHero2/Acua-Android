@@ -106,37 +106,16 @@
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
-                </RelativeLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:orientation="vertical">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <Button
-                        android:id="@+id/btn_menu_legal"
+                    <View
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:background="?android:attr/selectableItemBackground"
-                        android:gravity="left|center_vertical"
-                        android:paddingLeft="20dp"
-                        android:text="Terms and Conditions"
-                        android:textAllCaps="false"
-                        android:textColor="#bbbbbb"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:visibility="gone" />
+                        android:layout_height="1dp"
+                        android:layout_below="@+id/btn_menu_payment"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:background="@android:color/white" />
+                </RelativeLayout>
 
-                </FrameLayout>
-
-                <FrameLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -144,18 +123,26 @@
                         android:id="@+id/btn_menu_share"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
                         android:background="?android:attr/selectableItemBackground"
                         android:gravity="left|center_vertical"
                         android:paddingLeft="20dp"
                         android:text="@string/side_menu_share"
                         android:textAllCaps="false"
-                        android:textColor="#bbbbbb"
-                        android:textSize="14sp"
+                        android:textColor="@color/colorGrey"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
 
-                </FrameLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_below="@+id/btn_menu_share"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:background="@android:color/white" />
+                </RelativeLayout>
 
-                <FrameLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -163,16 +150,25 @@
                         android:id="@+id/btn_menu_feedback"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
                         android:background="?android:attr/selectableItemBackground"
                         android:gravity="left|center_vertical"
                         android:paddingLeft="20dp"
                         android:text="@string/side_menu_feedback"
                         android:textAllCaps="false"
-                        android:textColor="#bbbbbb"
-                        android:textSize="14sp"
+                        android:textColor="@color/colorGrey"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
 
-                </FrameLayout>
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:orientation="vertical">
 
                 <RelativeLayout
                     android:layout_width="match_parent"

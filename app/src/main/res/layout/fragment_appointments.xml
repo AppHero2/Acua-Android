@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.mosili.acua.fragments.AppointmentsFragment">
+    tools:context="com.acua.app.fragments.AppointmentsFragment">
 
     <TextView
         android:id="@+id/tv_empty"
@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="LinearLayoutManager"
-        tools:context="com.mosili.acua.fragments.AppointmentsFragment"
+        tools:context="com.acua.app.fragments.AppointmentsFragment"
         tools:listitem="@layout/row_order_admin" />
 
 </FrameLayout>

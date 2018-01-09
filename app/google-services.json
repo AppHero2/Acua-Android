@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:173602554771:android:fc93853776dd8e57",
         "android_client_info": {
-          "package_name": "com.mosili.acua"
+          "package_name": "com.acua.app"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "173602554771-2qo6nm72j9853tukrrpleqe6lqh74uu4.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.mosili.acua",
+            "package_name": "com.acua.app",
             "certificate_hash": "30056c28d7214086457f283947027c4ca33084f2"
           }
         },
