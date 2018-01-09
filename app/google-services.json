@@ -8,18 +8,26 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:173602554771:android:fc93853776dd8e57",
+        "mobilesdk_app_id": "1:173602554771:android:982168a24db73ba1",
         "android_client_info": {
           "package_name": "com.acua.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "173602554771-2qo6nm72j9853tukrrpleqe6lqh74uu4.apps.googleusercontent.com",
+          "client_id": "173602554771-9g7ss6do6ait4025aan0cl8nakkf003d.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.acua.app",
             "certificate_hash": "30056c28d7214086457f283947027c4ca33084f2"
+          }
+        },
+        {
+          "client_id": "173602554771-naplilsf3t5rklg6iece1j21fip4v4df.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.acua.app",
+            "certificate_hash": "5f94a015828aa1db162d63095aaea670d32414a0"
           }
         },
         {

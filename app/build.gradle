@@ -8,9 +8,9 @@ android {
     signingConfigs {
         config {
             keyAlias 'mosili'
-            keyPassword '?????'
+            keyPassword '123456'
             storeFile file('E:/Projects/Acua/com_mosili_acua.jks')
-            storePassword '?????'
+            storePassword '123456'
         }
     }
     compileSdkVersion 26
