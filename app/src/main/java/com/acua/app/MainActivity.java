@@ -26,6 +26,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.acua.app.interfaces.NotificationListener;
+import com.acua.app.models.Notification;
 import com.google.firebase.database.FirebaseDatabase;
 import com.acua.app.adapters.ViewPagerAdapter;
 import com.acua.app.classes.AppManager;
@@ -47,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
-        implements View.OnClickListener, UserValueListener{
+        implements View.OnClickListener, UserValueListener, NotificationListener{
 
     private static final String TAG = "MainActivity";
 
@@ -119,6 +121,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         AppManager.getInstance().setUserValueListenerMain(this);
+        AppManager.getInstance().setNotificationListener(this);
 
         //Initializing viewPager
         viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -238,6 +241,16 @@ public class MainActivity extends AppCompatActivity
             this.session = user;
             updateUserInfoOnNavHeader(this.session);
         }
+    }
+
+    @Override
+    public void onRemovedNotification(Notification notification) {
+
+    }
+
+    @Override
+    public void onReceivedNotification(Notification notification) {
+        
     }
 
     private void initPushNotification(){

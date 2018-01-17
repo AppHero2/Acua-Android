@@ -40,11 +40,14 @@ import com.acua.app.utils.IntervalTimePickerDialog;
 import com.acua.app.utils.References;
 import com.acua.app.utils.TimeUtil;
 import com.acua.app.utils.Util;
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EditOrderActivity extends AppCompatActivity {
 
@@ -317,7 +320,6 @@ public class EditOrderActivity extends AppCompatActivity {
                     References.getInstance().ordersRef.child(currentOrder.idx).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            Log.d("Updating", "Booked successfully");
                             Toast.makeText(EditOrderActivity.this, "Updated successfully", Toast.LENGTH_SHORT).show();
                             AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
                         }
@@ -334,7 +336,7 @@ public class EditOrderActivity extends AppCompatActivity {
     }
 
     private void showTime() {
-        txtTime.setText(hour + ":" + minute);
+        txtTime.setText(hour + ":" + String.format("%02d", minute));
     }
 
     private void updateCost(){

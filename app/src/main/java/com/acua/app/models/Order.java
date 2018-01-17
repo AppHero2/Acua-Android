@@ -15,7 +15,7 @@ import static com.acua.app.utils.Util.getStringFromData;
 
 public class Order {
     public String idx;
-    public String customerId;
+    public String customerId, customerPushToken;
     public WashMenu menu;
     public OrderLocation location;
     public long beginAt, endAt;
@@ -35,6 +35,7 @@ public class Order {
     public void updateData(Map<String, Object> data){
         this.idx = getStringFromData("uid", data);
         this.customerId = getStringFromData("customerId", data);
+        this.customerPushToken = getStringFromData("customerPushToken", data);
 
         Map<String, Object> menuData = getMapDataFromData("menu", data);
         String menuId = (String) menuData.get("idx");

@@ -16,28 +16,25 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.acua.app.interfaces.NotificationListener;
+import com.acua.app.models.Notification;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.acua.app.PaymentActivity;
 import com.acua.app.country.Country;
 import com.acua.app.interfaces.CarTypeValueListener;
 import com.acua.app.interfaces.MenuValueListener;
@@ -63,7 +60,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -93,16 +89,19 @@ public class AppManager {
     private Country country;
 
     private ValueEventListener trackUserListener, trackCarTypeListener, trackWashTypeListener, trackMenuListener, trackOrdersListener;
+    private ChildEventListener trackNotificationListener;
     private UserValueListener userValueListenerMain;
     private CarTypeValueListener carTypeValueListener;
     private WashTypeValueListener washTypeValueListener;
     private MenuValueListener menuValueListener;
     private OrderValueListener orderValueListener;
+    private NotificationListener notificationListener;
 
     public List<CarType> carTypes = new ArrayList<>();
     public List<WashType> washTypes = new ArrayList<>();
     public List<WashMenu> menuList = new ArrayList<>();
     public List<Order> orderList = new ArrayList<>();
+    public List<Notification> notifications = new ArrayList<>();
 
     public Order currentOrder, focusedOrder;
 
@@ -220,6 +219,10 @@ public class AppManager {
         this.userValueListenerMain = userValueListenerMain;
     }
 
+    public void setNotificationListener(NotificationListener notificationListener) {
+        this.notificationListener = notificationListener;
+    }
+
     public void setCarTypeValueListener(CarTypeValueListener carTypeValueListener) {
         this.carTypeValueListener = carTypeValueListener;
     }
@@ -236,6 +239,59 @@ public class AppManager {
         this.orderValueListener = orderValueListener;
     }
 
+
+    public void startTrackingNotification(String uid){
+        if (trackNotificationListener != null)
+            return;
+
+        trackNotificationListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if (dataSnapshot.getValue() !=  null) {
+                    Map<String, Object> data = (Map<String, Object>) dataSnapshot.getValue();
+                    Notification notification = new Notification(data);
+                    notifications.add(notification);
+
+                    if (notificationListener != null)
+                        notificationListener.onReceivedNotification(notification);
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() !=  null) {
+                    Map<String, Object> data = (Map<String, Object>) dataSnapshot.getValue();
+                    Notification notification = new Notification(data);
+                    for (Notification notify:notifications) {
+                        if (notification.getIdx().equals(notify.getIdx())) {
+                            notifications.remove(notify);
+                            break;
+                        }
+                    }
+
+                    if (notificationListener != null)
+                        notificationListener.onRemovedNotification(notification);
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("TrackNotification", databaseError.toString());
+            }
+        };
+
+        References.getInstance().notificationsRef.child(uid).addChildEventListener(trackNotificationListener);
+    }
     /**
      * this method is used to track user
      * @param uid : user identity

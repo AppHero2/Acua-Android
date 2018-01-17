@@ -43,11 +43,14 @@ import com.acua.app.utils.IntervalTimePickerDialog;
 import com.acua.app.utils.References;
 import com.acua.app.utils.TimeUtil;
 import com.acua.app.utils.Util;
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -269,6 +272,7 @@ public class BookingFragment extends Fragment {
                 order.menu = curMenu;
                 order.location = curLocation;
                 order.customerId = AppManager.getSession().getIdx();
+                order.customerPushToken = AppManager.getSession().getPushToken();
                 Date bookedAt = Util.getDate(year, month, day, hour, minute, 0);
                 order.beginAt = bookedAt.getTime();
                 order.endAt = bookedAt.getTime() + curMenu.getDuration()*1000;
@@ -283,13 +287,10 @@ public class BookingFragment extends Fragment {
                     References.getInstance().ordersRef.child(String.valueOf(order.beginAt)).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            // TODO: send notification to service
-                            Log.d("BOOKING", "Booked successfully");
                             Toast.makeText(getActivity(), "Booked successfully", Toast.LENGTH_SHORT).show();
                             AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
                         }
                     });
-
                 }
             }
         });
@@ -304,7 +305,7 @@ public class BookingFragment extends Fragment {
     }
 
     private void showTime() {
-        txtTime.setText(hour + ":" + minute);
+        txtTime.setText(hour + ":" + String.format("%02d", minute));
     }
 
     private void updateCost(){
@@ -367,7 +368,6 @@ public class BookingFragment extends Fragment {
         btnOkay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if (!hasTap && hasPlug) {
                     spinnerWashType.setSelection(3);
                 } else if (hasTap && !hasPlug) {

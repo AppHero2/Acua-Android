@@ -67,7 +67,7 @@
 
                     <Button
                         android:id="@+id/btn_menu_notification"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:background="?android:attr/selectableItemBackground"
@@ -78,6 +78,18 @@
                         android:textColor="@color/colorGrey"
                         android:textSize="18sp"
                         android:textStyle="bold" />
+
+                    <com.matrixxun.starry.badgetextview.MaterialBadgeTextView
+                        android:id="@+id/tv_badge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/colorPrimary"
+                        android:layout_toRightOf="@+id/btn_menu_notification"
+                        android:layout_toEndOf="@+id/btn_menu_notification"
+                        android:textColor="@android:color/white"
+                        android:text="1"
+                        android:textSize="12sp"/>
 
                     <View
                         android:layout_width="match_parent"

@@ -93,6 +93,7 @@ public class RegisterUserActivity extends AppCompatActivity {
         final String phone = firebaseUser.getPhoneNumber();
         userId = firebaseUser.getUid();
         AppManager.getInstance().startTrackingUser(userId);
+        AppManager.getInstance().startTrackingNotification(userId);
         AppManager.getInstance().startTrackingCarType();
         AppManager.getInstance().startTrackingWashType();
         AppManager.getInstance().startTrackingMenus();

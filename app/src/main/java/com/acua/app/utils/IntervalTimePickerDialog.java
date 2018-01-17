@@ -14,7 +14,7 @@ import android.widget.TimePicker;
 
 public class IntervalTimePickerDialog extends TimePickerDialog {
 
-    private final static int TIME_PICKER_INTERVAL = 15;
+    private final static int TIME_PICKER_INTERVAL = 60;
     private TimePicker mTimePicker;
     private final OnTimeSetListener mTimeSetListener;
 
@@ -53,10 +53,13 @@ public class IntervalTimePickerDialog extends TimePickerDialog {
             Class<?> classForid = Class.forName("com.android.internal.R$id");
             Field timePickerField = classForid.getField("timePicker");
             mTimePicker = (TimePicker) findViewById(timePickerField.getInt(null));
-            Field field = classForid.getField("minute");
+            Field hourField = classForid.getField("hour");
+            NumberPicker hourSpinner = (NumberPicker) mTimePicker.findViewById(hourField.getInt(null));
+            hourSpinner.setMinValue(6);
+            hourSpinner.setMaxValue(18);
 
-            NumberPicker minuteSpinner = (NumberPicker) mTimePicker
-                    .findViewById(field.getInt(null));
+            Field minuteField = classForid.getField("minute");
+            NumberPicker minuteSpinner = (NumberPicker) mTimePicker.findViewById(minuteField.getInt(null));
             minuteSpinner.setMinValue(0);
             minuteSpinner.setMaxValue((60 / TIME_PICKER_INTERVAL) - 1);
             List<String> displayedValues = new ArrayList<>();

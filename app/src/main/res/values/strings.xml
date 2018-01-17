@@ -119,6 +119,12 @@
     <string name="label_source_state">Status</string>
     <string name="label_source_id">ID Last 6</string>
 
+    <!-- Notifications -->
+    <string name="notifications">Notifications</string>
+    <string name="notification_empty">No Notifications</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="today">Today</string>
+
     <!-- Place Picker -->
     <string name="map_api_key">AIzaSyC6IrVi3PSVo_GzG-0Gx9LvtSvTlQogCGw</string>
     <!-- Country Picker -->

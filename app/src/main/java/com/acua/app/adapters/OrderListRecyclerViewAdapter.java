@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
 import com.kaopiz.kprogresshud.KProgressHUD;
 import com.acua.app.EditOrderActivity;
 import com.acua.app.MapActivity;
@@ -40,7 +41,9 @@ import com.acua.app.utils.TimeUtil;
 import com.acua.app.utils.Util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -417,7 +420,18 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                         References.getInstance().ordersRef.child(mItem.idx).setValue(mItem).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                AppManager.getInstance().sendPushNotificationToCustomer(mUser.getPushToken(), "Accepted your offer!",  session.getFullName() + " has accepted your offer!");
+                                String title = "Accepted your offer!";
+                                String message = "Our acua operators are on the way...";
+                                AppManager.getInstance().sendPushNotificationToCustomer(mUser.getPushToken(), title,  message);
+                                DatabaseReference reference = References.getInstance().notificationsRef.child(mUser.getIdx()).push();
+                                String notificationId = reference.getKey();
+                                Map<String, Object> notificationData = new HashMap<>();
+                                notificationData.put("idx", notificationId);
+                                notificationData.put("title", title);
+                                notificationData.put("message", message);
+                                notificationData.put("createdAt", System.currentTimeMillis());
+                                notificationData.put("isRead", false);
+                                reference.setValue(notificationData);
                             }
                         });
                     } else if (mItem.serviceStatus == OrderServiceStatus.ACCEPTED) {
@@ -425,7 +439,18 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                         References.getInstance().ordersRef.child(mItem.idx).setValue(mItem).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                AppManager.getInstance().sendPushNotificationToCustomer(mUser.getPushToken(), "Completed your offer!",  session.getFullName() + " has completed your offer! You need to pay for the service");
+                                String title = "Completed your offer!";
+                                String message = "Thank you for choosing acua. Keep safe until we meet again";
+                                AppManager.getInstance().sendPushNotificationToCustomer(mUser.getPushToken(), title,  message);
+                                DatabaseReference reference = References.getInstance().notificationsRef.child(mUser.getIdx()).push();
+                                String notificationId = reference.getKey();
+                                Map<String, Object> notificationData = new HashMap<>();
+                                notificationData.put("idx", notificationId);
+                                notificationData.put("title", title);
+                                notificationData.put("message", message);
+                                notificationData.put("createdAt", System.currentTimeMillis());
+                                notificationData.put("isRead", false);
+                                reference.setValue(notificationData);
                             }
                         });
                     } else {

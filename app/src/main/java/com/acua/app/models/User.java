@@ -1,13 +1,5 @@
 package com.acua.app.models;
 
-import android.util.Log;
-
-import com.acua.app.utils.Util;
-import com.stripe.android.model.Token;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import static com.acua.app.utils.Util.getIntFromData;
