@@ -289,6 +289,8 @@ public class BookingFragment extends Fragment {
                         public void onComplete(@NonNull Task<Void> task) {
                             Toast.makeText(getActivity(), "Booked successfully", Toast.LENGTH_SHORT).show();
                             AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
+
+                            // TODO: 1/18/2018 register notification on the firebase
                         }
                     });
                 }

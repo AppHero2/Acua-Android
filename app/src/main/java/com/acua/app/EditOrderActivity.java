@@ -322,6 +322,9 @@ public class EditOrderActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             Toast.makeText(EditOrderActivity.this, "Updated successfully", Toast.LENGTH_SHORT).show();
                             AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
+
+                            // TODO: 1/18/2018 register notification on the firebase
+
                         }
                     });
                 }

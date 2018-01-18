@@ -38,6 +38,7 @@ import com.acua.app.interfaces.UserValueListener;
 import com.acua.app.models.User;
 import com.acua.app.utils.References;
 import com.acua.app.utils.Util;
+import com.matrixxun.starry.badgetextview.MaterialBadgeTextView;
 import com.onesignal.OSNotification;
 import com.onesignal.OSNotificationOpenResult;
 import com.onesignal.OSPermissionObserver;
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity
 
     private ImageView nav_header_Profile;
     private TextView nav_header_Username, nav_header_Useremail;
-
+    private MaterialBadgeTextView tvBadge;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private String[] tabTitle = new String[2];
@@ -109,6 +110,7 @@ public class MainActivity extends AppCompatActivity
         Button btnShare = (Button) findViewById(R.id.btn_menu_share); btnShare.setOnClickListener(this);
         Button btnFeedback = (Button) findViewById(R.id.btn_menu_feedback); btnFeedback.setOnClickListener(this);
 
+        tvBadge = (MaterialBadgeTextView) findViewById(R.id.tv_badge); tvBadge.setVisibility(View.GONE);
         TextView txtCopyright = (TextView) findViewById(R.id.txtCopyright);
         try {
             PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -169,6 +171,9 @@ public class MainActivity extends AppCompatActivity
 
         // Clear all notification
         OneSignal.clearOneSignalNotifications();
+
+        // Refresh Notifications badge count
+        refreshNotificationBadgeCount();
     }
 
     @Override
@@ -212,7 +217,7 @@ public class MainActivity extends AppCompatActivity
             }
             break;
             case R.id.btn_menu_notification:{
-
+                startActivity(new Intent(MainActivity.this, NotificationsActivity.class));
             }
             break;
             case R.id.btn_menu_payment:{
@@ -245,12 +250,22 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onRemovedNotification(Notification notification) {
-
+        refreshNotificationBadgeCount();
     }
 
     @Override
     public void onReceivedNotification(Notification notification) {
-        
+        refreshNotificationBadgeCount();
+    }
+
+    private void refreshNotificationBadgeCount(){
+        int count = AppManager.getInstance().notifications.size();
+        if (count < 1) {
+            tvBadge.setVisibility(View.GONE);
+        } else {
+            tvBadge.setVisibility(View.VISIBLE);
+            tvBadge.setText(count);
+        }
     }
 
     private void initPushNotification(){
