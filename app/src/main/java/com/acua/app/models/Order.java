@@ -1,6 +1,8 @@
 package com.acua.app.models;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static com.acua.app.models.OrderPayStatus.UNPAID;
@@ -16,6 +18,7 @@ import static com.acua.app.utils.Util.getStringFromData;
 public class Order {
     public String idx;
     public String customerId, customerPushToken;
+    public List<String> washers = new ArrayList<>();
     public WashMenu menu;
     public OrderLocation location;
     public long beginAt, endAt;
@@ -23,6 +26,7 @@ public class Order {
     public OrderPayStatus payStatus = UNPAID;
     public boolean hasTap = true;
     public boolean hasPlug = true;
+    public boolean is24reminded = false;
 
     public Order() {
 
@@ -57,5 +61,6 @@ public class Order {
 
         this.hasTap = getBooleanFromData("hasTap", data);
         this.hasPlug = getBooleanFromData("hasPlug", data);
+        this.is24reminded = getBooleanFromData("is24reminded", data);
     }
 }

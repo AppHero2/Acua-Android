@@ -71,11 +71,15 @@
             android:name=".PaymentActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".NotificationsActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity android:name=".FeedbackActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
+
         <!-- OneSignal Service -->
         <service
             android:name=".service.NotificationService"

@@ -229,7 +229,8 @@ public class MainActivity extends AppCompatActivity
             }
                 break;
             case R.id.btn_menu_feedback:{
-                sendFeedback();
+                //sendFeedback();
+                startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
             }
                 break;
         }
@@ -264,7 +265,7 @@ public class MainActivity extends AppCompatActivity
             tvBadge.setVisibility(View.GONE);
         } else {
             tvBadge.setVisibility(View.VISIBLE);
-            tvBadge.setText(count);
+            tvBadge.setText(String.valueOf(count));
         }
     }
 

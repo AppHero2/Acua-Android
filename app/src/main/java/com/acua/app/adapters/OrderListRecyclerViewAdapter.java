@@ -417,6 +417,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                     final User session = AppManager.getSession();
                     if (mItem.serviceStatus == OrderServiceStatus.PENDING) {
                         mItem.serviceStatus = OrderServiceStatus.ACCEPTED;
+                        mItem.washers.add(mUser.getIdx());
                         References.getInstance().ordersRef.child(mItem.idx).setValue(mItem).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
@@ -465,21 +466,21 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             String[] types = mItem.menu.getIdx().split("_");
             String washTypeId = types[0];
             String carTypeId = types[1];
-            String washType = "";
-            String carType = "";
+            String washTypeName = "";
+            String carTypeName = "";
             for (WashType type : AppManager.getInstance().washTypes) {
                 if (type.getIdx().equals(washTypeId)) {
-                    washType = type.getName();
+                    washTypeName = type.getName();
                     break;
                 }
             }
             for (CarType type : AppManager.getInstance().carTypes) {
                 if (type.getIdx().equals(carTypeId)) {
-                    carType = type.getName();
+                    carTypeName = type.getName();
                     break;
                 }
             }
-            tvTypes.setText(carType + ", " + washType);
+            tvTypes.setText(carTypeName + ", " + washTypeName);
             tvAddress.setText(mItem.location.getName());
             String userId = mItem.customerId;
             AppManager.getUser(userId, new UserValueListener() {

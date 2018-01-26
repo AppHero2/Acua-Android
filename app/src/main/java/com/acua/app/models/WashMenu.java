@@ -12,7 +12,7 @@ public class WashMenu {
     public WashMenu(String idx, double price, long duration){
         this.idx = idx;
         this.price = price;
-        this.duration = duration;
+        this.duration = 3600; //duration;
     }
 
     public String getIdx() {

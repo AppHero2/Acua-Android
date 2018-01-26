@@ -42,6 +42,7 @@ import com.acua.app.utils.TimeUtil;
 import com.acua.app.utils.Util;
 import com.google.firebase.database.DatabaseReference;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -324,7 +325,6 @@ public class EditOrderActivity extends AppCompatActivity {
                             AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
 
                             // TODO: 1/18/2018 register notification on the firebase
-
                         }
                     });
                 }
@@ -353,7 +353,8 @@ public class EditOrderActivity extends AppCompatActivity {
             }
 
             if (curMenu != null) {
-                txtCost.setText(String.valueOf(curMenu.getPrice()));
+                DecimalFormat df = new DecimalFormat("#,###,##0.00");
+                txtCost.setText(String.valueOf(df.format(curMenu.getPrice())));
             } else {
                 txtCost.setText(String.valueOf(0));
             }

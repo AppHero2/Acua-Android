@@ -45,6 +45,7 @@ import com.acua.app.utils.TimeUtil;
 import com.acua.app.utils.Util;
 import com.google.firebase.database.DatabaseReference;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -278,6 +279,7 @@ public class BookingFragment extends Fragment {
                 order.endAt = bookedAt.getTime() + curMenu.getDuration()*1000;
                 order.hasTap = hasTap;
                 order.hasPlug = hasPlug;
+                order.is24reminded = false;
 
                 User session = AppManager.getSession();
                 final String push_title = session.getFullName() + " has made an offer.";
@@ -321,7 +323,8 @@ public class BookingFragment extends Fragment {
             }
 
             if (curMenu != null) {
-                txtCost.setText(String.valueOf(curMenu.getPrice()));
+                DecimalFormat df = new DecimalFormat("#,###,##0.00");
+                txtCost.setText(String.valueOf(df.format(curMenu.getPrice())));
             } else {
                 txtCost.setText(String.valueOf(0));
             }

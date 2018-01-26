@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.acua.app.FeedbackActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_title"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize" />
+
+
+    <LinearLayout
+        android:id="@+id/layout_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar"
+        android:padding="12dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_last_exp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/feedback_last_exp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"/>
+
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="21/21/2017 at 09:00"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center"/>
+        <TextView
+            android:id="@+id/tv_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Hatchback Full Wash, ZAR 20.00"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center"/>
+        <TextView
+            android:id="@+id/tv_operator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Operators: Neo and Tee"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/colorPrimary"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layout_top"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/tv_report"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/feedback_report"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"/>
+
+        <RadioGroup
+            android:id="@+id/groupTap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:checkedButton="@id/rb_1"
+            android:orientation="vertical"
+            android:layout_below="@+id/tv_report">
+
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/rb_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/feedback_title_1"
+                android:textColor="@color/colorPrimary"
+                app:buttonTint="@color/colorPrimary"/>
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/rb_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/feedback_title_2"
+                android:textColor="@color/colorPrimary"
+                app:buttonTint="@color/colorPrimary"/>
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/rb_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/feedback_title_3"
+                android:textColor="@color/colorPrimary"
+                app:buttonTint="@color/colorPrimary"/>
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/rb_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/feedback_title_4"
+                android:textColor="@color/colorPrimary"
+                app:buttonTint="@color/colorPrimary"/>
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/rb_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/feedback_title_5"
+                android:textColor="@color/colorPrimary"
+                app:buttonTint="@color/colorPrimary"/>
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/rb_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/feedback_title_6"
+                android:textColor="@color/colorPrimary"
+                app:buttonTint="@color/colorPrimary"/>
+        </RadioGroup>
+
+    </RelativeLayout>
+
+</RelativeLayout>

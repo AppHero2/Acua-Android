@@ -18,7 +18,7 @@ android {
         applicationId "com.acua.app"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 24
+        versionCode 27
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [onesignal_app_id               : "1f9e701b-7709-40e6-a1b6-7dff0ee29b42",
