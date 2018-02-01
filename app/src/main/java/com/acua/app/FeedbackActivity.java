@@ -55,7 +55,7 @@ public class FeedbackActivity extends AppCompatActivity {
     private User washer;
 
 
-    private ChildEventListener trackNotificationListener;
+    private ChildEventListener trackFeedbackListener;
 
     private List<Feedback> feedbacks = new ArrayList<>();
     private FeedbackAdapter adapter;
@@ -217,15 +217,15 @@ public class FeedbackActivity extends AppCompatActivity {
     }
 
     public void stopTrackingNotification (String uid){
-        if (trackNotificationListener != null)
-            References.getInstance().notificationsRef.child(uid).removeEventListener(trackNotificationListener);
+        if (trackFeedbackListener != null)
+            References.getInstance().notificationsRef.child(uid).removeEventListener(trackFeedbackListener);
     }
 
     public void startTrackingNotification(String uid){
-        if (trackNotificationListener != null)
+        if (trackFeedbackListener != null)
             return;
 
-        trackNotificationListener = new ChildEventListener() {
+        trackFeedbackListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if (dataSnapshot.getValue() !=  null) {
@@ -278,7 +278,7 @@ public class FeedbackActivity extends AppCompatActivity {
             }
         };
 
-        References.getInstance().notificationsRef.child(uid).addChildEventListener(trackNotificationListener);
+        References.getInstance().feedbackRef.addChildEventListener(trackFeedbackListener);
     }
 
     private void showFeedbackDialog(String title, String message, String positive, String negative){
