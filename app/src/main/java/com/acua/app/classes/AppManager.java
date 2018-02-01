@@ -101,10 +101,11 @@ public class AppManager {
     public List<WashType> washTypes = new ArrayList<>();
     public List<WashMenu> menuList = new ArrayList<>();
     public List<Order> orderList = new ArrayList<>();
+    public List<Order> selfOrders = new ArrayList<>();
     public List<Notification> notifications = new ArrayList<>();
 
     public Order currentOrder, focusedOrder;
-
+    public User session;
 //    private OkHttpClient client;
 
     public static AppManager getInstance() {
@@ -259,7 +260,19 @@ public class AppManager {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                if (dataSnapshot.getValue() != null) {
+                    Map<String, Object> data = (Map<String, Object>) dataSnapshot.getValue();
+                    Notification notification = new Notification(data);
+                    for (Notification notify:notifications) {
+                        if (notification.getIdx().equals(notify.getIdx())) {
+                            notify.updateData(data);
+                            break;
+                        }
+                    }
 
+                    if (notificationListener != null)
+                        notificationListener.onReceivedNotification(notification);
+                }
             }
 
             @Override
@@ -418,12 +431,16 @@ public class AppManager {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     orderList.clear();
+                    selfOrders.clear();
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         String key = child.getKey();
                         Map<String, Object> value = (Map<String, Object>) child.getValue();
                         Order order = new Order(value);
                         order.idx = key;
                         orderList.add(order);
+                        if (order.customerId.equals(session.getIdx())) {
+                            selfOrders.add(order);
+                        }
                     }
                     if (orderValueListener != null) {
                         orderValueListener.onLoadedOrder(orderList);
@@ -555,6 +572,9 @@ public class AppManager {
             data.put("userType", userType);
             data.put("payCard", payCard);
             User user = new User(data);
+
+            AppManager.getInstance().session = user;
+
             return user;
         } else {
             return null;

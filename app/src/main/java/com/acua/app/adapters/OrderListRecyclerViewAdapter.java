@@ -99,21 +99,15 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     }
 
     public void setOrderList(List<Order> orders) {
-        orderList.clear();
+//        orderList.clear();
         User session = AppManager.getSession();
         if ( type == 0) // customer
         {
-            for (Order order : orders) {
-                if (order.customerId.equals(session.getIdx())) {
-                    orderList.add(order);
-                }
-            }
+            orderList = AppManager.getInstance().selfOrders;
         }
         else if (type == 1) // service
         {
-            for (Order order: orders) {
-                orderList.add(order);
-            }
+            orderList = AppManager.getInstance().orderList;
         }
     }
 

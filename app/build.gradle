@@ -18,7 +18,7 @@ android {
         applicationId "com.acua.app"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 27
+        versionCode 28
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [onesignal_app_id               : "1f9e701b-7709-40e6-a1b6-7dff0ee29b42",
@@ -69,6 +69,8 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.2'
 //    compile 'com.squareup.okhttp3:okhttp:3.9.0'
     compile 'com.android.volley:volley:1.0.0'
+
+    implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

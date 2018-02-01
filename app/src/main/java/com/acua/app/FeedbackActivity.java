@@ -1,17 +1,73 @@
 package com.acua.app;
 
+import android.content.Context;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.acua.app.classes.AppManager;
+import com.acua.app.interfaces.UserValueListener;
+import com.acua.app.models.CarType;
+import com.acua.app.models.Feedback;
+import com.acua.app.models.Order;
+import com.acua.app.models.User;
+import com.acua.app.models.WashType;
+import com.acua.app.utils.References;
+import com.acua.app.utils.TimeUtil;
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FeedbackActivity extends AppCompatActivity {
+
+    private View positiveAction;
+    private EditText etFeedback;
+    private TextView tvMessage;
+
+    private int issueType = 0;
+    private Order lastOrder ;
+    private User washer;
+
+
+    private ChildEventListener trackNotificationListener;
+
+    private List<Feedback> feedbacks = new ArrayList<>();
+    private FeedbackAdapter adapter;
+    private User session;
+
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
+
 
         TextView txtTitle = (TextView) findViewById(R.id.txtTitle); txtTitle.setText(getString(R.string.feedback));
         ImageView btnBack = (ImageView) findViewById(R.id.btnBack);
@@ -21,5 +77,353 @@ public class FeedbackActivity extends AppCompatActivity {
                 FeedbackActivity.this.finish();
             }
         });
+
+        RelativeLayout layoutCustomer = findViewById(R.id.layout_customer);
+        RelativeLayout layoutOperator = findViewById(R.id.layout_operator);
+
+        if (AppManager.getInstance().session.getUserType() == 0) // normal user
+        {
+            layoutCustomer.setVisibility(View.VISIBLE);
+            layoutOperator.setVisibility(View.GONE);
+
+            List<Order> orders = AppManager.getInstance().selfOrders;
+            Collections.sort(orders, new Comparator<Order>() {
+                @Override
+                public int compare(Order o1, Order o2) {
+                    return o2.idx.compareTo(o1.idx);
+                }
+            });
+
+            lastOrder = orders.get(orders.size()-1);
+
+            TextView tvDate = findViewById(R.id.tv_date);
+            TextView tvType = findViewById(R.id.tv_type);
+            final TextView tvOperator = findViewById(R.id.tv_operator);
+
+            tvDate.setText(TimeUtil.getDateString(lastOrder.beginAt) + " at " + TimeUtil.getUserTime(lastOrder.beginAt));
+
+            String[] types = lastOrder.menu.getIdx().split("_");
+            String washTypeId = types[0];
+            String carTypeId = types[1];
+            String washType = "";
+            String carType = "";
+            for (WashType type : AppManager.getInstance().washTypes) {
+                if (type.getIdx().equals(washTypeId)) {
+                    washType = type.getName();
+                    break;
+                }
+            }
+            for (CarType type : AppManager.getInstance().carTypes) {
+                if (type.getIdx().equals(carTypeId)) {
+                    carType = type.getName();
+                    break;
+                }
+            }
+            tvType.setText(carType + ", " + washType + "  ZAR " + lastOrder.menu.getPrice());
+
+            if (lastOrder.washers.size() > 0) {
+                String washerId = lastOrder.washers.get(0);
+                AppManager.getUser(washerId, new UserValueListener() {
+                    @Override
+                    public void onLoadedUser(User user) {
+                        washer = user;
+                        tvOperator.setText("operators : " + user.getFullName());
+                    }
+                });
+            } else {
+                tvOperator.setText("operators : " + "not engaged yet");
+            }
+
+            RadioGroup groupReport = (RadioGroup) findViewById(R.id.groupReport);
+            groupReport.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup radioGroup, int i) {
+
+                    switch (i) {
+                        case R.id.rb_1:
+                            issueType = 1;
+                            break;
+                        case R.id.rb_2:
+                            issueType = 2;
+                            break;
+                        case R.id.rb_3:
+                            issueType = 3;
+                            break;
+                        case R.id.rb_4:
+                            issueType = 4;
+                            break;
+                        case R.id.rb_5:
+                            issueType = 5;
+                            break;
+                        case R.id.rb_6:
+                            issueType = 6;
+                            break;
+                    }
+
+                    String title = getString(R.string.feedback);
+                    String message = Feedback.getIssueTitle(FeedbackActivity.this, issueType);
+                    String positive = getString(R.string.feedback_submit);
+                    String negative = getString(R.string.feedback_cancel);
+
+                    showFeedbackDialog(title, message, positive, negative);
+
+                }
+            });
+
+        }
+        else // admin & operator
+        {
+            layoutCustomer.setVisibility(View.GONE);
+            layoutOperator.setVisibility(View.VISIBLE);
+
+            ListView listView = (ListView) findViewById(R.id.listFeedback);
+            TextView emptyView = (TextView) findViewById(R.id.emptyView);
+            listView.setEmptyView(emptyView);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Cell cell = (Cell) view.getTag();
+                    final Feedback feedback = cell.getFeedback();
+
+                }
+            });
+
+            adapter = new FeedbackAdapter(this, feedbacks);
+            listView.setAdapter(adapter);
+
+            swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    }, 1000);
+                }
+            });
+
+            startTrackingNotification(session.getIdx());
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        stopTrackingNotification(session.getIdx());
+    }
+
+    public void stopTrackingNotification (String uid){
+        if (trackNotificationListener != null)
+            References.getInstance().notificationsRef.child(uid).removeEventListener(trackNotificationListener);
+    }
+
+    public void startTrackingNotification(String uid){
+        if (trackNotificationListener != null)
+            return;
+
+        trackNotificationListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if (dataSnapshot.getValue() !=  null) {
+                    Map<String, Object> data = (Map<String, Object>) dataSnapshot.getValue();
+                    Feedback feedback = new Feedback(data);
+                    feedbacks.add(feedback);
+                    adapter.notifyDataSetChanged();
+                }
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                if (dataSnapshot.getValue() != null) {
+                    Map<String, Object> data = (Map<String, Object>) dataSnapshot.getValue();
+                    Feedback feedback = new Feedback(data);
+                    for (Feedback feed: feedbacks) {
+                        if (feedback.getIdx().equals(feed.getIdx())) {
+                            feed.updateData(data);
+                            break;
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() !=  null) {
+                    Map<String, Object> data = (Map<String, Object>) dataSnapshot.getValue();
+                    Feedback feedback = new Feedback(data);
+                    for (Feedback feed: feedbacks) {
+                        if (feedback.getIdx().equals(feed.getIdx())) {
+                            feedbacks.remove(feed);
+                            break;
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("TrackNotification", databaseError.toString());
+            }
+        };
+
+        References.getInstance().notificationsRef.child(uid).addChildEventListener(trackNotificationListener);
+    }
+
+    private void showFeedbackDialog(String title, String message, String positive, String negative){
+        MaterialDialog dialog =
+                new MaterialDialog.Builder(this)
+//                        .title(title)
+                        .customView(R.layout.dialog_customview, true)
+                        .positiveText(positive)
+                        .negativeText(negative)
+                        .build();
+
+        positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
+        positiveAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                submitFeedback();
+            }
+        });
+
+        etFeedback = dialog.getCustomView().findViewById(R.id.etFeedback);
+        etFeedback.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        positiveAction.setEnabled(s.toString().trim().length() > 0);
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {}
+                });
+
+        tvMessage = dialog.getCustomView().findViewById(R.id.tvMessage);
+        tvMessage.setText(message);
+
+        dialog.show();
+        positiveAction.setEnabled(false); // disabled by default
+    }
+
+    private void submitFeedback(){
+
+        if (washer != null) {
+            AppManager.getInstance().sendPushNotificationToCustomer(washer.getPushToken(), "Feedback Received",  "");
+            DatabaseReference reference = References.getInstance().feedbackRef.push();
+            String feedbackId = reference.getKey();
+            Map<String, Object> feedbackData = new HashMap<>();
+            feedbackData.put("idx", feedbackId);
+            feedbackData.put("orderID", lastOrder.idx);
+            feedbackData.put("washerID", washer.getIdx());
+            feedbackData.put("senderID", lastOrder.customerId);
+            feedbackData.put("content", etFeedback.getText().toString());
+            feedbackData.put("type", issueType);
+            feedbackData.put("createdAt", System.currentTimeMillis());
+            reference.setValue(feedbackData);
+        } else {
+            Toast.makeText(this, "Your offer not engaged yet", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /// ---->>> ADAPTER
+    private class FeedbackAdapter extends BaseAdapter {
+        private Context context;
+        private LayoutInflater layoutInflater;
+        private List<Feedback> items = new ArrayList<>();
+        private List<Cell> cells = new ArrayList<>();
+
+        public FeedbackAdapter(Context context, List<Feedback> items){
+            this.context = context;
+            this.items = items;
+            this.layoutInflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public Feedback getItem(int i) {
+            return items.get(i);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public int getCount() {
+            return items.size();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup viewGroup) {
+
+            Cell cell;
+            View cellView = convertView;
+            if (convertView == null) {
+                cellView = this.layoutInflater.inflate(R.layout.row_notification, null);
+                cell = new Cell(cellView);
+                cellView.setTag(cell);
+            } else {
+                cell = (Cell) cellView.getTag();
+            }
+
+            cell.setData(getItem(position));
+
+            return cellView;
+        }
+    }
+
+    private class Cell {
+
+        private View mView;
+        private TextView tvTitle, tvContent, tvDate;
+        private View badgeView;
+
+        private Feedback feedback;
+
+        public Feedback getFeedback() {
+            return feedback;
+        }
+
+        public Cell(View itemView) {
+            mView = itemView;
+            tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
+            tvContent = (TextView) itemView.findViewById(R.id.tv_content);
+            tvDate = (TextView) itemView.findViewById(R.id.tv_date);
+        }
+
+        public void setData(Feedback feedback){
+            this.feedback = feedback;
+
+            String issueTitle = Feedback.getIssueTitle(FeedbackActivity.this, issueType);
+            tvTitle.setText(issueTitle);
+            tvContent.setText(feedback.getContent());
+            String date = TimeUtil.getDateString(feedback.getCreatedAt());
+            String todayDate = TimeUtil.getDateString(System.currentTimeMillis());
+
+            if (todayDate.compareTo(date) == 0) {
+                tvDate.setText(TimeUtil.getUserTime(feedback.getCreatedAt()));
+            } else {
+                tvDate.setText(TimeUtil.getUserFriendlyDate(
+                        mView.getContext(),
+                        feedback.getCreatedAt()
+                ));
+            }
+
+        }
     }
 }

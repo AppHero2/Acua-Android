@@ -54,7 +54,7 @@ public class AppointmentsFragment extends Fragment {
         adapter = new OrderListRecyclerViewAdapter(getActivity());
         adapter.startUpdateTimer();
         rvOrders.setAdapter(adapter);
-        updateStatus(AppManager.getInstance().orderList);
+        updateStatus(AppManager.getInstance().selfOrders);
 
         AppManager.getInstance().setOrderValueListener(new OrderValueListener() {
             @Override

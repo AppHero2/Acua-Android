@@ -20,7 +20,7 @@ public class Notification {
         updateData(data);
     }
 
-    private void updateData(Map<String, Object> data){
+    public void updateData(Map<String, Object> data){
         this.idx = getStringFromData("idx", data);
         this.title = getStringFromData("title", data);
         this.message = getStringFromData("message", data);

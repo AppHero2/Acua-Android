@@ -135,6 +135,7 @@
 
     <!-- Feedback -->
     <string name="feedback">Feedback</string>
+    <string name="feedback_empty">No Feedback</string>
     <string name="feedback_last_exp">Your last acua experience</string>
     <string name="feedback_report">Report an issue</string>
     <string name="feedback_title_1">I am not satisfied with the quality of the carwash</string>
@@ -149,6 +150,9 @@
     <string name="feedback_content_4">At acua we encourage ethical business practises for our operators. Theft is strongly frowned upon and guilty parties are guaranteed to face service consequences.\n\n If you have good reason to believe that one or more items have gone missing from your car or yard due to theft or taken by mistake by one or more of our operators, we shall investigate as far as reasonably possible. If they are found guilty, your item will be returned to you free to charge. Please share the details here:</string>
     <string name="feedback_content_5">Although acua runs a tight ship, we may disappoint you in ways we never intended to. Your feedback helps us to improve the carwash service we deliver and to ensure you always get value for your money. If we have fallen short in the delivery of the service, we apologise for the inconvenience caused. Please let us know what went wrong here:</string>
     <string name="feedback_content_6">Although acua runs a tight ship, we may disappoint you in ways we never intended to. Your feedback helps us to improve the carwash service we deliver and to ensure you always get value for your money.\n\n If we have fallen short in the delivery of the service, we apologise for the inconvenience caused. Please let us know what went wrong here:</string>
+    <string name="feedback_hint">The client must be able to type in the details of the complaint here for example: "The windows had fingerprint marks after the car wash was completed" only allow 500 characters</string>
+    <string name="feedback_submit">Submit</string>
+    <string name="feedback_cancel">Cancel</string>
 
     <!-- Place Picker -->
     <string name="map_api_key">AIzaSyC6IrVi3PSVo_GzG-0Gx9LvtSvTlQogCGw</string>

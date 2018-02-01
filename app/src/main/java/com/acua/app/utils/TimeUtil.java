@@ -102,7 +102,7 @@ public class TimeUtil {
     }
 
     public static String getDateString(Date date) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
         return format.format(date);
     }

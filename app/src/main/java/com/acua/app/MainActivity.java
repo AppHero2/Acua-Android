@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.acua.app.interfaces.NotificationListener;
 import com.acua.app.models.Notification;
+import com.acua.app.models.Order;
 import com.google.firebase.database.FirebaseDatabase;
 import com.acua.app.adapters.ViewPagerAdapter;
 import com.acua.app.classes.AppManager;
@@ -229,8 +230,11 @@ public class MainActivity extends AppCompatActivity
             }
                 break;
             case R.id.btn_menu_feedback:{
-                //sendFeedback();
-                startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
+                if (AppManager.getInstance().selfOrders.size() > 0) {
+                    startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
+                } else {
+                    Toast.makeText(this, "You have no previous appointment.", Toast.LENGTH_SHORT).show();
+                }
             }
                 break;
         }
@@ -260,7 +264,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void refreshNotificationBadgeCount(){
-        int count = AppManager.getInstance().notifications.size();
+        int count = 0;
+        for (Notification notification: AppManager.getInstance().notifications) {
+            if (!notification.isRead()){
+                count += 1;
+            }
+        }
+
         if (count < 1) {
             tvBadge.setVisibility(View.GONE);
         } else {
