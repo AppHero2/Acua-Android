@@ -4,6 +4,7 @@ import java.util.Map;
 
 import static com.acua.app.utils.Util.getBooleanFromData;
 import static com.acua.app.utils.Util.getIntFromData;
+import static com.acua.app.utils.Util.getLongFromData;
 import static com.acua.app.utils.Util.getStringFromData;
 
 /**
@@ -24,7 +25,7 @@ public class Notification {
         this.idx = getStringFromData("idx", data);
         this.title = getStringFromData("title", data);
         this.message = getStringFromData("message", data);
-        this.createdAt = getIntFromData("createdAt", data);
+        this.createdAt = getLongFromData("createdAt", data);
         this.isRead = getBooleanFromData("isRead", data);
     }
 

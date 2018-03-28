@@ -59,6 +59,40 @@ public class TimeUtil {
 
     }
 
+    public static String getComplexTimeString(Calendar calendar) {
+        int year = calendar.get(Calendar.YEAR);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
+        String month_name = month_date.format(calendar.getTime());
+        SimpleDateFormat week_day = new SimpleDateFormat("EEEE");
+        String week_name = week_day.format(calendar.getTime());
+        return week_name + " " + day + " " + month_name + " " + year;
+    }
+
+    public static String getComplexTimeString(long millis) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+        int year = calendar.get(Calendar.YEAR);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
+        String month_name = month_date.format(calendar.getTime());
+        SimpleDateFormat week_day = new SimpleDateFormat("EEEE");
+        String week_name = week_day.format(calendar.getTime());
+        return week_name + " " + day + " " + month_name + " " + year;
+    }
+
+    public static String getFullTimeString(long millis) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+        int year = calendar.get(Calendar.YEAR);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        SimpleDateFormat month_date = new SimpleDateFormat("MMM");
+        String month_name = month_date.format(calendar.getTime());
+        return String.format("%02d", hour) + ":" + String.format("%02d", minute) + " on " + day + " " + month_name + " " + year;
+    }
+
     public static String getSimpleTimeString(long millis) {
         Calendar date = Calendar.getInstance();
         date.setTimeInMillis(millis);
@@ -103,7 +137,6 @@ public class TimeUtil {
 
     public static String getDateString(Date date) {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-
         return format.format(date);
     }
 

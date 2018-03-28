@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">acua</string>
+    <string name="app_name">acuar</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -12,15 +12,15 @@
     <string name="get_started_tur1">Get your car washed in the \nconvenience of your own home</string>
     <string name="get_started_tur2">Book an appointment between\n 06:00 and 18:00 7 days a week</string>
     <string name="get_started_tur3">Enjoy convenience</string>
-    <string name="terms_title">auca terms and conditions</string>
+    <string name="terms_title">Acuar Agreements</string>
     <string name="terms_content">
         <![CDATA[
-        <b>Acua Agreements</b>
+        <b>Acuar Agreements</b>
         <p>You are about to sign up to be an acua end user</p>
         <p>By clicking ‘accept’ you confirm that:</p>
         <b>1.The contract</b>
         <p>1.1	You have read, understood and agree to the terms of use and the Privacy Policy (the agreements). Any person booking or receiving car wash services provided for by acua agrees to and is bound by these agreements.</p>
-        <p><center><b><u>ACUA AGREEMENTS</u></b></center></p>
+        <p><center><b><u>Acuar Terms and Conditions</u></b></center></p>
         <p><b>2.The service</b></p>
         <p>2.1	A booking must be made on the app by selecting the wash type, the make of the car to be washed and confirming the availability of the utilities, i.e. water referred to as “tap” and electricity referred to as “power source” in order for the car to be washed. Fill in the desired date, time at location at which the carwash service will be rendered. Select confirm to book the appointment.</p>
         <p>2.2	We warrant that the services shall
@@ -47,12 +47,12 @@
         <p><b>5.</b>	All warranties, conditions and other terms implied by statue or common law are, to the fullest extent permitted by law, excluded from this agreement however nothing herein is intended to limit liability for death, personal injury or fraud. </p>
 
         <p></p>
-        <p><center><b><u>ACUA PRIVACY POLICY</u></b></center></p>
-        <p>At acua, we respect your right to privacy. When you use acua services you provide and trust us with private information which we intend to keep private. The acua Privacy Policy describes the type of information we will collect from all acua app users, how we may use that information and with whom the information may be shared. By downloading, installing and using the acua app and services you acknowledge that you accept the practices highlighted in the acua Privacy Policy. This policy applies to all acua users and operators.</p>
-        <p><b>6.</b> Acua will collect the information you provide when you sign up to create or update an acua account. You must provide us with your email address, names, optional photograph, phone number, address and payment information. We will use these details to inform you to inform you of any promotions, to inform you when the operators have arrived at the specified location, verify payment details and send relevant receipts for the services offered. The payment details will be used to securely bill you for any services provided through the acua app.</p>
-        <p><b>7.</b> We will access any transactional information for any services or requests provided through the acua app. This information is necessary for tracking operator or business productivity and performance. Transactional information may also be accessed to resolve acua user queries.</p>
-        <p><b>8.</b> When you use the acua app we will collect information on the availability of relevant utilities namely water and electricity, the make of car to be washed, your location information, date and time booked for the carwash appointment. This information is necessary for acua operators to successfully facilitate the acua experience.</p>
-        <p><b>9.</b> We strive to take reasonable and appropriate security measures to guard against unauthorized access to the systems where we store your personal information. This includes physical and electronic security measures in compliance with applicable security requirements. In addition, we authorize access to personal information only for those of our employees or service providers who require it to fulfil their job responsibilities. However, despite the measures we take we cannot warrant the security of any information provided to us. </p>        <p><b>10.</b> We may make changes to this policy from time to time. If we change or add any new details to this policy regarding the way we use your personal information, we will post a notification on our website or send a direct email to you. Users are bound by any changes to acua Privacy Policy when he or she uses our services after such changes have been first posted.</p>
+        <p><center><b><u>ACUAR PRIVACY POLICY</u></b></center></p>
+        <p>At acuar, we respect your right to privacy. When you use acuar services you provide and trust us with private information which we intend to keep private. The acuar Privacy Policy describes the type of information we will collect from all acuar app users, how we may use that information and with whom the information may be shared. By downloading, installing and using the acuar app and services you acknowledge that you accept the practices highlighted in the acuar Privacy Policy. This policy applies to all acuar users and operators.</p>
+        <p><b>6.</b> Acuar will collect the information you provide when you sign up to create or update an acuar account. You must provide us with your email address, names, optional photograph, phone number, address and payment information. We will use these details to inform you to inform you of any promotions, to inform you when the operators have arrived at the specified location, verify payment details and send relevant receipts for the services offered. The payment details will be used to securely bill you for any services provided through the acuar app.</p>
+        <p><b>7.</b> We will access any transactional information for any services or requests provided through the acuar app. This information is necessary for tracking operator or business productivity and performance. Transactional information may also be accessed to resolve acuar user queries.</p>
+        <p><b>8.</b> When you use the acuar app we will collect information on the availability of relevant utilities namely water and electricity, the make of car to be washed, your location information, date and time booked for the carwash appointment. This information is necessary for acuar operators to successfully facilitate the acuar experience.</p>
+        <p><b>9.</b> We strive to take reasonable and appropriate security measures to guard against unauthorized access to the systems where we store your personal information. This includes physical and electronic security measures in compliance with applicable security requirements. In addition, we authorize access to personal information only for those of our employees or service providers who require it to fulfil their job responsibilities. However, despite the measures we take we cannot warrant the security of any information provided to us. </p>        <p><b>10.</b> We may make changes to this policy from time to time. If we change or add any new details to this policy regarding the way we use your personal information, we will post a notification on our website or send a direct email to you. Users are bound by any changes to acuar Privacy Policy when he or she uses our services after such changes have been first posted.</p>
     ]]>
     </string>
     <string name="terms_accept_button">Accept</string>
@@ -60,7 +60,7 @@
 
     <!-- Register Phone -->
     <string name="register_verify_phone">Verify your phone number</string>
-    <string name="register_verify_content">acua will send SMS message to verify your phone\nnumber.Enter your country code and phone number.</string>
+    <string name="register_verify_content">acuar will send SMS message to verify your phone\nnumber.Enter your country code and phone number.</string>
     <string name="register_verify_note">Carrier SMS charges may apply</string>
     <string name="register_verify_sent">Verification code sent</string>
     <string name="register_button_resend">Resend</string>
@@ -83,8 +83,10 @@
     <string name="side_menu_payment">Payment</string>
     <string name="side_menu_share">Share app with friends</string>
     <string name="side_menu_feedback">Feedback</string>
+    <string name="side_menu_where">Where are we?</string>
+    <string name="side_menu_agreements">Agreements</string>
     <string name="side_menu_terms">Terms &amp; conditions</string>
-    <string name="side_menu_copyright">Copyright © 2017 acua Co., Ltd</string>
+    <string name="side_menu_copyright">Copyright © 2017 acuar Co., Ltd</string>
 
     <!-- Tab -->
     <string name="tab_title_statistics">DAILY STATISTICS</string>
@@ -92,13 +94,15 @@
     <string name="tab_title_appoint">APPOINTMENT</string>
 
     <!-- BOOKING -->
-    <string name="book_wash_type">Wash Type : </string>
-    <string name="book_car_type">Car Type :</string>
-    <string name="book_question_tap">Do you have an accessible tap?</string>
-    <string name="book_question_plug">Do you have an accessible plug?</string>
+    <string name="book_wash_type">Wash : </string>
+    <string name="book_car_type">Car  : </string>
+    <string name="book_question">Do you have an accessible: </string>
+    <string name="book_tap">Tap:</string>
+    <string name="book_plug">Plug:</string>
     <string name="book_answer_yes">Yes</string>
     <string name="book_answer_no">No</string>
     <string name="book_answer_na">N/A</string>
+    <string name="book_schedule_appointment">Schedule your appointment</string>
     <string name="book_schedule">Schedule</string>
     <string name="book_location">Location</string>
     <string name="book_button_confirm">Confirm</string>
@@ -113,7 +117,7 @@
 
     <!-- Payment -->
     <string name="addPayment">Add Payment Method</string>
-
+    <string name="payment_contents">Dear valued customer,\n\nPayments for the car wash service will be facilitated with the use of a secure card machine by the acuar operators.</string>
     <string name="endingIn">Card ending in </string>
     <string name="progressMessage">Creating Token&#8230;</string>
     <string name="validationErrors">Validation Errors</string>
@@ -136,23 +140,58 @@
     <!-- Feedback -->
     <string name="feedback">Feedback</string>
     <string name="feedback_empty">No Feedback</string>
-    <string name="feedback_last_exp">Your last acua experience</string>
+    <string name="feedback_last_exp">Your last acuar experience</string>
     <string name="feedback_report">Report an issue</string>
     <string name="feedback_title_1">I am not satisfied with the quality of the carwash</string>
-    <string name="feedback_title_2">The acua operators were unprofessional</string>
-    <string name="feedback_title_3">The acua carwash service did not arrive</string>
+    <string name="feedback_title_2">The acuar operators were unprofessional</string>
+    <string name="feedback_title_3">The acuar carwash service did not arrive</string>
     <string name="feedback_title_4">I lost an item</string>
     <string name="feedback_title_5">The carwash service has caused damage to my car</string>
     <string name="feedback_title_6">I have a different issue</string>
-    <string name="feedback_content_1">At acua we aim to provide the best quality carwash experiences to you, one worth every cent you pay.\n\n If the quality of the carwash service for this experience was not satisfactory, we apologise for this shortfall. Please share the details of the poor service here:</string>
-    <string name="feedback_content_2">As an acua client, your feedback on the acua experience and your interaction with the acua operators help us to improve the service we provide to you. The acua operators have agreed to a professional code of conduct, which includes treating our clients with respect.\n\n If the acua operators had an unprofessional interaction with you, we apologise for this behaviour. Please share the details of the unprofessionalism here</string>
-    <string name="feedback_content_3">Although we aim to run a tight ship, Murphy\'s law which states "Anything that can go wrong, will go wrong" may overtake the acua operation.\n\n If the acua carwash service failed to honour an appointment you scheduled, please accept our apologise for the inconvenience. We understand that your time is valuable, and we will do our best to make it to you. Please share the details here:</string>
-    <string name="feedback_content_4">At acua we encourage ethical business practises for our operators. Theft is strongly frowned upon and guilty parties are guaranteed to face service consequences.\n\n If you have good reason to believe that one or more items have gone missing from your car or yard due to theft or taken by mistake by one or more of our operators, we shall investigate as far as reasonably possible. If they are found guilty, your item will be returned to you free to charge. Please share the details here:</string>
-    <string name="feedback_content_5">Although acua runs a tight ship, we may disappoint you in ways we never intended to. Your feedback helps us to improve the carwash service we deliver and to ensure you always get value for your money. If we have fallen short in the delivery of the service, we apologise for the inconvenience caused. Please let us know what went wrong here:</string>
-    <string name="feedback_content_6">Although acua runs a tight ship, we may disappoint you in ways we never intended to. Your feedback helps us to improve the carwash service we deliver and to ensure you always get value for your money.\n\n If we have fallen short in the delivery of the service, we apologise for the inconvenience caused. Please let us know what went wrong here:</string>
+    <string name="feedback_content_1">At acuar we aim to provide the best quality carwash experiences to you, one worth every cent you pay.\n\n If the quality of the carwash service for this experience was not satisfactory, we apologise for this shortfall. Please share the details of the poor service here:</string>
+    <string name="feedback_content_2">As an acuar client, your feedback on the acuar experience and your interaction with the acuar operators help us to improve the service we provide to you. The acuar operators have agreed to a professional code of conduct, which includes treating our clients with respect.\n\n If the acuar operators had an unprofessional interaction with you, we apologise for this behaviour. Please share the details of the unprofessionalism here</string>
+    <string name="feedback_content_3">Although we aim to run a tight ship, Murphy\'s law which states "Anything that can go wrong, will go wrong" may overtake the acuar operation.\n\n If the acuar carwash service failed to honour an appointment you scheduled, please accept our apologise for the inconvenience. We understand that your time is valuable, and we will do our best to make it to you. Please share the details here:</string>
+    <string name="feedback_content_4">At acuar we encourage ethical business practises for our operators. Theft is strongly frowned upon and guilty parties are guaranteed to face service consequences.\n\n If you have good reason to believe that one or more items have gone missing from your car or yard due to theft or taken by mistake by one or more of our operators, we shall investigate as far as reasonably possible. If they are found guilty, your item will be returned to you free to charge. Please share the details here:</string>
+    <string name="feedback_content_5">Although acuar runs a tight ship, we may disappoint you in ways we never intended to. Your feedback helps us to improve the carwash service we deliver and to ensure you always get value for your money. If we have fallen short in the delivery of the service, we apologise for the inconvenience caused. Please let us know what went wrong here:</string>
+    <string name="feedback_content_6">Although acuar runs a tight ship, we may disappoint you in ways we never intended to. Your feedback helps us to improve the carwash service we deliver and to ensure you always get value for your money.\n\n If we have fallen short in the delivery of the service, we apologise for the inconvenience caused. Please let us know what went wrong here:</string>
     <string name="feedback_hint">The client must be able to type in the details of the complaint here for example: "The windows had fingerprint marks after the car wash was completed" only allow 500 characters</string>
     <string name="feedback_submit">Submit</string>
     <string name="feedback_cancel">Cancel</string>
+
+    <string name="where_title">Where are we?</string>
+    <string name="where_notes">We operate in the following areas:</string>
+    <string name="where_area1"> Aanwins AH\n
+                                Allen’s Nek\n
+                                Alsef AH\n
+                                Ambot AH\n
+                                Amorosa\n
+                                Constantia Kloof\n
+                                Eagle canyon estate\n
+                                Harveston AH\n
+                                Helderkruin\n
+                                Honeydew\n
+                                Honeydew Manor\n
+                                Honeydew ridge\n
+                                Honeypark\n
+                                Laser Park\n
+                                Little falls
+    </string>
+    <string name="where_area2"> Noordekrans\n
+                                Panorama 200 IQ\n
+                                Panorama AH\n
+                                Poortveiw AH\n
+                                Radiokop\n
+                                Roodekrans\n
+                                Ruimsig\n
+                                Ruimsig AH\n
+                                Ruimsig Noord\n
+                                Strubensvalley\n
+                                Weltevreden Park\n
+                                Wilgeheuwel\n
+                                Wilgespruit\n
+                                Willowbrook\n
+                                Wilro Park
+    </string>
 
     <!-- Place Picker -->
     <string name="map_api_key">AIzaSyC6IrVi3PSVo_GzG-0Gx9LvtSvTlQogCGw</string>

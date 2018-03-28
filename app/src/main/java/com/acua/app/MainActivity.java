@@ -110,6 +110,8 @@ public class MainActivity extends AppCompatActivity
         Button btnPayment = (Button) findViewById(R.id.btn_menu_payment); btnPayment.setOnClickListener(this);
         Button btnShare = (Button) findViewById(R.id.btn_menu_share); btnShare.setOnClickListener(this);
         Button btnFeedback = (Button) findViewById(R.id.btn_menu_feedback); btnFeedback.setOnClickListener(this);
+        Button btnWhere = (Button) findViewById(R.id.btn_menu_where); btnWhere.setOnClickListener(this);
+        Button btnAgreements = (Button) findViewById(R.id.btn_menu_agreements); btnAgreements.setOnClickListener(this);
 
         tvBadge = (MaterialBadgeTextView) findViewById(R.id.tv_badge); tvBadge.setVisibility(View.GONE);
         TextView txtCopyright = (TextView) findViewById(R.id.txtCopyright);
@@ -235,6 +237,14 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     Toast.makeText(this, "You have no previous appointment.", Toast.LENGTH_SHORT).show();
                 }
+            }
+                break;
+            case R.id.btn_menu_where:{
+                startActivity(new Intent(MainActivity.this, WhereActivity.class));
+            }
+                break;
+            case R.id.btn_menu_agreements:{
+                startActivity(new Intent(MainActivity.this, AgreementsActivity.class));
             }
                 break;
         }
@@ -416,7 +426,7 @@ public class MainActivity extends AppCompatActivity
     private void sendFeedback(){
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("message/rfc822");
-        i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"mosili.pebane@gmail.com"});
+        i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"acuacarwash@gmail.com"});
         i.putExtra(Intent.EXTRA_SUBJECT, "feedback for acua " + currentVersion);
         i.putExtra(Intent.EXTRA_TEXT   , "");
         try {
@@ -429,7 +439,7 @@ public class MainActivity extends AppCompatActivity
     private void contactUs(){
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("message/rfc822");
-        i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"mosili.pebane@gmail.com"});
+        i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"acuacarwash@gmail.com"});
         i.putExtra(Intent.EXTRA_SUBJECT, "regarding to acua");
         i.putExtra(Intent.EXTRA_TEXT   , "");
         try {

@@ -68,6 +68,7 @@ public class FeedbackActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
 
+        session = AppManager.getSession();
 
         TextView txtTitle = (TextView) findViewById(R.id.txtTitle); txtTitle.setText(getString(R.string.feedback));
         ImageView btnBack = (ImageView) findViewById(R.id.btnBack);
@@ -191,7 +192,7 @@ public class FeedbackActivity extends AppCompatActivity {
             adapter = new FeedbackAdapter(this, feedbacks);
             listView.setAdapter(adapter);
 
-            swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+            swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
             swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
@@ -213,7 +214,7 @@ public class FeedbackActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        stopTrackingNotification(session.getIdx());
+        if (session != null) stopTrackingNotification(session.getIdx());
     }
 
     public void stopTrackingNotification (String uid){

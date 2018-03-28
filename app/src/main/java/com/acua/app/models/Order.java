@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.acua.app.models.OrderPayStatus.UNPAID;
-import static com.acua.app.models.OrderServiceStatus.PENDING;
+import static com.acua.app.models.OrderServiceStatus.BOOKED;
 import static com.acua.app.utils.Util.getBooleanFromData;
 import static com.acua.app.utils.Util.getMapDataFromData;
 import static com.acua.app.utils.Util.getStringFromData;
@@ -22,7 +22,7 @@ public class Order {
     public WashMenu menu;
     public OrderLocation location;
     public long beginAt, endAt;
-    public OrderServiceStatus serviceStatus = PENDING;
+    public OrderServiceStatus serviceStatus = BOOKED;
     public OrderPayStatus payStatus = UNPAID;
     public boolean hasTap = true;
     public boolean hasPlug = true;

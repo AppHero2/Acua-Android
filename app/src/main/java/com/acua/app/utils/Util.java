@@ -187,6 +187,17 @@ public class Util {
         return  value;
     }
 
+    public static Long getLongFromData(String key, Map<String, Object> data){
+        Long value = (long)0;
+        try{
+            String strValue = data.get(key).toString();
+            value = Long.parseLong(strValue);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return value;
+    }
+
     public static String getStringFromData(String key, Map<String, Object> data){
         String value = "?";
         try{

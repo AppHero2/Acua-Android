@@ -33,7 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-
+                <!--Profile-->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -60,7 +60,7 @@
                         android:layout_marginRight="10dp"
                         android:background="@android:color/white" />
                 </RelativeLayout>
-
+                <!--Notification-->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -99,7 +99,7 @@
                         android:layout_marginRight="10dp"
                         android:background="@android:color/white" />
                 </RelativeLayout>
-
+                <!--Payments-->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -126,7 +126,7 @@
                         android:layout_marginRight="10dp"
                         android:background="@android:color/white" />
                 </RelativeLayout>
-
+                <!--Share app-->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -153,7 +153,7 @@
                         android:layout_marginRight="10dp"
                         android:background="@android:color/white" />
                 </RelativeLayout>
-
+                <!--Feedback-->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -167,6 +167,60 @@
                         android:gravity="left|center_vertical"
                         android:paddingLeft="20dp"
                         android:text="@string/side_menu_feedback"
+                        android:textAllCaps="false"
+                        android:textColor="@color/colorGrey"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_below="@+id/btn_menu_feedback"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:background="@android:color/white" />
+                </RelativeLayout>
+                <!--Where are we?-->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:id="@+id/btn_menu_where"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="left|center_vertical"
+                        android:paddingLeft="20dp"
+                        android:text="@string/side_menu_where"
+                        android:textAllCaps="false"
+                        android:textColor="@color/colorGrey"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_below="@+id/btn_menu_where"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:background="@android:color/white" />
+                </RelativeLayout>
+                <!--Agreements-->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:id="@+id/btn_menu_agreements"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="left|center_vertical"
+                        android:paddingLeft="20dp"
+                        android:text="@string/side_menu_agreements"
                         android:textAllCaps="false"
                         android:textColor="@color/colorGrey"
                         android:textSize="18sp"

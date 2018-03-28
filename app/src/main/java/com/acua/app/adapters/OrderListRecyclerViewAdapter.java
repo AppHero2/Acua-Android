@@ -191,7 +191,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                 public boolean onLongClick(View view) {
                     AlertView actionSheet = new AlertView.Builder().setContext(view.getContext())
                             .setStyle(AlertView.Style.ActionSheet)
-                            .setTitle("Please confirm your booking")
+                            .setTitle("Change of Plans?")
                             .setMessage(null)
                             .setCancelText("Dismiss")
                             .setDestructive("Update Booking", "Withdraw Booking")
@@ -320,7 +320,8 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
             if (mItem.serviceStatus == OrderServiceStatus.COMPLETED && mItem.payStatus != OrderPayStatus.PAID) {
                 tvRemain.setVisibility(View.GONE);
-                btnPay.setVisibility(View.VISIBLE);
+                //btnPay.setVisibility(View.VISIBLE); // disable pay button for this version
+                btnPay.setVisibility(View.GONE);
             } else {
                 tvRemain.setVisibility(View.VISIBLE);
                 btnPay.setVisibility(View.GONE);
@@ -409,13 +410,13 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                 @Override
                 public void onClick(View view) {
                     final User session = AppManager.getSession();
-                    if (mItem.serviceStatus == OrderServiceStatus.PENDING) {
+                    if (mItem.serviceStatus == OrderServiceStatus.BOOKED) {
                         mItem.serviceStatus = OrderServiceStatus.ACCEPTED;
                         mItem.washers.add(mUser.getIdx());
                         References.getInstance().ordersRef.child(mItem.idx).setValue(mItem).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                String title = "Accepted your offer!";
+                                String title = "We are on the way!";
                                 String message = "Our acua operators are on the way...";
                                 AppManager.getInstance().sendPushNotificationToCustomer(mUser.getPushToken(), title,  message);
                                 DatabaseReference reference = References.getInstance().notificationsRef.child(mUser.getIdx()).push();
@@ -434,7 +435,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                         References.getInstance().ordersRef.child(mItem.idx).setValue(mItem).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                String title = "Completed your offer!";
+                                String title = "acuar experience complete!";
                                 String message = "Thank you for choosing acua. Keep safe until we meet again";
                                 AppManager.getInstance().sendPushNotificationToCustomer(mUser.getPushToken(), title,  message);
                                 DatabaseReference reference = References.getInstance().notificationsRef.child(mUser.getIdx()).push();
@@ -490,12 +491,14 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                 }
             });
 
-            btnAction.setVisibility(View.VISIBLE);
-            if (mItem.serviceStatus == OrderServiceStatus.PENDING) {
+
+            if (mItem.serviceStatus == OrderServiceStatus.BOOKED) {
                 tvStatus.setText("In complete");
+                btnAction.setVisibility(View.VISIBLE);
                 btnAction.setText("Engage");
             } else if (mItem.serviceStatus == OrderServiceStatus.ACCEPTED) {
                 tvStatus.setText("In Progress");
+                btnAction.setVisibility(View.VISIBLE);
                 btnAction.setText("Done");
             } else {
                 tvStatus.setText("Completed");

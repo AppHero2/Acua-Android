@@ -5,5 +5,5 @@ package com.acua.app.models;
  */
 
 public enum OrderServiceStatus {
-    PENDING, ACCEPTED, STARTED, ENDED, COMPLETED
+    BOOKED, ACCEPTED, STARTED, ENDED, COMPLETED
 }

@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
@@ -22,6 +23,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.acua.app.alertView.AlertView;
+import com.acua.app.alertView.OnItemClickListener;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
@@ -41,8 +44,10 @@ import com.acua.app.utils.References;
 import com.acua.app.utils.TimeUtil;
 import com.acua.app.utils.Util;
 import com.google.firebase.database.DatabaseReference;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -74,10 +79,17 @@ public class EditOrderActivity extends AppCompatActivity {
 
     private Order currentOrder ;
 
+    private KProgressHUD hud;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_order);
+
+        hud = KProgressHUD.create(this)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setWindowColor(ContextCompat.getColor(this,R.color.colorTransparency))
+                .setDimAmount(0.5f);
 
         currentOrder = AppManager.getInstance().currentOrder;
 
@@ -226,7 +238,8 @@ public class EditOrderActivity extends AppCompatActivity {
                     @Override
                     public void onDateSet(DatePicker datePicker, int yearOf, int monthOfYear, int dayOfMonth) {
                         year = yearOf;  month = monthOfYear;  day = dayOfMonth;
-                        showDate();
+                        calendar.set(year, month, day);
+                        showDateTime(calendar);
                     }
                 }, year, month, day).show();
             }
@@ -245,27 +258,29 @@ public class EditOrderActivity extends AppCompatActivity {
                             public void onTimeSet(TimePicker view, int hourOfDay, int minuteOfHour) {
                                 hour = hourOfDay;
                                 minute = minuteOfHour;
-                                showTime();
+                                showDateTime(calendar);
                             }
                         }, hour, minute, true);
                 timePickerDialog.show();
-
             }
         });
 
-        calendar.setTimeInMillis(currentOrder.beginAt);
+        calendar.set(Calendar.HOUR_OF_DAY, 6);
+        calendar.set(Calendar.MINUTE, 0);
+
         year = calendar.get(Calendar.YEAR);
         month = calendar.get(Calendar.MONTH);
         day = calendar.get(Calendar.DAY_OF_MONTH);
         hour = calendar.get(Calendar.HOUR_OF_DAY);
         minute = calendar.get(Calendar.MINUTE);
-        showDate();
-        showTime();
+
+        showDateTime(calendar);
 
         txtAddress = (TextView) findViewById(R.id.txtAddress);
         txtAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hud.show();
                 PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
                 try {
                     startActivityForResult(builder.build(EditOrderActivity.this), PLACE_PICKER_REQUEST); // for activity
@@ -284,6 +299,7 @@ public class EditOrderActivity extends AppCompatActivity {
         btnAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hud.show();
                 PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
                 try {
                     startActivityForResult(builder.build(EditOrderActivity.this), PLACE_PICKER_REQUEST); // for activity
@@ -303,7 +319,7 @@ public class EditOrderActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Order order = new Order();
+                final Order order = new Order();
                 order.menu = curMenu;
                 order.location = curLocation;
                 order.customerId = AppManager.getSession().getIdx();
@@ -313,20 +329,37 @@ public class EditOrderActivity extends AppCompatActivity {
                 order.hasTap = hasTap;
                 order.hasPlug = hasPlug;
 
-                User session = AppManager.getSession();
-                final String push_title = session.getFullName() + " has updated an offer.";
-                final String push_message = carType.getName() + ", " + washType.getName() + " at " + TimeUtil.getSimpleDateString(order.beginAt);
-
                 if (isValidBooking(order)) {
-                    References.getInstance().ordersRef.child(currentOrder.idx).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            Toast.makeText(EditOrderActivity.this, "Updated successfully", Toast.LENGTH_SHORT).show();
-                            AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
-
-                            // TODO: 1/18/2018 register notification on the firebase
+                    boolean isExistOne = false;
+                    for (Order theOrder: AppManager.getInstance().orderList) {
+                        if (theOrder.beginAt <= order.beginAt && order.beginAt <= theOrder.endAt) {
+                            isExistOne = true;
+                            break;
                         }
-                    });
+                    }
+
+                    if (isExistOne) {
+                        final long validTime = generateValidTime(order.beginAt);
+                        String validTimeString = TimeUtil.getFullTimeString(validTime);
+                        String title = "Note";
+                        String message = "Dear valued customer, this time slot is currently unavailable. The next available time slot is " + validTimeString + " Would you like to book this slot?";
+                        AlertView alertView = new AlertView(title, message, getString(R.string.alert_button_cancel), new String[]{getString(R.string.alert_button_okay)}, null, EditOrderActivity.this, AlertView.Style.Alert, new OnItemClickListener() {
+                            @Override
+                            public void onItemClick(Object o, int position) {
+                                if (position == 0) // ok button
+                                {
+                                    order.beginAt = validTime;
+                                    makeOrder(order);
+                                    calendar.setTimeInMillis(order.beginAt);
+                                    showDateTime(calendar);
+                                }
+
+                            }
+                        });
+                        alertView.show();
+                    } else {
+                        makeOrder(order);
+                    }
                 }
             }
         });
@@ -334,12 +367,29 @@ public class EditOrderActivity extends AppCompatActivity {
         updateCost();
     }
 
-    private void showDate() {
-        txtDate.setText(day + "/" + (month+1) + "/" + year);
+    private void makeOrder(Order order) {
+
+        User session = AppManager.getSession();
+        final String push_title = session.getFullName() + " has updated an offer.";
+        final String push_message = carType.getName() + ", " + washType.getName() + " at " + TimeUtil.getSimpleDateString(order.beginAt);
+
+        References.getInstance().ordersRef.child(String.valueOf(order.beginAt)).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(EditOrderActivity.this, "Updated successfully", Toast.LENGTH_SHORT).show();
+                AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
+
+                // TODO: 1/18/2018 register notification on the firebase
+            }
+        });
     }
 
-    private void showTime() {
-        txtTime.setText(hour + ":" + String.format("%02d", minute));
+    private void showDateTime(Calendar calendar) {
+        String fullyDateFormat = TimeUtil.getComplexTimeString(calendar);
+        txtDate.setText(fullyDateFormat);
+        hour = calendar.get(Calendar.HOUR_OF_DAY);
+        minute = calendar.get(Calendar.MINUTE);
+        txtTime.setText(String.format("%02d", hour) + ":" + String.format("%02d", minute));
     }
 
     private void updateCost(){
@@ -416,10 +466,36 @@ public class EditOrderActivity extends AppCompatActivity {
         });
     }
 
+    private long generateValidTime(long time){
+        do {
+            time = time + 3600*1000;
+        } while (TimeUtil.checkAvailableTimeRange(time) && isExistingOne(time));
+        return time;
+    }
+
+    private boolean isExistingOne(long time){
+        boolean isExist = false;
+        for (Order theOrder: AppManager.getInstance().orderList) {
+            if (theOrder.beginAt <= time && time <= theOrder.endAt) {
+                isExist = true;
+                break;
+            }
+        }
+        return isExist;
+    }
+
+    private boolean isPastTime(long time) {
+        boolean isPastTime = true;
+        if (System.currentTimeMillis() < time) {
+            isPastTime = false;
+        }
+        return isPastTime;
+    }
+
     private Boolean isValidBooking(Order order) {
 
         if (curMenu == null) {
-            Util.showAlert("Note!", "Please check your network, and reopen acua", this);
+            Util.showAlert("Note!", "Please check your network, and reopen acuar", this);
             return false;
         }
 
@@ -429,26 +505,23 @@ public class EditOrderActivity extends AppCompatActivity {
             return false;
         }
 
-        for (Order theOrder: AppManager.getInstance().orderList) {
-            if (!theOrder.idx.equals(currentOrder.idx)) {
-                if (theOrder.beginAt <= order.beginAt && order.beginAt <= theOrder.endAt) {
-                    Util.showAlert("Note!", "You could not book at the moment because another customer made already booking before you.", this);
-                    return false;
-                }
-            }
-        }
-
         if (!TimeUtil.checkAvailableTimeRange(order.beginAt)) {
             Toast.makeText(this, "The operating hours for the car wash is 6:00 to 18:00.", Toast.LENGTH_SHORT).show();
             return false;
         }
 
+        if (isPastTime(order.beginAt)) {
+            Toast.makeText(this, "You can only book dates and times that are in the future.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         return true;
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        hud.dismiss();
         if (resultCode == RESULT_OK) {
             switch (requestCode){
                 case PLACE_PICKER_REQUEST:

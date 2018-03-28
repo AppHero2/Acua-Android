@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +26,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.acua.app.alertView.AlertView;
+import com.acua.app.alertView.OnItemClickListener;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
@@ -43,15 +46,13 @@ import com.acua.app.utils.IntervalTimePickerDialog;
 import com.acua.app.utils.References;
 import com.acua.app.utils.TimeUtil;
 import com.acua.app.utils.Util;
-import com.google.firebase.database.DatabaseReference;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -78,6 +79,8 @@ public class BookingFragment extends Fragment {
     private List<String> washNames = new ArrayList<>();
     private List<String> carNames = new ArrayList<>();
 
+    private KProgressHUD hud;
+
     public BookingFragment() {
         // Required empty public constructor
     }
@@ -94,6 +97,11 @@ public class BookingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_booking, container, false);
+
+        hud = KProgressHUD.create(getActivity())
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setWindowColor(ContextCompat.getColor(getActivity(),R.color.colorTransparency))
+                .setDimAmount(0.5f);
 
         spinnerWashType = (Spinner) view.findViewById(R.id.spinerWashTypes);
         spinnerCarType = (Spinner) view.findViewById(R.id.spinerCarTypes);
@@ -200,7 +208,8 @@ public class BookingFragment extends Fragment {
                     @Override
                     public void onDateSet(DatePicker datePicker, int yearOf, int monthOfYear, int dayOfMonth) {
                         year = yearOf;  month = monthOfYear;  day = dayOfMonth;
-                        showDate();
+                        calendar.set(year, month, day);
+                        showDateTime(calendar);
                     }
                 }, year, month, day).show();
             }
@@ -218,26 +227,32 @@ public class BookingFragment extends Fragment {
                             public void onTimeSet(TimePicker view, int hourOfDay, int minuteOfHour) {
                                 hour = hourOfDay;
                                 minute = minuteOfHour;
-                                showTime();
+                                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                                calendar.set(Calendar.MINUTE, minuteOfHour);
+                                showDateTime(calendar);
                             }
                         }, hour, minute, true);
                 timePickerDialog.show();
-
             }
         });
+
+
+        calendar.set(Calendar.HOUR_OF_DAY, 6);
+        calendar.set(Calendar.MINUTE, 0);
 
         year = calendar.get(Calendar.YEAR);
         month = calendar.get(Calendar.MONTH);
         day = calendar.get(Calendar.DAY_OF_MONTH);
         hour = calendar.get(Calendar.HOUR_OF_DAY);
         minute = calendar.get(Calendar.MINUTE);
-        showDate();
-        showTime();
+
+        showDateTime(calendar);
 
         txtAddress = (TextView) view.findViewById(R.id.txtAddress);
         txtAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hud.show();
                 PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
                 try {
                     startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST); // for activity
@@ -252,6 +267,7 @@ public class BookingFragment extends Fragment {
         btnAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hud.show();
                 PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
                 try {
                     startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST); // for activity
@@ -269,7 +285,7 @@ public class BookingFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                Order order = new Order();
+                final Order order = new Order();
                 order.menu = curMenu;
                 order.location = curLocation;
                 order.customerId = AppManager.getSession().getIdx();
@@ -281,20 +297,38 @@ public class BookingFragment extends Fragment {
                 order.hasPlug = hasPlug;
                 order.is24reminded = false;
 
-                User session = AppManager.getSession();
-                final String push_title = session.getFullName() + " has made an offer.";
-                final String push_message = carType.getName() + ", " + washType.getName() + " at " + TimeUtil.getSimpleDateString(order.beginAt);
-
                 if (isValidBooking(order)) {
-                    References.getInstance().ordersRef.child(String.valueOf(order.beginAt)).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            Toast.makeText(getActivity(), "Booked successfully", Toast.LENGTH_SHORT).show();
-                            AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
 
-                            // TODO: 1/18/2018 register notification on the firebase
+                    boolean isExistOne = false;
+                    for (Order theOrder: AppManager.getInstance().orderList) {
+                        if (theOrder.beginAt <= order.beginAt && order.beginAt <= theOrder.endAt) {
+                            isExistOne = true;
+                            break;
                         }
-                    });
+                    }
+
+                    if (isExistOne) {
+                        final long validTime = generateValidTime(order.beginAt);
+                        String validTimeString = TimeUtil.getFullTimeString(validTime);
+                        String title = "Note";
+                        String message = "Dear valued customer, this time slot is currently unavailable. The next available time slot is " + validTimeString + " Would you like to book this slot?";
+                        AlertView alertView = new AlertView(title, message, getString(R.string.alert_button_cancel), new String[]{getString(R.string.alert_button_okay)}, null, getActivity(), AlertView.Style.Alert, new OnItemClickListener() {
+                            @Override
+                            public void onItemClick(Object o, int position) {
+                                if (position == 0) // ok button
+                                {
+                                    order.beginAt = validTime;
+                                    makeOrder(order);
+                                    calendar.setTimeInMillis(order.beginAt);
+                                    showDateTime(calendar);
+                                }
+
+                            }
+                        });
+                        alertView.show();
+                    } else {
+                        makeOrder(order);
+                    }
                 }
             }
         });
@@ -304,12 +338,29 @@ public class BookingFragment extends Fragment {
         return view;
     }
 
-    private void showDate() {
-        txtDate.setText(day + "/" + (month+1) + "/" + year);
+    private void makeOrder(Order order) {
+
+        User session = AppManager.getSession();
+        final String push_title = session.getFullName() + " has made an offer.";
+        final String push_message = carType.getName() + ", " + washType.getName() + " at " + TimeUtil.getSimpleDateString(order.beginAt);
+
+        References.getInstance().ordersRef.child(String.valueOf(order.beginAt)).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(getActivity(), "Booked successfully", Toast.LENGTH_SHORT).show();
+                AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
+
+                // TODO: 1/18/2018 register notification on the firebase
+            }
+        });
     }
 
-    private void showTime() {
-        txtTime.setText(hour + ":" + String.format("%02d", minute));
+    private void showDateTime(Calendar calendar) {
+        String fullyDateFormat = TimeUtil.getComplexTimeString(calendar);
+        txtDate.setText(fullyDateFormat);
+        hour = calendar.get(Calendar.HOUR_OF_DAY);
+        minute = calendar.get(Calendar.MINUTE);
+        txtTime.setText(String.format("%02d", hour) + ":" + String.format("%02d", minute));
     }
 
     private void updateCost(){
@@ -376,13 +427,39 @@ public class BookingFragment extends Fragment {
                 if (!hasTap && hasPlug) {
                     spinnerWashType.setSelection(3);
                 } else if (hasTap && !hasPlug) {
-                    spinnerWashType.setSelection(0);
+                    spinnerWashType.setSelection(3);
                 } else if (!hasTap && !hasPlug) {
                     spinnerWashType.setSelection(3);
                 }
                 dialog.dismiss();
             }
         });
+    }
+
+    private long generateValidTime(long time){
+        do {
+            time = time + 3600*1000;
+        } while (TimeUtil.checkAvailableTimeRange(time) && isExistingOne(time));
+        return time;
+    }
+
+    private boolean isExistingOne(long time){
+        boolean isExist = false;
+        for (Order theOrder: AppManager.getInstance().orderList) {
+            if (theOrder.beginAt <= time && time <= theOrder.endAt) {
+                isExist = true;
+                break;
+            }
+        }
+        return isExist;
+    }
+
+    private boolean isPastTime(long time) {
+        boolean isPastTime = true;
+        if (System.currentTimeMillis() < time) {
+            isPastTime = false;
+        }
+        return isPastTime;
     }
 
     private Boolean isValidBooking(Order order) {
@@ -398,24 +475,23 @@ public class BookingFragment extends Fragment {
             return false;
         }
 
-        for (Order theOrder: AppManager.getInstance().orderList) {
-            if (theOrder.beginAt <= order.beginAt && order.beginAt <= theOrder.endAt) {
-                Util.showAlert("Note!", "You could not book at the moment because another customer made already booking before you.", getActivity());
-                return false;
-            }
-        }
-
         if (!TimeUtil.checkAvailableTimeRange(order.beginAt)) {
             Toast.makeText(getActivity(), "The operating hours for the car wash is 6:00 to 18:00.", Toast.LENGTH_SHORT).show();
             return false;
         }
 
+        if (isPastTime(order.beginAt)) {
+            Toast.makeText(getActivity(), "You can only book dates and times that are in the future.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         return true;
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        hud.dismiss();
         if (resultCode == RESULT_OK) {
             switch (requestCode){
                 case PLACE_PICKER_REQUEST:

@@ -35,6 +35,7 @@ public class AppApplication extends Application{
 
         AppManager.getInstance().setContext(getApplicationContext());
         AppManager.getInstance().setCountry(Country.getCountryFromSIM(getApplicationContext()));
+        AppManager.getInstance().session = AppManager.getSession();
 
         // Initialize image loader
         initImageLoader(this);
