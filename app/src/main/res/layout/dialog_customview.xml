@@ -9,7 +9,10 @@
         android:id="@+id/tvMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="6dp"/>
+        android:layout_margin="6dp"
+        android:text="message content here"
+        android:textColor="@color/colorTextBlue"
+        android:textSize="16sp"/>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
@@ -27,6 +30,9 @@
             android:hint="@string/feedback_hint"
             android:maxLength="500"
             android:gravity="top"
+            android:textColor="@color/colorPrimaryDark"
+            android:padding="5sp"
+            android:text=""
             android:textSize="16sp"
             android:background="@android:color/transparent"/>
     </android.support.design.widget.TextInputLayout>

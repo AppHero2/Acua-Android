@@ -417,7 +417,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 String title = "We are on the way!";
-                                String message = "Our acua operators are on the way...";
+                                String message = "Our acuar operators are on the way...";
                                 AppManager.getInstance().sendPushNotificationToCustomer(mUser.getPushToken(), title,  message);
                                 DatabaseReference reference = References.getInstance().notificationsRef.child(mUser.getIdx()).push();
                                 String notificationId = reference.getKey();
@@ -436,7 +436,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 String title = "acuar experience complete!";
-                                String message = "Thank you for choosing acua. Keep safe until we meet again";
+                                String message = "Thank you for choosing acuar. Keep safe until we meet again";
                                 AppManager.getInstance().sendPushNotificationToCustomer(mUser.getPushToken(), title,  message);
                                 DatabaseReference reference = References.getInstance().notificationsRef.child(mUser.getIdx()).push();
                                 String notificationId = reference.getKey();

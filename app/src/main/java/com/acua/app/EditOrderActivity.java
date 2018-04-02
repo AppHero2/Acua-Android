@@ -43,17 +43,16 @@ import com.acua.app.utils.IntervalTimePickerDialog;
 import com.acua.app.utils.References;
 import com.acua.app.utils.TimeUtil;
 import com.acua.app.utils.Util;
-import com.google.firebase.database.DatabaseReference;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import static com.acua.app.utils.Const.ServiceTimeEnd;
+import static com.acua.app.utils.Const.ServiceTimeStart;
 
 public class EditOrderActivity extends AppCompatActivity {
 
@@ -265,7 +264,7 @@ public class EditOrderActivity extends AppCompatActivity {
             }
         });
 
-        calendar.set(Calendar.HOUR_OF_DAY, 6);
+        calendar.set(Calendar.HOUR_OF_DAY, ServiceTimeStart);
         calendar.set(Calendar.MINUTE, 0);
 
         year = calendar.get(Calendar.YEAR);
@@ -415,11 +414,12 @@ public class EditOrderActivity extends AppCompatActivity {
 
         String title = "";
         if (hasTap && hasPlug) {
+            spinnerWashType.setEnabled(true);
             return;
         } else if (!hasTap && hasPlug) {
-            title = getString(R.string.book_error_tap);
+            title = getString(R.string.book_error_no_tap);
         } else if (hasTap && !hasPlug) {
-            title = getString(R.string.book_error_plug);
+            title = getString(R.string.book_error_no_plug);
         } else if (!hasTap && !hasPlug) {
             title = getString(R.string.book_error_both);
         }
@@ -457,10 +457,11 @@ public class EditOrderActivity extends AppCompatActivity {
                 if (!hasTap && hasPlug) {
                     spinnerWashType.setSelection(3);
                 } else if (hasTap && !hasPlug) {
-                    spinnerWashType.setSelection(0);
+                    spinnerWashType.setSelection(2);
                 } else if (!hasTap && !hasPlug) {
-                    spinnerWashType.setSelection(3);
+                    spinnerWashType.setSelection(2);
                 }
+                spinnerWashType.setEnabled(false);
                 dialog.dismiss();
             }
         });
@@ -506,7 +507,7 @@ public class EditOrderActivity extends AppCompatActivity {
         }
 
         if (!TimeUtil.checkAvailableTimeRange(order.beginAt)) {
-            Toast.makeText(this, "The operating hours for the car wash is 6:00 to 18:00.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "The operating hours for the car wash is " + ServiceTimeStart +":00 to "+ServiceTimeEnd +":00.", Toast.LENGTH_SHORT).show();
             return false;
         }
 

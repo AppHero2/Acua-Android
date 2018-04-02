@@ -41,7 +41,7 @@
                     <Button
                         android:id="@+id/btn_menu_profile"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/side_menu_btn_height"
                         android:layout_gravity="center_vertical"
                         android:background="?android:attr/selectableItemBackground"
                         android:gravity="left|center_vertical"
@@ -49,7 +49,7 @@
                         android:text="@string/side_menu_profile"
                         android:textAllCaps="false"
                         android:textColor="@color/colorGrey"
-                        android:textSize="18sp"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <View
@@ -67,11 +67,13 @@
 
                     <Button
                         android:id="@+id/btn_menu_notification"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/side_menu_btn_height"
                         android:layout_gravity="center_vertical"
                         android:background="?android:attr/selectableItemBackground"
                         android:gravity="left|center_vertical"
+                        android:layout_marginRight="50dp"
+                        android:layout_marginEnd="50dp"
                         android:paddingLeft="20dp"
                         android:text="@string/side_menu_notification"
                         android:textAllCaps="false"
@@ -83,13 +85,14 @@
                         android:id="@+id/tv_badge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:background="@color/colorPrimary"
-                        android:layout_toRightOf="@+id/btn_menu_notification"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="-50dp"
                         android:layout_toEndOf="@+id/btn_menu_notification"
-                        android:textColor="@android:color/white"
+                        android:layout_toRightOf="@+id/btn_menu_notification"
+                        android:background="@color/colorPrimary"
                         android:text="1"
-                        android:textSize="12sp"/>
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp" />
 
                     <View
                         android:layout_width="match_parent"
@@ -107,7 +110,7 @@
                     <Button
                         android:id="@+id/btn_menu_payment"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/side_menu_btn_height"
                         android:layout_gravity="center_vertical"
                         android:background="?android:attr/selectableItemBackground"
                         android:gravity="left|center_vertical"
@@ -134,7 +137,7 @@
                     <Button
                         android:id="@+id/btn_menu_share"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/side_menu_btn_height"
                         android:layout_gravity="center_vertical"
                         android:background="?android:attr/selectableItemBackground"
                         android:gravity="left|center_vertical"
@@ -161,7 +164,7 @@
                     <Button
                         android:id="@+id/btn_menu_feedback"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/side_menu_btn_height"
                         android:layout_gravity="center_vertical"
                         android:background="?android:attr/selectableItemBackground"
                         android:gravity="left|center_vertical"
@@ -188,7 +191,7 @@
                     <Button
                         android:id="@+id/btn_menu_where"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/side_menu_btn_height"
                         android:layout_gravity="center_vertical"
                         android:background="?android:attr/selectableItemBackground"
                         android:gravity="left|center_vertical"
@@ -215,7 +218,7 @@
                     <Button
                         android:id="@+id/btn_menu_agreements"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/side_menu_btn_height"
                         android:layout_gravity="center_vertical"
                         android:background="?android:attr/selectableItemBackground"
                         android:gravity="left|center_vertical"
@@ -225,6 +228,14 @@
                         android:textColor="@color/colorGrey"
                         android:textSize="18sp"
                         android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_below="@+id/btn_menu_agreements"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:background="@android:color/white" />
 
                 </RelativeLayout>
 
@@ -238,15 +249,8 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_marginTop="20dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:background="@android:color/white" />
 
                     <TextView
                         android:id="@+id/txtCopyright"

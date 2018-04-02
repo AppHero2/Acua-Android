@@ -76,6 +76,8 @@ public class RegisterUserActivity extends AppCompatActivity {
 
     private Bitmap bitmapProfile;
 
+    private User existingUser;
+
     public static final int MULTIPLE_PERMISSIONS = 989;
 
     String[] permissions= new String[]{
@@ -129,7 +131,7 @@ public class RegisterUserActivity extends AppCompatActivity {
                     References.getInstance().usersRef.child(userId).child("firstname").setValue(etFistName.getText().toString());
                     References.getInstance().usersRef.child(userId).child("lastname").setValue(etLastName.getText().toString());
                     References.getInstance().usersRef.child(userId).child("email").setValue(etEmail.getText().toString());
-                    References.getInstance().usersRef.child(userId).child("userType").setValue(0);
+                    References.getInstance().usersRef.child(userId).child("userType").setValue(existingUser!=null?existingUser.getUserType():0);
                     startActivity(new Intent(RegisterUserActivity.this, MainActivity.class));
                 }
             }
@@ -429,11 +431,11 @@ public class RegisterUserActivity extends AppCompatActivity {
                 if (dataSnapshot.getValue() != null) {
                     for (DataSnapshot child: dataSnapshot.getChildren()) {
                         Map<String, Object> userData = (Map<String, Object>) child.getValue();
-                        User user = new User(userData);
-                        etFistName.setText(user.getFirstname());
-                        etLastName.setText(user.getLastname());
-                        etEmail.setText(user.getEmail());
-                        Util.setProfileImage(user.getPhoto(), imgProfile, new ImageLoadingListener() {
+                        existingUser = new User(userData);
+                        etFistName.setText(existingUser.getFirstname());
+                        etLastName.setText(existingUser.getLastname());
+                        etEmail.setText(existingUser.getEmail());
+                        Util.setProfileImage(existingUser.getPhoto(), imgProfile, new ImageLoadingListener() {
                             @Override
                             public void onLoadingStarted(String s, View view) {
                                 bar.setVisibility(View.VISIBLE);
@@ -455,7 +457,7 @@ public class RegisterUserActivity extends AppCompatActivity {
                                 bar.setVisibility(View.GONE);
                             }
                         });
-                        AppManager.saveSession(user);
+                        AppManager.saveSession(existingUser);
                     }
                 }
 

@@ -377,6 +377,13 @@ public class MainActivity extends AppCompatActivity
             adapter.addFragment(adminStatisticsFragment, getString(R.string.tab_title_statistics));
             adapter.addFragment(appointmentsFragment, getString(R.string.tab_title_appoint));
         }
+        else if (this.session.getUserType() == 2)
+        {
+            adminStatisticsFragment = new AdminStatisticsFragment();
+            appointmentsFragment = new AppointmentsFragment();
+            adapter.addFragment(adminStatisticsFragment, getString(R.string.tab_title_statistics));
+            adapter.addFragment(appointmentsFragment, getString(R.string.tab_title_appoint));
+        }
 
         viewPager.setAdapter(adapter);
     }
@@ -405,6 +412,9 @@ public class MainActivity extends AppCompatActivity
         } else if (this.session.getUserType() == 1) {
             tabTitle[0] = getString(R.string.tab_title_statistics);
             tabTitle[1] = getString(R.string.tab_title_appoint);
+        } else if (this.session.getUserType() == 2) {
+            tabTitle[0] = getString(R.string.tab_title_statistics);
+            tabTitle[1] = getString(R.string.tab_title_appoint);
         }
 
         for(int i = 0; i < tabTitle.length; i++)
@@ -418,7 +428,7 @@ public class MainActivity extends AppCompatActivity
         final String appPackageName = this.getPackageName();
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out acua App at: https://play.google.com/store/apps/details?id=" + appPackageName);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "Spend time on what matters. Have your car professionally washed at home with acuar. Download the app at: https://play.google.com/store/apps/details?id=" + appPackageName);
         sendIntent.setType("text/plain");
         this.startActivity(sendIntent);
     }

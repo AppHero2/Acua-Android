@@ -283,7 +283,7 @@ public class FeedbackActivity extends AppCompatActivity {
     }
 
     private void showFeedbackDialog(String title, String message, String positive, String negative){
-        MaterialDialog dialog =
+        final MaterialDialog dialog =
                 new MaterialDialog.Builder(this)
 //                        .title(title)
                         .customView(R.layout.dialog_customview, true)
@@ -296,6 +296,7 @@ public class FeedbackActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 submitFeedback();
+                dialog.dismiss();
             }
         });
 
@@ -323,22 +324,27 @@ public class FeedbackActivity extends AppCompatActivity {
 
     private void submitFeedback(){
 
+        DatabaseReference reference = References.getInstance().feedbackRef.push();
+        String feedbackId = reference.getKey();
+        Map<String, Object> feedbackData = new HashMap<>();
+        feedbackData.put("idx", feedbackId);
+        feedbackData.put("orderID", lastOrder.idx);
+        feedbackData.put("senderID", lastOrder.customerId);
+        feedbackData.put("content", etFeedback.getText().toString());
+        feedbackData.put("type", issueType);
+        feedbackData.put("createdAt", System.currentTimeMillis());
+
         if (washer != null) {
-            AppManager.getInstance().sendPushNotificationToCustomer(washer.getPushToken(), "Feedback Received",  "");
-            DatabaseReference reference = References.getInstance().feedbackRef.push();
-            String feedbackId = reference.getKey();
-            Map<String, Object> feedbackData = new HashMap<>();
-            feedbackData.put("idx", feedbackId);
-            feedbackData.put("orderID", lastOrder.idx);
+            // send feedback to operator
             feedbackData.put("washerID", washer.getIdx());
-            feedbackData.put("senderID", lastOrder.customerId);
-            feedbackData.put("content", etFeedback.getText().toString());
-            feedbackData.put("type", issueType);
-            feedbackData.put("createdAt", System.currentTimeMillis());
-            reference.setValue(feedbackData);
+            AppManager.getInstance().sendPushNotificationToCustomer(washer.getPushToken(), "Feedback Received",  "");
         } else {
-            Toast.makeText(this, "Your offer not engaged yet", Toast.LENGTH_SHORT).show();
+            // send feedback to admin
+            feedbackData.put("washerID", "buvYTN54QNgkwKi1yLQGcA0lNCw2");
+            AppManager.getInstance().sendPushNotificationToCustomer("b79494a7-594c-4919-852f-ce29d324e847", "Feedback Received",  "");
         }
+
+        reference.setValue(feedbackData);
     }
 
     /// ---->>> ADAPTER

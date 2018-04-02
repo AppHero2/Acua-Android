@@ -10,7 +10,7 @@
     <!-- Sign up -->
     <string name="get_started_button">Get Started</string>
     <string name="get_started_tur1">Get your car washed in the \nconvenience of your own home</string>
-    <string name="get_started_tur2">Book an appointment between\n 06:00 and 18:00 7 days a week</string>
+    <string name="get_started_tur2">Book an appointment between\n 07:00 and 18:00 7 days a week</string>
     <string name="get_started_tur3">Enjoy convenience</string>
     <string name="terms_title">Acuar Agreements</string>
     <string name="terms_content">
@@ -108,9 +108,9 @@
     <string name="book_button_confirm">Confirm</string>
     <string name="book_button_update">Update</string>
     <string name="book_update_title">Update Appointment</string>
-    <string name="book_error_tap">Due to an inaccessible tap, we can only offer the waterless wash option.</string>
-    <string name="book_error_plug">Due to an inaccessible power source, we can only offer the waterless wash and dry option.</string>
-    <string name="book_error_both">Due to an inaccessible tap and power source, we can only offer the waterless wash option.</string>
+    <string name="book_error_no_tap">Due to an inaccessible tap, we can only offer the waterless full wash option.</string>
+    <string name="book_error_no_plug">Due to an inaccessible plug, we can only offer the waterless wash option.</string>
+    <string name="book_error_both">Due to an inaccessible tap, we can only offer the waterless wash option.</string>
 
     <!-- APPOINTMENT -->
     <string name="order_list_empty">No Appointments</string>

@@ -55,6 +55,8 @@ import java.util.Date;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
+import static com.acua.app.utils.Const.ServiceTimeEnd;
+import static com.acua.app.utils.Const.ServiceTimeStart;
 
 
 public class BookingFragment extends Fragment {
@@ -237,7 +239,7 @@ public class BookingFragment extends Fragment {
         });
 
 
-        calendar.set(Calendar.HOUR_OF_DAY, 6);
+        calendar.set(Calendar.HOUR_OF_DAY, ServiceTimeStart);
         calendar.set(Calendar.MINUTE, 0);
 
         year = calendar.get(Calendar.YEAR);
@@ -386,15 +388,15 @@ public class BookingFragment extends Fragment {
 
         String title = "";
         if (hasTap && hasPlug) {
+            spinnerWashType.setEnabled(true);
             return;
         } else if (!hasTap && hasPlug) {
-            title = getString(R.string.book_error_tap);
+            title = getString(R.string.book_error_no_tap);
         } else if (hasTap && !hasPlug) {
-            title = getString(R.string.book_error_plug);
+            title = getString(R.string.book_error_no_plug);
         } else if (!hasTap && !hasPlug) {
             title = getString(R.string.book_error_both);
         }
-
         showBottomAlert(title);
     }
 
@@ -415,7 +417,6 @@ public class BookingFragment extends Fragment {
                 ((RadioButton) groupTap.getChildAt(0)).setChecked(true);
                 ((RadioButton) groupPlug.getChildAt(0)).setChecked(true);
                 spinnerWashType.setSelection(0);
-
                 dialog.dismiss();
             }
         });
@@ -427,10 +428,11 @@ public class BookingFragment extends Fragment {
                 if (!hasTap && hasPlug) {
                     spinnerWashType.setSelection(3);
                 } else if (hasTap && !hasPlug) {
-                    spinnerWashType.setSelection(3);
+                    spinnerWashType.setSelection(2);
                 } else if (!hasTap && !hasPlug) {
-                    spinnerWashType.setSelection(3);
+                    spinnerWashType.setSelection(2);
                 }
+                spinnerWashType.setEnabled(false);
                 dialog.dismiss();
             }
         });
@@ -476,7 +478,7 @@ public class BookingFragment extends Fragment {
         }
 
         if (!TimeUtil.checkAvailableTimeRange(order.beginAt)) {
-            Toast.makeText(getActivity(), "The operating hours for the car wash is 6:00 to 18:00.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "The operating hours for the car wash is " + ServiceTimeStart +":00 to "+ServiceTimeEnd +":00.", Toast.LENGTH_SHORT).show();
             return false;
         }
 
