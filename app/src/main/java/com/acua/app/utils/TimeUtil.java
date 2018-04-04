@@ -9,6 +9,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import static com.acua.app.utils.Const.ServiceTimeEnd;
+import static com.acua.app.utils.Const.ServiceTimeStart;
+
 /**
  * Created by Ghost on 2/9/2017.
  */
@@ -120,7 +123,7 @@ public class TimeUtil {
         calendar.setTimeInMillis(millis);
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
-        if (6 <= hour && hour < 18) {
+        if ( ServiceTimeStart <= hour && hour < ServiceTimeEnd) {
             return true;
         }else{
             return false;

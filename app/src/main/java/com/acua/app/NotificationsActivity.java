@@ -24,12 +24,20 @@ import com.acua.app.utils.TimeUtil;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.stepstone.apprating.AppRatingDialog;
+import com.stepstone.apprating.listener.RatingDialogListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NotificationsActivity extends AppCompatActivity {
+import static com.acua.app.utils.Const.ADMIN_PUSH_ID;
+import static com.acua.app.utils.Const.ADMIN_USER_ID;
+
+public class NotificationsActivity extends AppCompatActivity implements RatingDialogListener{
 
     private ChildEventListener trackNotificationListener;
 
@@ -66,6 +74,15 @@ public class NotificationsActivity extends AppCompatActivity {
                 if (!news.isRead()){
                     References.getInstance().notificationsRef.child(session.getIdx()).child(news.getIdx()).child("isRead").setValue(true);
                 }
+
+                if (news.getTitle().equals("Please Rate our Service")){
+                    NotificationsActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showRatingDiglog();
+                        }
+                    });
+                }
             }
         });
 
@@ -97,6 +114,55 @@ public class NotificationsActivity extends AppCompatActivity {
         stopTrackingNotification(session.getIdx());
     }
 
+    @Override
+    public void onPositiveButtonClicked(int rate, String comment) {
+        // interpret results, send it to analytics etc...
+        User session = AppManager.getSession();
+        String title = session.getFullName() + " left service rating as " + rate + ".";
+        AppManager.getInstance().sendPushNotificationToCustomer(ADMIN_PUSH_ID, title,  comment);
+        DatabaseReference reference = References.getInstance().notificationsRef.child(ADMIN_USER_ID).push();
+        String notificationId = reference.getKey();
+        Map<String, Object> notificationData = new HashMap<>();
+        notificationData.put("idx", notificationId);
+        notificationData.put("title", title);
+        notificationData.put("message", comment);
+        notificationData.put("createdAt", System.currentTimeMillis());
+        notificationData.put("isRead", false);
+        reference.setValue(notificationData);
+    }
+
+    @Override
+    public void onNegativeButtonClicked() {
+        Log.d("NotificationsActivity", "onNegativeButtonClicked: Cancel");
+    }
+
+    @Override
+    public void onNeutralButtonClicked() {
+        Log.d("NotificationsActivity", "onNeutralButtonClicked: Later");
+    }
+
+    private void showRatingDiglog(){
+        new AppRatingDialog.Builder()
+                .setPositiveButtonText("Submit")
+                .setNegativeButtonText("Cancel")
+                .setNeutralButtonText("Later")
+                .setNoteDescriptions(Arrays.asList("Very Bad", "Not good", "Quite ok", "Very Good", "Excellent !!!"))
+                .setDefaultRating(4)
+                .setTitle("Please rate our service")
+                .setDescription("Please select some stars and give your feedback")
+//                .setDefaultComment("")
+                .setStarColor(R.color.colorRatingStart)
+                .setNoteDescriptionTextColor(R.color.colorGrey)
+                .setTitleTextColor(R.color.colorTextBlue)
+                .setDescriptionTextColor(R.color.colorGrey)
+                .setHint("Please write your comment here ...")
+                .setHintTextColor(R.color.colorGrey)
+                .setCommentTextColor(R.color.colorGrey)
+                .setCommentBackgroundColor(R.color.colorRatingCommentBG)
+                .setWindowAnimation(R.style.MyDialogFadeAnimation)
+                .create(NotificationsActivity.this)
+                .show();
+    }
     private void refreshNotificationData(){
         notifications = AppManager.getInstance().notifications;
         adapter.notifyDataSetChanged();

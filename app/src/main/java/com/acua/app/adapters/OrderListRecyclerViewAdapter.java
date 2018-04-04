@@ -100,7 +100,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
     public void setOrderList(List<Order> orders) {
 //        orderList.clear();
-        User session = AppManager.getSession();
+//        User session = AppManager.getSession();
         if ( type == 0) // customer
         {
             orderList = AppManager.getInstance().selfOrders;

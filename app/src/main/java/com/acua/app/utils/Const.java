@@ -12,4 +12,6 @@ public class Const {
     public static final int ServiceTimeStart = 7;
     public static final int ServiceTimeEnd = 18;
 
+    public static final String ADMIN_USER_ID = "NXd9uqzVSBfK1AEQMk9Fdgvv9d03";
+    public static final String ADMIN_PUSH_ID = "70870a0c-cbf7-48e3-88df-5c9d73ffc0fd";
 }

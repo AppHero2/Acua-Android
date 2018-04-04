@@ -12,6 +12,9 @@ import android.content.DialogInterface;
 import android.widget.NumberPicker;
 import android.widget.TimePicker;
 
+import static com.acua.app.utils.Const.ServiceTimeEnd;
+import static com.acua.app.utils.Const.ServiceTimeStart;
+
 public class IntervalTimePickerDialog extends TimePickerDialog {
 
     private final static int TIME_PICKER_INTERVAL = 60;
@@ -55,8 +58,8 @@ public class IntervalTimePickerDialog extends TimePickerDialog {
             mTimePicker = (TimePicker) findViewById(timePickerField.getInt(null));
             Field hourField = classForid.getField("hour");
             NumberPicker hourSpinner = (NumberPicker) mTimePicker.findViewById(hourField.getInt(null));
-            hourSpinner.setMinValue(6);
-            hourSpinner.setMaxValue(18);
+            hourSpinner.setMinValue(ServiceTimeStart);
+            hourSpinner.setMaxValue(ServiceTimeEnd);
 
             Field minuteField = classForid.getField("minute");
             NumberPicker minuteSpinner = (NumberPicker) mTimePicker.findViewById(minuteField.getInt(null));

@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.acua.app.classes.AppRater;
 import com.acua.app.interfaces.NotificationListener;
 import com.acua.app.models.Notification;
 import com.acua.app.models.Order;
@@ -39,13 +40,20 @@ import com.acua.app.interfaces.UserValueListener;
 import com.acua.app.models.User;
 import com.acua.app.utils.References;
 import com.acua.app.utils.Util;
+import com.google.gson.JsonObject;
 import com.matrixxun.starry.badgetextview.MaterialBadgeTextView;
 import com.onesignal.OSNotification;
 import com.onesignal.OSNotificationOpenResult;
 import com.onesignal.OSPermissionObserver;
 import com.onesignal.OSPermissionStateChanges;
 import com.onesignal.OneSignal;
+import com.stepstone.apprating.AppRatingDialog;
+import com.stepstone.apprating.listener.RatingDialogListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -297,9 +305,27 @@ public class MainActivity extends AppCompatActivity
                 .setNotificationOpenedHandler(new OneSignal.NotificationOpenedHandler() {
                     @Override
                     public void notificationOpened(OSNotificationOpenResult result) {
-                        Log.d("Notification", result.toString());
+                        try{
+                            JSONObject notification = result.toJSONObject().getJSONObject("notification");
+                            JSONObject payload = notification.getJSONObject("payload");
+                            String body = Util.getStringFromJSON(payload, "body");
+                            Log.d("Notification", body);
+                            if (body.equals("Please Rate our Service")) {
+                                // TODO: 4/4/2018 show Rating Dialog
+                            }
+
+                            MainActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    startActivity(new Intent(MainActivity.this, NotificationsActivity.class));
+                                }
+                            });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 })
+
                 .setNotificationReceivedHandler(new OneSignal.NotificationReceivedHandler() {
                     @Override
                     public void notificationReceived(OSNotification notification) {
@@ -356,7 +382,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateUserInfoOnNavHeader(User user){
-        nav_header_Username.setText(user.getFirstname() + " " + user.getLastname());
+        nav_header_Username.setText(user.getFullName());
         nav_header_Useremail.setText(user.getEmail());
         Util.setProfileImage(user.getPhoto(), nav_header_Profile);
     }

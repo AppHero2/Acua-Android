@@ -40,4 +40,8 @@
     <color name="bgColor_alert_button_press">#EAEAEA</color>
     <color name="bgColor_actionsheet_cancel_nor">#ffffff</color>
 
+    <!-- Rating Dialog -->
+    <color name="colorRatingStart">#ffd700</color>
+    <color name="colorRatingCommentBG">#EAEAEA</color>
+
 </resources>

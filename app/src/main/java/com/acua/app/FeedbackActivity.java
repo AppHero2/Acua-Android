@@ -44,6 +44,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.acua.app.utils.Const.ADMIN_PUSH_ID;
+import static com.acua.app.utils.Const.ADMIN_USER_ID;
+
 public class FeedbackActivity extends AppCompatActivity {
 
     private View positiveAction;
@@ -340,8 +343,8 @@ public class FeedbackActivity extends AppCompatActivity {
             AppManager.getInstance().sendPushNotificationToCustomer(washer.getPushToken(), "Feedback Received",  "");
         } else {
             // send feedback to admin
-            feedbackData.put("washerID", "buvYTN54QNgkwKi1yLQGcA0lNCw2");
-            AppManager.getInstance().sendPushNotificationToCustomer("b79494a7-594c-4919-852f-ce29d324e847", "Feedback Received",  "");
+            feedbackData.put("washerID", ADMIN_USER_ID);
+            AppManager.getInstance().sendPushNotificationToCustomer(ADMIN_PUSH_ID, "Feedback Received",  "");
         }
 
         reference.setValue(feedbackData);

@@ -18,7 +18,7 @@ android {
         applicationId "com.acua.app"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 32
+        versionCode 35
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [onesignal_app_id               : "1f9e701b-7709-40e6-a1b6-7dff0ee29b42",
@@ -61,6 +61,7 @@ dependencies {
     compile 'com.google.firebase:firebase-auth:11.6.2'
     compile 'com.google.firebase:firebase-storage:11.6.2'
     compile 'com.google.firebase:firebase-database:11.6.2'
+    compile 'com.google.firebase:firebase-crash:11.6.2'
     compile "com.google.android.gms:play-services-places:11.6.2"
     compile 'com.raycoarana.codeinputview:codeinputview:1.1.3'
 
@@ -69,6 +70,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.2'
 //    compile 'com.squareup.okhttp3:okhttp:3.9.0'
     compile 'com.android.volley:volley:1.0.0'
+    compile 'com.stepstone.apprating:app-rating:2.2.0'
 
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
 }
