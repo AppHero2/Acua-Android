@@ -37,7 +37,7 @@ public class Order {
     }
 
     public void updateData(Map<String, Object> data){
-        this.idx = getStringFromData("uid", data);
+        this.idx = getStringFromData("idx", data);
         this.customerId = getStringFromData("customerId", data);
         this.customerPushToken = getStringFromData("customerPushToken", data);
 

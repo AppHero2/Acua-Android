@@ -13,12 +13,18 @@
         android:text="@string/order_list_empty"
         android:textSize="18sp"/>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_orders"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutManager="LinearLayoutManager"
-        tools:context="com.acua.app.fragments.AppointmentsFragment"
-        tools:listitem="@layout/row_order_admin" />
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_orders"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="LinearLayoutManager"
+            tools:context="com.acua.app.fragments.AppointmentsFragment"
+            tools:listitem="@layout/row_order_admin" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </FrameLayout>

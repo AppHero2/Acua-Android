@@ -51,7 +51,7 @@ public class PaymentActivity extends AppCompatActivity {
                 .setDimAmount(0.5f);
 
         TextView txtTitle = (TextView) findViewById(R.id.txtTitle);
-        txtTitle.setText("Add a payment");
+        txtTitle.setText(getString(R.string.side_menu_payment));
         ImageView btnBack = (ImageView) findViewById(R.id.btnBack);
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override

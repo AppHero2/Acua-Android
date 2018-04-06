@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.acua.app.fragments.AppointmentsFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
@@ -50,6 +51,7 @@ import java.util.TimerTask;
 public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Order> orderList = new ArrayList<>();
+    private AppointmentsFragment fragment;
     private Activity activity;
     private KProgressHUD hud;
     private int type = 0;
@@ -88,10 +90,11 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         }, 1000, 1000);
     }
 
-    public OrderListRecyclerViewAdapter(Activity activity) {
+    public OrderListRecyclerViewAdapter(AppointmentsFragment fragment) {
         User session = AppManager.getSession();
         this.type = session.getUserType();
-        this.activity = activity;
+        this.fragment = fragment;
+        this.activity = fragment.getActivity();
         this.hud = KProgressHUD.create(activity)
                 .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
                 .setWindowColor(ContextCompat.getColor(activity,R.color.colorTransparency))
@@ -189,49 +192,84 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             mView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    AlertView actionSheet = new AlertView.Builder().setContext(view.getContext())
-                            .setStyle(AlertView.Style.ActionSheet)
-                            .setTitle("Change of Plans?")
-                            .setMessage(null)
-                            .setCancelText("Dismiss")
-                            .setDestructive("Update Booking", "Withdraw Booking")
-                            .setOthers(null)
-                            .setOnItemClickListener(new OnItemClickListener() {
-                                @Override
-                                public void onItemClick(Object o, int position) {
-                                    alertButtonPostion = position;
-                                }
-                            })
-                            .build();
 
-                    actionSheet.setOnDismissListener(new OnDismissListener() {
-                        @Override
-                        public void onDismiss(Object o) {
-                            if (alertButtonPostion != AlertView.CANCELPOSITION) {
-                                if (alertButtonPostion == 0){
-                                    AppManager.getInstance().currentOrder = mItem;
-                                    activity.startActivity(new Intent(activity, EditOrderActivity.class));
-                                }else if (alertButtonPostion == 1){
-                                    activity.runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            AlertView alertView = new AlertView("Are you sure?", "Do you really want to withdraw this order?", "Cancel", null, new String[]{"Okay"}, activity, AlertView.Style.Alert, new OnItemClickListener() {
-                                                @Override
-                                                public void onItemClick(Object o, int position) {
-                                                    if (position != AlertView.CANCELPOSITION){
-                                                        References.getInstance().ordersRef.child(mItem.idx).removeValue();
-                                                    }
-                                                }
-                                            });
-                                            alertView.show();
-                                        }
-                                    });
+                    if (mItem.serviceStatus == OrderServiceStatus.COMPLETED) {
+
+                        AlertView actionSheet = new AlertView.Builder().setContext(view.getContext())
+                                .setStyle(AlertView.Style.ActionSheet)
+                                .setTitle("Would you like to:")
+                                .setMessage(null)
+                                .setCancelText("Dismiss")
+                                .setDestructive("Rate Service", "Leave Feedback")
+                                .setOthers(null)
+                                .setOnItemClickListener(new OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(Object o, int position) {
+                                        alertButtonPostion = position;
+                                    }
+                                })
+                                .build();
+
+                        actionSheet.setOnDismissListener(new OnDismissListener() {
+                            @Override
+                            public void onDismiss(Object o) {
+                                if (alertButtonPostion != AlertView.CANCELPOSITION) {
+                                    if (alertButtonPostion == 0){
+                                        fragment.onClickRatService();
+                                    }else if (alertButtonPostion == 1){
+                                        fragment.onClickFeedback();
+                                    }
                                 }
                             }
-                        }
-                    });
+                        });
+                        actionSheet.show();
 
-                    actionSheet.show();
+                    } else {
+
+                        AlertView actionSheet = new AlertView.Builder().setContext(view.getContext())
+                                .setStyle(AlertView.Style.ActionSheet)
+                                .setTitle("Change of Plans?")
+                                .setMessage(null)
+                                .setCancelText("Dismiss")
+                                .setDestructive("Update Booking", "Withdraw Booking")
+                                .setOthers(null)
+                                .setOnItemClickListener(new OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(Object o, int position) {
+                                        alertButtonPostion = position;
+                                    }
+                                })
+                                .build();
+
+                        actionSheet.setOnDismissListener(new OnDismissListener() {
+                            @Override
+                            public void onDismiss(Object o) {
+                                if (alertButtonPostion != AlertView.CANCELPOSITION) {
+                                    if (alertButtonPostion == 0){
+                                        AppManager.getInstance().currentOrder = mItem;
+                                        activity.startActivity(new Intent(activity, EditOrderActivity.class));
+                                    }else if (alertButtonPostion == 1){
+                                        activity.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                AlertView alertView = new AlertView("Are you sure?", "Do you really want to withdraw this order?", "Cancel", null, new String[]{"Okay"}, activity, AlertView.Style.Alert, new OnItemClickListener() {
+                                                    @Override
+                                                    public void onItemClick(Object o, int position) {
+                                                        if (position != AlertView.CANCELPOSITION){
+                                                            References.getInstance().ordersRef.child(mItem.idx).removeValue();
+                                                        }
+                                                    }
+                                                });
+                                                alertView.show();
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        });
+                        actionSheet.show();
+                    }
+
 
                     return true;
                 }
@@ -360,16 +398,16 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     }
 
     public class ViewHolder1 extends RecyclerView.ViewHolder {
-        public View mView;
-        public TextView tvUsername, tvTypes, tvAddress, tvSchedule, tvRemain, tvStatus;
+        private View mView;
+        private TextView tvUsername, tvTypes, tvAddress, tvSchedule, tvRemain, tvStatus;
         private ImageView imgProfile;
         private ImageView btnLocation, btnPhoneCall;
         private AppCompatButton btnAction;
 
-        public Order mItem;
+        private Order mItem;
         private User mUser;
 
-        public ViewHolder1(View view) {
+        private ViewHolder1(View view) {
             super(view);
             mView = view;
             tvUsername = (TextView) view.findViewById(R.id.tv_username);
@@ -393,7 +431,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                 @Override
                 public void onClick(View view) {
                     if (mUser != null) {
-                        Intent in = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + mUser.getPhone()));
+                        Intent in = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + mUser.getPhone()));
                         try {
                             activity.startActivity(in);
                         } catch (SecurityException ex) {
@@ -514,7 +552,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             return isExpired;
         }
 
-        public void updateTimeRemaining(long currentTime) {
+        private void updateTimeRemaining(long currentTime) {
 
             if (mItem != null){
                 if (mItem.serviceStatus == OrderServiceStatus.COMPLETED) {

@@ -30,6 +30,7 @@ import com.acua.app.classes.AppRater;
 import com.acua.app.interfaces.NotificationListener;
 import com.acua.app.models.Notification;
 import com.acua.app.models.Order;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.acua.app.adapters.ViewPagerAdapter;
 import com.acua.app.classes.AppManager;
@@ -58,8 +59,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.acua.app.utils.Const.ADMIN_PUSH_ID;
+import static com.acua.app.utils.Const.ADMIN_USER_ID;
+
 public class MainActivity extends AppCompatActivity
-        implements View.OnClickListener, UserValueListener, NotificationListener{
+        implements View.OnClickListener, UserValueListener, NotificationListener, RatingDialogListener,
+        AppointmentsFragment.OnAppointmentsFragmentInteractionListener{
 
     private static final String TAG = "MainActivity";
 
@@ -240,10 +245,14 @@ public class MainActivity extends AppCompatActivity
             }
                 break;
             case R.id.btn_menu_feedback:{
-                if (AppManager.getInstance().selfOrders.size() > 0) {
-                    startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
+                if (session.getUserType() == 0) {
+                    if (AppManager.getInstance().selfOrders.size() > 0) {
+                        startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
+                    } else {
+                        Toast.makeText(this, "You have no previous appointment.", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(this, "You have no previous appointment.", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
                 }
             }
                 break;
@@ -482,6 +491,70 @@ public class MainActivity extends AppCompatActivity
             startActivity(Intent.createChooser(i, "Send mail..."));
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showRatingDiglog(){
+        new AppRatingDialog.Builder()
+                .setPositiveButtonText("Submit")
+                .setNegativeButtonText("Cancel")
+                .setNeutralButtonText("Later")
+                .setNoteDescriptions(Arrays.asList("Very Bad", "Not good", "Quite ok", "Very Good", "Excellent !!!"))
+                .setDefaultRating(4)
+                .setTitle("Please rate our service")
+                .setDescription("Please select some stars and give your feedback")
+//                .setDefaultComment("")
+                .setStarColor(R.color.colorRatingStart)
+                .setNoteDescriptionTextColor(R.color.colorGrey)
+                .setTitleTextColor(R.color.colorTextBlue)
+                .setDescriptionTextColor(R.color.colorGrey)
+                .setHint("Please write your comment here ...")
+                .setHintTextColor(R.color.colorGrey)
+                .setCommentTextColor(R.color.colorGrey)
+                .setCommentBackgroundColor(R.color.colorRatingCommentBG)
+                .setWindowAnimation(R.style.MyDialogFadeAnimation)
+                .create(MainActivity.this)
+                .show();
+    }
+
+    @Override
+    public void onPositiveButtonClicked(int rate, String comment) {
+        // interpret results, send it to analytics etc...
+        User session = AppManager.getSession();
+        String title = session.getFullName() + " left service rating as " + rate + ".";
+        AppManager.getInstance().sendPushNotificationToCustomer(ADMIN_PUSH_ID, title,  comment);
+        DatabaseReference reference = References.getInstance().notificationsRef.child(ADMIN_USER_ID).push();
+        String notificationId = reference.getKey();
+        Map<String, Object> notificationData = new HashMap<>();
+        notificationData.put("idx", notificationId);
+        notificationData.put("title", title);
+        notificationData.put("message", comment);
+        notificationData.put("createdAt", System.currentTimeMillis());
+        notificationData.put("isRead", false);
+        reference.setValue(notificationData);
+    }
+
+    @Override
+    public void onNegativeButtonClicked() {
+        Log.d("MainAC", "onNegativeButtonClicked: Cancel");
+    }
+
+    @Override
+    public void onNeutralButtonClicked() {
+        Log.d("MainAC", "onNeutralButtonClicked: Later");
+    }
+
+    @Override
+    public void onClickRateServiceInAppointments() {
+        showRatingDiglog();
+    }
+
+    @Override
+    public void onClickFeedbackInAppointments() {
+        if (AppManager.getInstance().selfOrders.size() > 0) {
+            startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
+        } else {
+            Toast.makeText(this, "You have no previous appointment.", Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -19,7 +19,6 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.acua.app.classes.AppManager;
 import com.acua.app.interfaces.UserValueListener;
@@ -165,7 +164,7 @@ public class FeedbackActivity extends AppCompatActivity {
                     }
 
                     String title = getString(R.string.feedback);
-                    String message = Feedback.getIssueTitle(FeedbackActivity.this, issueType);
+                    String message = Feedback.getFeedbackContent(FeedbackActivity.this, issueType);
                     String positive = getString(R.string.feedback_submit);
                     String negative = getString(R.string.feedback_cancel);
 
@@ -208,7 +207,7 @@ public class FeedbackActivity extends AppCompatActivity {
                 }
             });
 
-            startTrackingNotification(session.getIdx());
+            startTrackingFeedback(session.getIdx());
         }
 
     }
@@ -225,7 +224,7 @@ public class FeedbackActivity extends AppCompatActivity {
             References.getInstance().notificationsRef.child(uid).removeEventListener(trackFeedbackListener);
     }
 
-    public void startTrackingNotification(String uid){
+    public void startTrackingFeedback(String uid){
         if (trackFeedbackListener != null)
             return;
 
@@ -327,9 +326,9 @@ public class FeedbackActivity extends AppCompatActivity {
 
     private void submitFeedback(){
 
-        DatabaseReference reference = References.getInstance().feedbackRef.push();
+        final DatabaseReference reference = References.getInstance().feedbackRef.push();
         String feedbackId = reference.getKey();
-        Map<String, Object> feedbackData = new HashMap<>();
+        final Map<String, Object> feedbackData = new HashMap<>();
         feedbackData.put("idx", feedbackId);
         feedbackData.put("orderID", lastOrder.idx);
         feedbackData.put("senderID", lastOrder.customerId);
@@ -337,17 +336,24 @@ public class FeedbackActivity extends AppCompatActivity {
         feedbackData.put("type", issueType);
         feedbackData.put("createdAt", System.currentTimeMillis());
 
-        if (washer != null) {
+        feedbackData.put("washerID", ADMIN_USER_ID);
+        AppManager.getUser(lastOrder.customerId, new UserValueListener() {
+            @Override
+            public void onLoadedUser(User user) {
+                AppManager.getInstance().sendPushNotificationToCustomer(ADMIN_PUSH_ID, "Feedback Received From " + user.getFullName() + "(" + user.getEmail() + ")",  "");
+                reference.setValue(feedbackData);
+            }
+        });
+
+        /*if (washer != null) {
             // send feedback to operator
             feedbackData.put("washerID", washer.getIdx());
-            AppManager.getInstance().sendPushNotificationToCustomer(washer.getPushToken(), "Feedback Received",  "");
+            AppManager.getInstance().sendPushNotificationToCustomer(washer.getPushToken(), "Feedback Received From " + washer.getEmail(),  "");
         } else {
             // send feedback to admin
             feedbackData.put("washerID", ADMIN_USER_ID);
-            AppManager.getInstance().sendPushNotificationToCustomer(ADMIN_PUSH_ID, "Feedback Received",  "");
-        }
-
-        reference.setValue(feedbackData);
+            AppManager.getInstance().sendPushNotificationToCustomer(ADMIN_PUSH_ID, "Feedback Received From " + washer.getEmail(),  "");
+        }*/
     }
 
     /// ---->>> ADAPTER
@@ -384,7 +390,7 @@ public class FeedbackActivity extends AppCompatActivity {
             Cell cell;
             View cellView = convertView;
             if (convertView == null) {
-                cellView = this.layoutInflater.inflate(R.layout.row_notification, null);
+                cellView = this.layoutInflater.inflate(R.layout.row_feedback, null);
                 cell = new Cell(cellView);
                 cellView.setTag(cell);
             } else {
@@ -419,11 +425,19 @@ public class FeedbackActivity extends AppCompatActivity {
         public void setData(Feedback feedback){
             this.feedback = feedback;
 
-            String issueTitle = Feedback.getIssueTitle(FeedbackActivity.this, issueType);
+            String issueTitle = Feedback.getFeedbackTitle(FeedbackActivity.this, issueType);
             tvTitle.setText(issueTitle);
             tvContent.setText(feedback.getContent());
             String date = TimeUtil.getDateString(feedback.getCreatedAt());
             String todayDate = TimeUtil.getDateString(System.currentTimeMillis());
+
+            AppManager.getUser(feedback.getSenderID(), new UserValueListener() {
+                @Override
+                public void onLoadedUser(User user) {
+                    String issueTitle = Feedback.getFeedbackTitle(FeedbackActivity.this, issueType) + " :\n " + user.getFullName() + "(" + user.getEmail() + ")";
+                    tvTitle.setText(issueTitle);
+                }
+            });
 
             if (todayDate.compareTo(date) == 0) {
                 tvDate.setText(TimeUtil.getUserTime(feedback.getCreatedAt()));

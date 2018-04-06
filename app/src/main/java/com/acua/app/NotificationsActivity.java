@@ -73,15 +73,15 @@ public class NotificationsActivity extends AppCompatActivity implements RatingDi
                 final Notification news = cell.getNews();
                 if (!news.isRead()){
                     References.getInstance().notificationsRef.child(session.getIdx()).child(news.getIdx()).child("isRead").setValue(true);
-                }
 
-                if (news.getTitle().equals("Please Rate our Service")){
-                    NotificationsActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showRatingDiglog();
-                        }
-                    });
+                    if (news.getTitle().equals("Please Rate our Service")){
+                        NotificationsActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                showRatingDiglog();
+                            }
+                        });
+                    }
                 }
             }
         });

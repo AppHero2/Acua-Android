@@ -429,22 +429,20 @@ public class AppManager {
         trackOrdersListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    orderList.clear();
-                    selfOrders.clear();
-                    for (DataSnapshot child : dataSnapshot.getChildren()) {
-                        String key = child.getKey();
-                        Map<String, Object> value = (Map<String, Object>) child.getValue();
-                        Order order = new Order(value);
-                        order.idx = key;
-                        orderList.add(order);
-                        if (order.customerId.equals(session.getIdx())) {
-                            selfOrders.add(order);
-                        }
+                orderList.clear();
+                selfOrders.clear();
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    String key = child.getKey();
+                    Map<String, Object> value = (Map<String, Object>) child.getValue();
+                    Order order = new Order(value);
+                    order.idx = key;
+                    orderList.add(order);
+                    if (order.customerId.equals(session.getIdx())) {
+                        selfOrders.add(order);
                     }
-                    if (orderValueListener != null) {
-                        orderValueListener.onLoadedOrder(orderList);
-                    }
+                }
+                if (orderValueListener != null) {
+                    orderValueListener.onLoadedOrder(orderList);
                 }
             }
 

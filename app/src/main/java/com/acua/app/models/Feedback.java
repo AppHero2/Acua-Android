@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.acua.app.utils.Util.getIntFromData;
+import static com.acua.app.utils.Util.getLongFromData;
 import static com.acua.app.utils.Util.getStringFromData;
 
 /**
@@ -32,7 +33,7 @@ public class Feedback {
         this.washerID = getStringFromData("washerID", data);
         this.content = getStringFromData("content", data);
         this.type = getIntFromData("type", data);
-        this.createdAt = getIntFromData("createdAt", data);
+        this.createdAt = getLongFromData("createdAt", data);
     }
 
     public String getIdx() {
@@ -63,25 +64,25 @@ public class Feedback {
         return type;
     }
 
-    static public String getIssueTitle(Context context, int type) {
+    static public String getFeedbackContent(Context context, int type) {
         String message;
         switch (type) {
-            case R.id.rb_1:
+            case 1:
                 message = context.getString(R.string.feedback_content_1);
                 break;
-            case R.id.rb_2:
+            case 2:
                 message = context.getString(R.string.feedback_content_2);
                 break;
-            case R.id.rb_3:
+            case 3:
                 message = context.getString(R.string.feedback_content_3);
                 break;
-            case R.id.rb_4:
+            case 4:
                 message = context.getString(R.string.feedback_content_4);
                 break;
-            case R.id.rb_5:
+            case 5:
                 message = context.getString(R.string.feedback_content_5);
                 break;
-            case R.id.rb_6:
+            case 6:
                 message = context.getString(R.string.feedback_content_6);
                 break;
             default:
@@ -90,5 +91,34 @@ public class Feedback {
         }
 
         return message;
+    }
+
+    static public String getFeedbackTitle(Context context, int type) {
+        String feedbackTitle;
+        switch (type) {
+            case 1:
+                feedbackTitle = context.getString(R.string.feedback_title_1);
+                break;
+            case 2:
+                feedbackTitle = context.getString(R.string.feedback_title_2);
+                break;
+            case 3:
+                feedbackTitle = context.getString(R.string.feedback_title_3);
+                break;
+            case 4:
+                feedbackTitle = context.getString(R.string.feedback_title_4);
+                break;
+            case 5:
+                feedbackTitle = context.getString(R.string.feedback_title_5);
+                break;
+            case 6:
+                feedbackTitle = context.getString(R.string.feedback_title_6);
+                break;
+            default:
+                feedbackTitle = context.getString(R.string.feedback_title_1);
+                break;
+        }
+
+        return feedbackTitle;
     }
 }

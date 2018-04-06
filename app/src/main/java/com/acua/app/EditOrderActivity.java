@@ -257,6 +257,8 @@ public class EditOrderActivity extends AppCompatActivity {
                             public void onTimeSet(TimePicker view, int hourOfDay, int minuteOfHour) {
                                 hour = hourOfDay;
                                 minute = minuteOfHour;
+                                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                                calendar.set(Calendar.MINUTE, minuteOfHour);
                                 showDateTime(calendar);
                             }
                         }, hour, minute, true);
@@ -264,9 +266,8 @@ public class EditOrderActivity extends AppCompatActivity {
             }
         });
 
-        calendar.set(Calendar.HOUR_OF_DAY, ServiceTimeStart);
-        calendar.set(Calendar.MINUTE, 0);
-
+        calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(currentOrder.beginAt);
         year = calendar.get(Calendar.YEAR);
         month = calendar.get(Calendar.MONTH);
         day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -318,27 +319,17 @@ public class EditOrderActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                final Order order = new Order();
-                order.menu = curMenu;
-                order.location = curLocation;
-                order.customerId = AppManager.getSession().getIdx();
                 Date bookedAt = Util.getDate(year, month, day, hour, minute, 0);
-                order.beginAt = bookedAt.getTime();
-                order.endAt = bookedAt.getTime() + curMenu.getDuration()*1000;
-                order.hasTap = hasTap;
-                order.hasPlug = hasPlug;
+                currentOrder.beginAt = bookedAt.getTime();
+                currentOrder.endAt = currentOrder.beginAt + curMenu.getDuration()*1000;
+                currentOrder.menu = curMenu;
+                currentOrder.location = curLocation;
+                currentOrder.hasTap = hasTap;
+                currentOrder.hasPlug = hasPlug;
 
-                if (isValidBooking(order)) {
-                    boolean isExistOne = false;
-                    for (Order theOrder: AppManager.getInstance().orderList) {
-                        if (theOrder.beginAt <= order.beginAt && order.beginAt <= theOrder.endAt) {
-                            isExistOne = true;
-                            break;
-                        }
-                    }
-
-                    if (isExistOne) {
-                        final long validTime = generateValidTime(order.beginAt);
+                if (isValidBooking(currentOrder)) {
+                    if (isExistingOne(currentOrder.beginAt)) {
+                        final long validTime = generateValidTime(currentOrder.beginAt);
                         String validTimeString = TimeUtil.getFullTimeString(validTime);
                         String title = "Note";
                         String message = "Dear valued customer, this time slot is currently unavailable. The next available time slot is " + validTimeString + " Would you like to book this slot?";
@@ -347,9 +338,10 @@ public class EditOrderActivity extends AppCompatActivity {
                             public void onItemClick(Object o, int position) {
                                 if (position == 0) // ok button
                                 {
-                                    order.beginAt = validTime;
-                                    makeOrder(order);
-                                    calendar.setTimeInMillis(order.beginAt);
+                                    currentOrder.beginAt = validTime;
+                                    currentOrder.endAt = currentOrder.beginAt + curMenu.getDuration()*1000;
+                                    makeOrder(currentOrder);
+                                    calendar.setTimeInMillis(currentOrder.beginAt);
                                     showDateTime(calendar);
                                 }
 
@@ -357,7 +349,7 @@ public class EditOrderActivity extends AppCompatActivity {
                         });
                         alertView.show();
                     } else {
-                        makeOrder(order);
+                        makeOrder(currentOrder);
                     }
                 }
             }
@@ -372,13 +364,11 @@ public class EditOrderActivity extends AppCompatActivity {
         final String push_title = session.getFullName() + " has updated an offer.";
         final String push_message = carType.getName() + ", " + washType.getName() + " at " + TimeUtil.getSimpleDateString(order.beginAt);
 
-        References.getInstance().ordersRef.child(String.valueOf(order.beginAt)).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
+        References.getInstance().ordersRef.child(order.idx).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Toast.makeText(EditOrderActivity.this, "Updated successfully", Toast.LENGTH_SHORT).show();
                 AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
-
-                // TODO: 1/18/2018 register notification on the firebase
             }
         });
     }
@@ -468,10 +458,14 @@ public class EditOrderActivity extends AppCompatActivity {
     }
 
     private long generateValidTime(long time){
-        do {
-            time = time + 3600*1000;
-        } while (TimeUtil.checkAvailableTimeRange(time) && isExistingOne(time));
-        return time;
+        long value = time - 3600 * 1000;
+        while (true) {
+            value += 3600 * 1000;
+            if (TimeUtil.checkAvailableTimeRange(value) && ! isExistingOne(value)) {
+                break;
+            }
+        }
+        return value;
     }
 
     private boolean isExistingOne(long time){

@@ -46,6 +46,7 @@ import com.acua.app.utils.IntervalTimePickerDialog;
 import com.acua.app.utils.References;
 import com.acua.app.utils.TimeUtil;
 import com.acua.app.utils.Util;
+import com.google.firebase.database.DatabaseReference;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.text.DecimalFormat;
@@ -301,15 +302,7 @@ public class BookingFragment extends Fragment {
 
                 if (isValidBooking(order)) {
 
-                    boolean isExistOne = false;
-                    for (Order theOrder: AppManager.getInstance().orderList) {
-                        if (theOrder.beginAt <= order.beginAt && order.beginAt <= theOrder.endAt) {
-                            isExistOne = true;
-                            break;
-                        }
-                    }
-
-                    if (isExistOne) {
+                    if (isExistingOne(order.beginAt)) {
                         final long validTime = generateValidTime(order.beginAt);
                         String validTimeString = TimeUtil.getFullTimeString(validTime);
                         String title = "Note";
@@ -346,13 +339,13 @@ public class BookingFragment extends Fragment {
         final String push_title = session.getFullName() + " has made an offer.";
         final String push_message = carType.getName() + ", " + washType.getName() + " at " + TimeUtil.getSimpleDateString(order.beginAt);
 
-        References.getInstance().ordersRef.child(String.valueOf(order.beginAt)).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
+        DatabaseReference reference = References.getInstance().ordersRef.push();
+        order.idx = reference.getKey();
+        References.getInstance().ordersRef.child(order.idx).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Toast.makeText(getActivity(), "Booked successfully", Toast.LENGTH_SHORT).show();
                 AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
-
-                // TODO: 1/18/2018 register notification on the firebase
             }
         });
     }
@@ -439,10 +432,14 @@ public class BookingFragment extends Fragment {
     }
 
     private long generateValidTime(long time){
-        do {
-            time = time + 3600*1000;
-        } while (TimeUtil.checkAvailableTimeRange(time) && isExistingOne(time));
-        return time;
+        long value = time - 3600 * 1000;
+        while (true) {
+            value += 3600 * 1000;
+            if (TimeUtil.checkAvailableTimeRange(value) && ! isExistingOne(value)) {
+                break;
+            }
+        }
+        return value;
     }
 
     private boolean isExistingOne(long time){
@@ -520,11 +517,11 @@ public class BookingFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
+//        if (context instanceof OnAppointmentsFragmentInteractionListener) {
+//            mListener = (OnAppointmentsFragmentInteractionListener) context;
 //        } else {
 //            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
+//                    + " must implement OnAppointmentsFragmentInteractionListener");
 //        }
     }
 
