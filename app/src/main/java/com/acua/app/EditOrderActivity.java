@@ -471,7 +471,7 @@ public class EditOrderActivity extends AppCompatActivity {
     private boolean isExistingOne(long time){
         boolean isExist = false;
         for (Order theOrder: AppManager.getInstance().orderList) {
-            if (theOrder.beginAt <= time && time <= theOrder.endAt) {
+            if (theOrder.idx != currentOrder.idx && theOrder.beginAt <= time && time <= theOrder.endAt) {
                 isExist = true;
                 break;
             }

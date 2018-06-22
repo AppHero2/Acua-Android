@@ -164,8 +164,8 @@ public class RegisterUserActivity extends AppCompatActivity {
             return false;
         }
 
-        if (firstname.isEmpty()) {
-            etFistName.setError(getResources().getString(R.string.register_user_field_empty));
+        if (lastname.isEmpty()) {
+            etLastName.setError(getResources().getString(R.string.register_user_field_empty));
             Toast.makeText(this, getResources().getString(R.string.register_user_field_empty), Toast.LENGTH_SHORT).show();
             return false;
         }

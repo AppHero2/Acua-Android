@@ -426,6 +426,8 @@ public class AppManager {
     public void startTrackingOrders(){
         if (trackOrdersListener != null) return;
 
+        if (session == null) return;
+
         trackOrdersListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -462,7 +464,7 @@ public class AppManager {
     }
 
     public void sendPushNotificationToService(final String title, final String message){
-        Query query = References.getInstance().usersRef.orderByChild("userType").equalTo(1); // service
+        Query query = References.getInstance().usersRef.orderByChild("userType").startAt(1); // service & admin
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

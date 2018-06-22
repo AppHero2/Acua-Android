@@ -91,7 +91,11 @@ public class AppSplashActivity extends AppCompatActivity {
         if (firebaseUser != null){
             User user = AppManager.getSession();
             if (user != null) {
-                startActivity(new Intent(AppSplashActivity.this, MainActivity.class));
+                if (user.getFirstname().equals("?") || user.getLastname().equals("?")) {
+                    startActivity(new Intent(this, RegisterUserActivity.class));
+                } else {
+                    startActivity(new Intent(AppSplashActivity.this, MainActivity.class));
+                }
             } else {
                 startActivity(new Intent(this, RegisterUserActivity.class));
             }

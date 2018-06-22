@@ -163,6 +163,7 @@ public class NotificationsActivity extends AppCompatActivity implements RatingDi
                 .create(NotificationsActivity.this)
                 .show();
     }
+
     private void refreshNotificationData(){
         notifications = AppManager.getInstance().notifications;
         adapter.notifyDataSetChanged();

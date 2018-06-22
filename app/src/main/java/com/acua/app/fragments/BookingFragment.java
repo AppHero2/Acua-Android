@@ -317,7 +317,6 @@ public class BookingFragment extends Fragment {
                                     calendar.setTimeInMillis(order.beginAt);
                                     showDateTime(calendar);
                                 }
-
                             }
                         });
                         alertView.show();
@@ -464,7 +463,7 @@ public class BookingFragment extends Fragment {
     private Boolean isValidBooking(Order order) {
 
         if (curMenu == null) {
-            Util.showAlert("Note!", "Please check your network, and reopen acua", getActivity());
+            Util.showAlert("Note!", "Please check your network, and reopen acuar", getActivity());
             return false;
         }
 
