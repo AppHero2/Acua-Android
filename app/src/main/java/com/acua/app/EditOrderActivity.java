@@ -229,8 +229,7 @@ public class EditOrderActivity extends AppCompatActivity {
         }
 
         txtDate = (TextView) findViewById(R.id.txtDate);
-        ImageView btnCalendar = (ImageView) findViewById(R.id.imgDay);
-        btnCalendar.setOnClickListener(new View.OnClickListener() {
+        txtDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new DatePickerDialog(EditOrderActivity.this, new DatePickerDialog.OnDateSetListener() {
@@ -245,8 +244,7 @@ public class EditOrderActivity extends AppCompatActivity {
         });
 
         txtTime = (TextView) findViewById(R.id.txtTime);
-        ImageView btnTimer = (ImageView) findViewById(R.id.imgTime);
-        btnTimer.setOnClickListener(new View.OnClickListener() {
+        txtTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Launch Time Picker Dialog

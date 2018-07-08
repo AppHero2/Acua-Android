@@ -89,9 +89,9 @@
     <string name="side_menu_share">Share app with friends</string>
     <string name="side_menu_feedback">Feedback</string>
     <string name="side_menu_where">Where are we?</string>
-    <string name="side_menu_agreements">Agreements</string>
+    <string name="side_menu_agreements">Agreement</string>
     <string name="side_menu_terms">Terms &amp; conditions</string>
-    <string name="side_menu_copyright">Copyright © 2017 acuar Co., Ltd</string>
+    <string name="side_menu_copyright">Copyright © 2018</string>
 
     <!-- Tab -->
     <string name="tab_title_statistics">STATISTICS</string>

@@ -2,11 +2,14 @@ package com.acua.app;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,6 +27,8 @@ public class AppSplashActivity extends AppCompatActivity {
 
     private Handler mHandler;
     private Runnable mRunnable;
+
+    private String currentVersion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +56,17 @@ public class AppSplashActivity extends AppCompatActivity {
                 dismissSplash();
             }
         });
+
+        TextView txtCopyright = (TextView) findViewById(R.id.txtCopyright);
+        try {
+            PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
+            String versionName = pInfo.versionName;
+            String versionCode = String.valueOf(pInfo.versionCode);
+            currentVersion = versionName + "(" + versionCode + ") ";
+            txtCopyright.setText(getString(R.string.app_name) + currentVersion + getString(R.string.side_menu_copyright));
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser != null){

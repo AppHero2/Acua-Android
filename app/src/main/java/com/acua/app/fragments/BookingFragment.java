@@ -203,8 +203,7 @@ public class BookingFragment extends Fragment {
 
         txtDate = (TextView) view.findViewById(R.id.txtDate);
         txtTime = (TextView) view.findViewById(R.id.txtTime);
-        ImageView btnCalendar = (ImageView) view.findViewById(R.id.imgDay);
-        btnCalendar.setOnClickListener(new View.OnClickListener() {
+        txtDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
@@ -217,9 +216,7 @@ public class BookingFragment extends Fragment {
                 }, year, month, day).show();
             }
         });
-
-        ImageView btnTimer = (ImageView) view.findViewById(R.id.imgTime);
-        btnTimer.setOnClickListener(new View.OnClickListener() {
+        txtTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Launch Time Picker Dialog

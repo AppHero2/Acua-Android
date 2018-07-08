@@ -74,6 +74,11 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                             viewHolder1.updateTimeRemaining(currentTime);
                         }
                         break;
+                        case 2: {
+                            ViewHolder1 viewHolder1 = (ViewHolder1)holder;
+                            viewHolder1.updateTimeRemaining(currentTime);
+                        }
+                        break;
                     }
                 }
             }
@@ -112,6 +117,10 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         {
             orderList = AppManager.getInstance().orderList;
         }
+        else if (type == 2) // admin
+        {
+            orderList = AppManager.getInstance().orderList;
+        }
     }
 
     @Override
@@ -127,6 +136,15 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                 return viewholder;
             }
             case 1:{
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.row_order_admin, parent, false);
+                ViewHolder1 viewholder  = new ViewHolder1(view);
+                synchronized (holders) {
+                    holders.add(viewholder);
+                }
+                return viewholder;
+            }
+            case 2:{
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.row_order_admin, parent, false);
                 ViewHolder1 viewholder  = new ViewHolder1(view);
@@ -157,6 +175,12 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             }
                 break;
             case 1: {
+                ViewHolder1 viewHolder1 = (ViewHolder1)holder;
+                viewHolder1.mItem = orderList.get(position);
+                viewHolder1.updateData();
+            }
+                break;
+            case 2: {
                 ViewHolder1 viewHolder1 = (ViewHolder1)holder;
                 viewHolder1.mItem = orderList.get(position);
                 viewHolder1.updateData();
@@ -391,7 +415,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                 tvRemain.setText(remaining);
                 this.isExpired = false;
             } else {
-                tvRemain.setText("Expired!!");
+                tvRemain.setText("Not engaged");
                 this.isExpired = true;
             }
         }
@@ -567,7 +591,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                 tvRemain.setText(remaining);
                 this.isExpired = false;
             } else {
-                tvRemain.setText("Expired!!");
+                tvRemain.setText("Not engaged");
                 this.isExpired = true;
             }
         }
