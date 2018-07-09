@@ -16,7 +16,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.acua.app.classes.AppManager;
-import com.acua.app.interfaces.NotificationListener;
 import com.acua.app.models.Notification;
 import com.acua.app.models.User;
 import com.acua.app.utils.References;
@@ -25,17 +24,18 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.stepstone.apprating.AppRatingDialog;
 import com.stepstone.apprating.listener.RatingDialogListener;
+
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.acua.app.utils.Const.ADMIN_PUSH_ID;
-import static com.acua.app.utils.Const.ADMIN_USER_ID;
 
 public class NotificationsActivity extends AppCompatActivity implements RatingDialogListener{
 
@@ -73,15 +73,15 @@ public class NotificationsActivity extends AppCompatActivity implements RatingDi
                 final Notification news = cell.getNews();
                 if (!news.isRead()){
                     References.getInstance().notificationsRef.child(session.getIdx()).child(news.getIdx()).child("isRead").setValue(true);
+                }
 
-                    if (news.getTitle().equals("Please Rate our Service")){
-                        NotificationsActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                showRatingDiglog();
-                            }
-                        });
-                    }
+                if (news.getTitle().equals("Please Rate our Service")){
+                    NotificationsActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showRatingDialog();
+                        }
+                    });
                 }
             }
         });
@@ -115,20 +115,49 @@ public class NotificationsActivity extends AppCompatActivity implements RatingDi
     }
 
     @Override
-    public void onPositiveButtonClicked(int rate, String comment) {
+    public void onPositiveButtonClicked(int rate, final String comment) {
         // interpret results, send it to analytics etc...
         User session = AppManager.getSession();
-        String title = session.getFullName() + " left service rating as " + rate + ".";
-        AppManager.getInstance().sendPushNotificationToCustomer(ADMIN_PUSH_ID, title,  comment);
-        DatabaseReference reference = References.getInstance().notificationsRef.child(ADMIN_USER_ID).push();
-        String notificationId = reference.getKey();
-        Map<String, Object> notificationData = new HashMap<>();
-        notificationData.put("idx", notificationId);
-        notificationData.put("title", title);
-        notificationData.put("message", comment);
-        notificationData.put("createdAt", System.currentTimeMillis());
-        notificationData.put("isRead", false);
-        reference.setValue(notificationData);
+        final String title = session.getFullName() + " left service rating as " + rate + ".";
+
+        Query query = References.getInstance().usersRef.orderByChild("userType").equalTo(2);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                JSONArray receivers = new JSONArray();
+                for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                    Map<String, Object> userData = (Map<String, Object>) snapshot.getValue();
+                    User user = new User(userData);
+                    if (user.getPushToken() != null) {
+                        receivers.put(user.getPushToken());
+                    }
+
+                    DatabaseReference reference = References.getInstance().notificationsRef.child(user.getIdx()).push();
+                    Map<String, Object> notificationData = new HashMap<>();
+                    notificationData.put("idx", reference.getKey());
+                    notificationData.put("title", title);
+                    notificationData.put("message", comment);
+                    notificationData.put("createdAt", System.currentTimeMillis());
+                    notificationData.put("isRead", false);
+                    reference.setValue(notificationData);
+                }
+
+                AppManager.getInstance().sendOneSignalPush(receivers, title, comment);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w( "Notification", databaseError.getMessage());
+            }
+        });
+
+        // remove all rating notifications
+        for (Notification notification : notifications) {
+            if (notification.getTitle().equals("Please Rate our Service")) {
+                References.getInstance().notificationsRef.child(session.getIdx()).child(notification.getIdx()).removeValue();
+            }
+        }
+
     }
 
     @Override
@@ -141,7 +170,7 @@ public class NotificationsActivity extends AppCompatActivity implements RatingDi
         Log.d("NotificationsActivity", "onNeutralButtonClicked: Later");
     }
 
-    private void showRatingDiglog(){
+    private void showRatingDialog(){
         new AppRatingDialog.Builder()
                 .setPositiveButtonText("Submit")
                 .setNegativeButtonText("Cancel")

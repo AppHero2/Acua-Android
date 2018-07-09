@@ -583,6 +583,11 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                     tvRemain.setText("service completed");
                     return;
                 }
+
+                if (mItem.serviceStatus == OrderServiceStatus.ACCEPTED) {
+                    tvRemain.setText("Engaged");
+                    return;
+                }
             }
 
             long timeDiff = mItem.endAt - currentTime;

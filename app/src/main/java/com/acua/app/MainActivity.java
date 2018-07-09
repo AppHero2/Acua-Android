@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import com.acua.app.classes.AppRater;
 import com.acua.app.interfaces.NotificationListener;
 import com.acua.app.models.Notification;
 import com.acua.app.models.Order;
+import com.acua.app.models.OrderServiceStatus;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.acua.app.adapters.ViewPagerAdapter;
@@ -125,6 +127,11 @@ public class MainActivity extends AppCompatActivity
         Button btnFeedback = (Button) findViewById(R.id.btn_menu_feedback); btnFeedback.setOnClickListener(this);
         Button btnWhere = (Button) findViewById(R.id.btn_menu_where); btnWhere.setOnClickListener(this);
         Button btnAgreements = (Button) findViewById(R.id.btn_menu_agreements); btnAgreements.setOnClickListener(this);
+
+        RelativeLayout layout_feedback = (RelativeLayout) findViewById(R.id.layout_feedback);
+        if (this.session.getUserType() == 1) {
+            layout_feedback.setVisibility(View.GONE);
+        }
 
         tvBadge = (MaterialBadgeTextView) findViewById(R.id.tv_badge); tvBadge.setVisibility(View.GONE);
         TextView txtCopyright = (TextView) findViewById(R.id.txtCopyright);
@@ -246,7 +253,17 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.btn_menu_feedback:{
                 if (session.getUserType() == 0) {
-                    if (AppManager.getInstance().selfOrders.size() > 0) {
+
+                    AppManager.getInstance().lastFeedbackOrder = null;
+                    for (int i=AppManager.getInstance().selfOrders.size()-1; i>=0; i--) {
+                        Order order = AppManager.getInstance().selfOrders.get(i);
+                        if (order.serviceStatus == OrderServiceStatus.COMPLETED) {
+                            AppManager.getInstance().lastFeedbackOrder = order;
+                            break;
+                        }
+                    }
+
+                    if (AppManager.getInstance().lastFeedbackOrder != null) {
                         startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
                     } else {
                         Toast.makeText(this, "You have no previous appointment.", Toast.LENGTH_SHORT).show();
@@ -460,10 +477,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void shareThisApp(){
-        final String appPackageName = this.getPackageName();
+        String message = "Have your car professionally washed at home or at the office with Acuar.\n" +
+                "\n" +
+                "Download the Acuar App on:\n" +
+                "the App Store: https://itunes.apple.com.us/app/acuar/id386096453?ls=1&mt=8\n" +
+                "Google Play Store: https;//play.google.com/store/apps/details?id=com.acua.app\n" +
+                "\n" +
+                "Spend time on what matters";
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "Spend time on what matters. Have your car professionally washed at home with acuar. Download the app at: https://play.google.com/store/apps/details?id=" + appPackageName);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, message);
         sendIntent.setType("text/plain");
         this.startActivity(sendIntent);
     }
@@ -551,7 +574,16 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onClickFeedbackInAppointments() {
-        if (AppManager.getInstance().selfOrders.size() > 0) {
+        AppManager.getInstance().lastFeedbackOrder = null;
+        for (int i=AppManager.getInstance().selfOrders.size()-1; i>=0; i--) {
+            Order order = AppManager.getInstance().selfOrders.get(i);
+            if (order.serviceStatus == OrderServiceStatus.COMPLETED) {
+                AppManager.getInstance().lastFeedbackOrder = order;
+                break;
+            }
+        }
+
+        if (AppManager.getInstance().lastFeedbackOrder != null) {
             startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
         } else {
             Toast.makeText(this, "You have no previous appointment.", Toast.LENGTH_SHORT).show();

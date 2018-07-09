@@ -24,6 +24,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -122,6 +124,13 @@ public class AppointmentsFragment extends Fragment {
                         AppManager.getInstance().selfOrders.add(order);
                     }
                 }
+
+                Collections.sort(AppManager.getInstance().orderList, new Comparator<Order>() {
+                    @Override
+                    public int compare(Order o1, Order o2) {
+                        return Long.valueOf(o2.beginAt).compareTo(Long.valueOf(o1.beginAt));
+                    }
+                });
 
                 updateStatus(AppManager.getInstance().orderList);
             }

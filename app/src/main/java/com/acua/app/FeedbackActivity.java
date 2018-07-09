@@ -89,15 +89,16 @@ public class FeedbackActivity extends AppCompatActivity {
             layoutCustomer.setVisibility(View.VISIBLE);
             layoutOperator.setVisibility(View.GONE);
 
-            List<Order> orders = AppManager.getInstance().selfOrders;
-            Collections.sort(orders, new Comparator<Order>() {
-                @Override
-                public int compare(Order o1, Order o2) {
-                    return o2.idx.compareTo(o1.idx);
-                }
-            });
+//            List<Order> orders = AppManager.getInstance().selfOrders;
+//            Collections.sort(orders, new Comparator<Order>() {
+//                @Override
+//                public int compare(Order o1, Order o2) {
+//                    return o2.idx.compareTo(o1.idx);
+//                }
+//            });
+//            lastOrder = orders.get(orders.size()-1);
 
-            lastOrder = orders.get(orders.size()-1);
+            lastOrder = AppManager.getInstance().lastFeedbackOrder;
 
             TextView tvDate = findViewById(R.id.tv_date);
             TextView tvType = findViewById(R.id.tv_type);

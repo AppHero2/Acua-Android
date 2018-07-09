@@ -61,6 +61,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,8 +106,10 @@ public class AppManager {
     public List<Order> selfOrders = new ArrayList<>();
     public List<Notification> notifications = new ArrayList<>();
 
-    public Order currentOrder, focusedOrder;
+    public Order currentOrder, focusedOrder, lastFeedbackOrder;
     public User session;
+
+
 //    private OkHttpClient client;
 
     public static AppManager getInstance() {
@@ -443,6 +447,14 @@ public class AppManager {
                         selfOrders.add(order);
                     }
                 }
+
+                Collections.sort(orderList, new Comparator<Order>() {
+                    @Override
+                    public int compare(Order o1, Order o2) {
+                        return Long.valueOf(o2.beginAt).compareTo(Long.valueOf(o1.beginAt));
+                    }
+                });
+
                 if (orderValueListener != null) {
                     orderValueListener.onLoadedOrder(orderList);
                 }
