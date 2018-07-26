@@ -59,7 +59,6 @@ import static android.app.Activity.RESULT_OK;
 import static com.acua.app.utils.Const.ServiceTimeEnd;
 import static com.acua.app.utils.Const.ServiceTimeStart;
 
-
 public class BookingFragment extends Fragment {
 
     private final int PLACE_PICKER_REQUEST = 999;
@@ -299,7 +298,7 @@ public class BookingFragment extends Fragment {
 
                 if (isValidBooking(order)) {
 
-                    if (isExistingOne(order.beginAt)) {
+                    if (isExistingTwo(order.beginAt)) {
                         final long validTime = generateValidTime(order.beginAt);
                         String validTimeString = TimeUtil.getFullTimeString(validTime);
                         String title = "Note";
@@ -310,6 +309,7 @@ public class BookingFragment extends Fragment {
                                 if (position == 0) // ok button
                                 {
                                     order.beginAt = validTime;
+                                    order.endAt = order.beginAt + curMenu.getDuration()*1000;
                                     makeOrder(order);
                                     calendar.setTimeInMillis(order.beginAt);
                                     showDateTime(calendar);
@@ -329,7 +329,7 @@ public class BookingFragment extends Fragment {
         return view;
     }
 
-    private void makeOrder(Order order) {
+    private void makeOrder(final Order order) {
 
         User session = AppManager.getSession();
         final String push_title = session.getFullName() + " has made an offer.";
@@ -342,6 +342,8 @@ public class BookingFragment extends Fragment {
             public void onComplete(@NonNull Task<Void> task) {
                 Toast.makeText(getActivity(), "Booked successfully", Toast.LENGTH_SHORT).show();
                 AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
+
+                mListener.didMakeOrder(order);
             }
         });
     }
@@ -431,22 +433,22 @@ public class BookingFragment extends Fragment {
         long value = time - 3600 * 1000;
         while (true) {
             value += 3600 * 1000;
-            if (TimeUtil.checkAvailableTimeRange(value) && ! isExistingOne(value)) {
+            if (TimeUtil.checkAvailableTimeRange(value) && ! isExistingTwo(value)) {
                 break;
             }
         }
         return value;
     }
 
-    private boolean isExistingOne(long time){
-        boolean isExist = false;
+    private boolean isExistingTwo(long time){
+        int existCount = 0;
         for (Order theOrder: AppManager.getInstance().orderList) {
             if (theOrder.beginAt <= time && time <= theOrder.endAt) {
-                isExist = true;
-                break;
+                existCount += 1;
             }
         }
-        return isExist;
+
+        return existCount >= 2;
     }
 
     private boolean isPastTime(long time) {
@@ -503,22 +505,15 @@ public class BookingFragment extends Fragment {
         }
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnAppointmentsFragmentInteractionListener) {
-//            mListener = (OnAppointmentsFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnAppointmentsFragmentInteractionListener");
-//        }
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnAppointmentsFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -528,7 +523,7 @@ public class BookingFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+
+        void didMakeOrder(Order order);
     }
 }

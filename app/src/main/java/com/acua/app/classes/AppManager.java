@@ -455,6 +455,13 @@ public class AppManager {
                     }
                 });
 
+                Collections.sort(selfOrders, new Comparator<Order>() {
+                    @Override
+                    public int compare(Order o1, Order o2) {
+                        return Long.valueOf(o2.beginAt).compareTo(Long.valueOf(o1.beginAt));
+                    }
+                });
+
                 if (orderValueListener != null) {
                     orderValueListener.onLoadedOrder(orderList);
                 }

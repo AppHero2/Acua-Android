@@ -82,6 +82,9 @@ public class NotificationsActivity extends AppCompatActivity implements RatingDi
                             showRatingDialog();
                         }
                     });
+
+                    // remove rating notifications
+                    References.getInstance().notificationsRef.child(session.getIdx()).child(news.getIdx()).removeValue();
                 }
             }
         });
@@ -150,13 +153,6 @@ public class NotificationsActivity extends AppCompatActivity implements RatingDi
                 Log.w( "Notification", databaseError.getMessage());
             }
         });
-
-        // remove all rating notifications
-        for (Notification notification : notifications) {
-            if (notification.getTitle().equals("Please Rate our Service")) {
-                References.getInstance().notificationsRef.child(session.getIdx()).child(notification.getIdx()).removeValue();
-            }
-        }
 
     }
 

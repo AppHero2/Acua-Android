@@ -165,37 +165,11 @@
 
     <string name="where_title">Where are we?</string>
     <string name="where_notes">We operate in the following areas:</string>
-    <string name="where_area1"> Aanwins AH\n
-                                Allen’s Nek\n
-                                Alsef AH\n
-                                Ambot AH\n
-                                Amorosa\n
-                                Constantia Kloof\n
-                                Eagle canyon estate\n
-                                Harveston AH\n
-                                Helderkruin\n
-                                Honeydew\n
-                                Honeydew Manor\n
-                                Honeydew ridge\n
-                                Honeypark\n
-                                Laser Park\n
-                                Little falls
+    <string name="where_area1"> Midrand\n
+                                Centurion\n
+
     </string>
-    <string name="where_area2"> Noordekrans\n
-                                Panorama 200 IQ\n
-                                Panorama AH\n
-                                Poortveiw AH\n
-                                Radiokop\n
-                                Roodekrans\n
-                                Ruimsig\n
-                                Ruimsig AH\n
-                                Ruimsig Noord\n
-                                Strubensvalley\n
-                                Weltevreden Park\n
-                                Wilgeheuwel\n
-                                Wilgespruit\n
-                                Willowbrook\n
-                                Wilro Park
+    <string name="where_area2">
     </string>
 
     <!-- Place Picker -->
@@ -205,7 +179,7 @@
 
     <!-- Alert View -->
     <string name="alert_title_notice">Notice</string>
-    <string name="alert_button_okay">Ok</string>
+    <string name="alert_button_okay">OK</string>
     <string name="alert_button_cancel">Cancel</string>
 
 </resources>

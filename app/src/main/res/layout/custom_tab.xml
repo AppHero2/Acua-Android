@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:text="Calls"
             android:textColor="@drawable/tab_text_color_selector"
-            android:textSize="18sp" />
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/tv_count"

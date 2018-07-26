@@ -18,8 +18,8 @@ android {
         applicationId "com.acua.app"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 43
-        versionName "1.0.1"
+        versionCode 45
+        versionName "1.0.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [onesignal_app_id               : "1f9e701b-7709-40e6-a1b6-7dff0ee29b42",
                                 // Project number pulled from dashboard, local value is ignored.
@@ -68,7 +68,6 @@ dependencies {
     implementation 'com.onesignal:OneSignal:[3.6.5, 3.99.99]'
     implementation 'com.stripe:stripe-android:5.1.0'
     implementation 'com.google.code.gson:gson:2.8.2'
-//    compile 'com.squareup.okhttp3:okhttp:3.9.0'
     implementation 'com.android.volley:volley:1.0.0'
     implementation 'com.stepstone.apprating:app-rating:2.2.0'
 

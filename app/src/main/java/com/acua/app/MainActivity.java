@@ -6,44 +6,44 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.acua.app.classes.AppRater;
-import com.acua.app.interfaces.NotificationListener;
-import com.acua.app.models.Notification;
-import com.acua.app.models.Order;
-import com.acua.app.models.OrderServiceStatus;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.acua.app.adapters.ViewPagerAdapter;
 import com.acua.app.classes.AppManager;
 import com.acua.app.fragments.AdminStatisticsFragment;
 import com.acua.app.fragments.AppointmentsFragment;
 import com.acua.app.fragments.BookingFragment;
+import com.acua.app.interfaces.NotificationListener;
 import com.acua.app.interfaces.UserValueListener;
+import com.acua.app.models.Notification;
+import com.acua.app.models.Order;
+import com.acua.app.models.OrderServiceStatus;
 import com.acua.app.models.User;
 import com.acua.app.utils.References;
 import com.acua.app.utils.Util;
-import com.google.gson.JsonObject;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.matrixxun.starry.badgetextview.MaterialBadgeTextView;
 import com.onesignal.OSNotification;
 import com.onesignal.OSNotificationOpenResult;
@@ -66,7 +66,7 @@ import static com.acua.app.utils.Const.ADMIN_USER_ID;
 
 public class MainActivity extends AppCompatActivity
         implements View.OnClickListener, UserValueListener, NotificationListener, RatingDialogListener,
-        AppointmentsFragment.OnAppointmentsFragmentInteractionListener{
+        AppointmentsFragment.OnAppointmentsFragmentInteractionListener, BookingFragment.OnFragmentInteractionListener{
 
     private static final String TAG = "MainActivity";
 
@@ -186,6 +186,35 @@ public class MainActivity extends AppCompatActivity
         viewPager.setCurrentItem(0);
 
         initPushNotification();
+
+
+        Query query = References.getInstance().ordersRef.orderByChild("customerId").equalTo(session.getIdx());
+        query.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.d("self order", dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -307,6 +336,11 @@ public class MainActivity extends AppCompatActivity
         refreshNotificationBadgeCount();
     }
 
+    @Override
+    public void didMakeOrder(Order order) {
+        viewPager.setCurrentItem(1, true);
+    }
+
     private void refreshNotificationBadgeCount(){
         int count = 0;
         for (Notification notification: AppManager.getInstance().notifications) {
@@ -331,24 +365,12 @@ public class MainActivity extends AppCompatActivity
                 .setNotificationOpenedHandler(new OneSignal.NotificationOpenedHandler() {
                     @Override
                     public void notificationOpened(OSNotificationOpenResult result) {
-                        try{
-                            JSONObject notification = result.toJSONObject().getJSONObject("notification");
-                            JSONObject payload = notification.getJSONObject("payload");
-                            String body = Util.getStringFromJSON(payload, "body");
-                            Log.d("Notification", body);
-                            if (body.equals("Please Rate our Service")) {
-                                // TODO: 4/4/2018 show Rating Dialog
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                startActivity(new Intent(MainActivity.this, NotificationsActivity.class));
                             }
-
-                            MainActivity.this.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    startActivity(new Intent(MainActivity.this, NotificationsActivity.class));
-                                }
-                            });
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        });
                     }
                 })
 

@@ -326,7 +326,7 @@ public class EditOrderActivity extends AppCompatActivity {
                 currentOrder.hasPlug = hasPlug;
 
                 if (isValidBooking(currentOrder)) {
-                    if (isExistingOne(currentOrder.beginAt)) {
+                    if (isExistingTwo(currentOrder.beginAt)) {
                         final long validTime = generateValidTime(currentOrder.beginAt);
                         String validTimeString = TimeUtil.getFullTimeString(validTime);
                         String title = "Note";
@@ -459,22 +459,22 @@ public class EditOrderActivity extends AppCompatActivity {
         long value = time - 3600 * 1000;
         while (true) {
             value += 3600 * 1000;
-            if (TimeUtil.checkAvailableTimeRange(value) && ! isExistingOne(value)) {
+            if (TimeUtil.checkAvailableTimeRange(value) && ! isExistingTwo(value)) {
                 break;
             }
         }
         return value;
     }
 
-    private boolean isExistingOne(long time){
-        boolean isExist = false;
+    private boolean isExistingTwo(long time){
+        int existCount = 0;
         for (Order theOrder: AppManager.getInstance().orderList) {
-            if (theOrder.idx != currentOrder.idx && theOrder.beginAt <= time && time <= theOrder.endAt) {
-                isExist = true;
-                break;
+            if (theOrder.beginAt <= time && time <= theOrder.endAt) {
+                existCount += 1;
             }
         }
-        return isExist;
+
+        return existCount >= 2;
     }
 
     private boolean isPastTime(long time) {

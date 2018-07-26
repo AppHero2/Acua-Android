@@ -473,7 +473,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                 public void onClick(View view) {
                     final User session = AppManager.getSession();
                     if (mItem.serviceStatus == OrderServiceStatus.BOOKED) {
-                        mItem.serviceStatus = OrderServiceStatus.ACCEPTED;
+                        mItem.serviceStatus = OrderServiceStatus.ENGAGED;
                         mItem.washers.add(mUser.getIdx());
                         References.getInstance().ordersRef.child(mItem.idx).setValue(mItem).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
@@ -492,7 +492,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                                 reference.setValue(notificationData);
                             }
                         });
-                    } else if (mItem.serviceStatus == OrderServiceStatus.ACCEPTED) {
+                    } else if (mItem.serviceStatus == OrderServiceStatus.ENGAGED) {
                         mItem.serviceStatus = OrderServiceStatus.COMPLETED;
                         References.getInstance().ordersRef.child(mItem.idx).setValue(mItem).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
@@ -558,7 +558,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                 tvStatus.setText("In complete");
                 btnAction.setVisibility(View.VISIBLE);
                 btnAction.setText("Engage");
-            } else if (mItem.serviceStatus == OrderServiceStatus.ACCEPTED) {
+            } else if (mItem.serviceStatus == OrderServiceStatus.ENGAGED) {
                 tvStatus.setText("In Progress");
                 btnAction.setVisibility(View.VISIBLE);
                 btnAction.setText("Done");
@@ -584,7 +584,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                     return;
                 }
 
-                if (mItem.serviceStatus == OrderServiceStatus.ACCEPTED) {
+                if (mItem.serviceStatus == OrderServiceStatus.ENGAGED) {
                     tvRemain.setText("Engaged");
                     return;
                 }

@@ -102,7 +102,7 @@ public class FeedbackActivity extends AppCompatActivity {
 
             TextView tvDate = findViewById(R.id.tv_date);
             TextView tvType = findViewById(R.id.tv_type);
-            final TextView tvOperator = findViewById(R.id.tv_operator);
+//            final TextView tvOperator = findViewById(R.id.tv_operator);
 
             tvDate.setText(TimeUtil.getDateString(lastOrder.beginAt) + " at " + TimeUtil.getUserTime(lastOrder.beginAt));
 
@@ -125,18 +125,18 @@ public class FeedbackActivity extends AppCompatActivity {
             }
             tvType.setText(carType + ", " + washType + "  ZAR " + lastOrder.menu.getPrice());
 
-            if (lastOrder.washers.size() > 0) {
-                String washerId = lastOrder.washers.get(0);
-                AppManager.getUser(washerId, new UserValueListener() {
-                    @Override
-                    public void onLoadedUser(User user) {
-                        washer = user;
-                        tvOperator.setText("operators : " + user.getFullName());
-                    }
-                });
-            } else {
-                tvOperator.setText("operators : " + "not engaged yet");
-            }
+//            if (lastOrder.washers.size() > 0) {
+//                String washerId = lastOrder.washers.get(0);
+//                AppManager.getUser(washerId, new UserValueListener() {
+//                    @Override
+//                    public void onLoadedUser(User user) {
+//                        washer = user;
+//                        tvOperator.setText("operators : " + user.getFullName());
+//                    }
+//                });
+//            } else {
+//                tvOperator.setText("operators : " + "not engaged yet");
+//            }
 
             RadioGroup groupReport = (RadioGroup) findViewById(R.id.groupReport);
             groupReport.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
