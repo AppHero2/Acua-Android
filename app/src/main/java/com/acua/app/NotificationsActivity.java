@@ -130,37 +130,6 @@ public class NotificationsActivity extends AppCompatActivity implements RatingDi
             }
         });
 
-        /*Query query = References.getInstance().usersRef.orderByChild("userType").equalTo(2);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                JSONArray receivers = new JSONArray();
-                for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
-                    Map<String, Object> userData = (Map<String, Object>) snapshot.getValue();
-                    User user = new User(userData);
-                    if (user.getPushToken() != null) {
-                        receivers.put(user.getPushToken());
-                    }
-
-                    DatabaseReference reference = References.getInstance().notificationsRef.child(user.getIdx()).push();
-                    Map<String, Object> notificationData = new HashMap<>();
-                    notificationData.put("idx", reference.getKey());
-                    notificationData.put("title", title);
-                    notificationData.put("message", comment);
-                    notificationData.put("createdAt", System.currentTimeMillis());
-                    notificationData.put("isRead", false);
-                    reference.setValue(notificationData);
-                }
-
-                AppManager.getInstance().sendOneSignalPush(receivers, title, comment);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w( "Notification", databaseError.getMessage());
-            }
-        });*/
-
     }
 
     @Override

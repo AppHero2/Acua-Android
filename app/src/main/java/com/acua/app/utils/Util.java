@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
+import com.acua.app.AppApplication;
 import com.acua.app.R;
 import com.acua.app.alertView.AlertView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -300,5 +301,18 @@ public class Util {
     public static void showAlert (String title, String message, Context context) {
         AlertView alertView = new AlertView(title, message, context.getString(R.string.alert_button_okay), null, null, context, AlertView.Style.Alert, null);
         alertView.show();
+    }
+
+    public static void saveLocalBooleanData(String pref, String key, Boolean value) {
+        SharedPreferences sharedPreferences = AppApplication.getInstance().getSharedPreferences(pref, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(key, value);
+        editor.apply();
+        editor.commit();
+    }
+
+    public static Boolean getLocalBooleanData(String pref, String key) {
+        SharedPreferences sharedPreferences = AppApplication.getInstance().getSharedPreferences(pref, Context.MODE_PRIVATE);
+        return sharedPreferences.getBoolean(key, false);
     }
 }

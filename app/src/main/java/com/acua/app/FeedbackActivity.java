@@ -31,6 +31,7 @@ import com.acua.app.models.User;
 import com.acua.app.models.WashType;
 import com.acua.app.utils.References;
 import com.acua.app.utils.TimeUtil;
+import com.acua.app.utils.Util;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.firebase.database.ChildEventListener;
@@ -64,6 +65,8 @@ public class FeedbackActivity extends AppCompatActivity {
     private List<Feedback> feedbacks = new ArrayList<>();
     private FeedbackAdapter adapter;
     private User session;
+    private String washType = "";
+    private String carType = "";
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -91,28 +94,18 @@ public class FeedbackActivity extends AppCompatActivity {
             layoutCustomer.setVisibility(View.VISIBLE);
             layoutOperator.setVisibility(View.GONE);
 
-//            List<Order> orders = AppManager.getInstance().selfOrders;
-//            Collections.sort(orders, new Comparator<Order>() {
-//                @Override
-//                public int compare(Order o1, Order o2) {
-//                    return o2.idx.compareTo(o1.idx);
-//                }
-//            });
-//            lastOrder = orders.get(orders.size()-1);
-
             lastOrder = AppManager.getInstance().lastFeedbackOrder;
 
             TextView tvDate = findViewById(R.id.tv_date);
             TextView tvType = findViewById(R.id.tv_type);
 //            final TextView tvOperator = findViewById(R.id.tv_operator);
 
-            tvDate.setText(TimeUtil.getDateString(lastOrder.beginAt) + " at " + TimeUtil.getUserTime(lastOrder.beginAt));
+            tvDate.setText(TimeUtil.getDateString(lastOrder.completedAt) + " at " + TimeUtil.getUserTime(lastOrder.completedAt));
 
             String[] types = lastOrder.menu.getIdx().split("_");
             String washTypeId = types[0];
             String carTypeId = types[1];
-            String washType = "";
-            String carType = "";
+
             for (WashType type : AppManager.getInstance().washTypes) {
                 if (type.getIdx().equals(washTypeId)) {
                     washType = type.getName();
@@ -126,19 +119,6 @@ public class FeedbackActivity extends AppCompatActivity {
                 }
             }
             tvType.setText(carType + ", " + washType + "  ZAR " + lastOrder.menu.getPrice());
-
-//            if (lastOrder.washers.size() > 0) {
-//                String washerId = lastOrder.washers.get(0);
-//                AppManager.getUser(washerId, new UserValueListener() {
-//                    @Override
-//                    public void onLoadedUser(User user) {
-//                        washer = user;
-//                        tvOperator.setText("operators : " + user.getFullName());
-//                    }
-//                });
-//            } else {
-//                tvOperator.setText("operators : " + "not engaged yet");
-//            }
 
             RadioGroup groupReport = (RadioGroup) findViewById(R.id.groupReport);
             groupReport.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -328,10 +308,15 @@ public class FeedbackActivity extends AppCompatActivity {
     }
 
     private void submitFeedback(){
-        String title = "Feedback Received";
+        String subject = Feedback.getFeedbackTitle(this, issueType);
         String content = etFeedback.getText().toString();
-        String html = session.getFullName() + "(" + session.getEmail() + ")" + " left feedback \n" + content;
-        AppManager.getInstance().sendEmailPushToADMIN(title, title, html, new ResultListener() {
+        String html = content + "\n\n"
+                + session.getFullName() + "\n"
+                + "(" + session.getEmail() + ")" + "\n"
+                + session.getPhone() + "\n"
+                + carType + " " + washType +"\n"
+                + TimeUtil.getFullTimeString(lastOrder.completedAt);
+        AppManager.getInstance().sendEmailPushToADMIN(subject, subject, html, new ResultListener() {
             @Override
             public void onResponse(boolean success, String response) {
                 String result = "Your feedback has been sent successfully.";
@@ -341,25 +326,6 @@ public class FeedbackActivity extends AppCompatActivity {
                 Toast.makeText(FeedbackActivity.this, result, Toast.LENGTH_SHORT).show();
             }
         });
-
-        /*final DatabaseReference reference = References.getInstance().feedbackRef.push();
-        String feedbackId = reference.getKey();
-        final Map<String, Object> feedbackData = new HashMap<>();
-        feedbackData.put("idx", feedbackId);
-        feedbackData.put("orderID", lastOrder.idx);
-        feedbackData.put("senderID", lastOrder.customerId);
-        feedbackData.put("content", etFeedback.getText().toString());
-        feedbackData.put("type", issueType);
-        feedbackData.put("createdAt", System.currentTimeMillis());
-
-        feedbackData.put("washerID", ADMIN_USER_ID);
-        AppManager.getUser(lastOrder.customerId, new UserValueListener() {
-            @Override
-            public void onLoadedUser(User user) {
-                AppManager.getInstance().sendPushNotificationToCustomer(ADMIN_PUSH_ID, "Feedback Received From " + user.getFullName() + "(" + user.getEmail() + ")",  "");
-                reference.setValue(feedbackData);
-            }
-        });*/
 
     }
 

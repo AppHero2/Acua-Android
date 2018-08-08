@@ -27,6 +27,14 @@ public class AppApplication extends Application{
 
     private FirebaseDatabase database;
 
+    private static AppApplication sInstance;
+    public AppApplication() {
+        sInstance = this;
+    }
+    public static synchronized AppApplication getInstance() {
+        return sInstance;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();

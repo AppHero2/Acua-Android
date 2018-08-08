@@ -1,11 +1,13 @@
 package com.acua.app;
 
 import android.app.ActivityManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -27,11 +29,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.acua.app.adapters.ViewPagerAdapter;
+import com.acua.app.alertView.AlertView;
+import com.acua.app.alertView.OnItemClickListener;
 import com.acua.app.classes.AppManager;
 import com.acua.app.fragments.AdminStatisticsFragment;
 import com.acua.app.fragments.AppointmentsFragment;
 import com.acua.app.fragments.BookingFragment;
 import com.acua.app.interfaces.NotificationListener;
+import com.acua.app.interfaces.RatingEventListener;
 import com.acua.app.interfaces.ResultListener;
 import com.acua.app.interfaces.UserValueListener;
 import com.acua.app.models.Notification;
@@ -46,8 +51,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.matrixxun.starry.badgetextview.MaterialBadgeTextView;
-import com.onesignal.OSNotification;
-import com.onesignal.OSNotificationOpenResult;
 import com.onesignal.OSPermissionObserver;
 import com.onesignal.OSPermissionStateChanges;
 import com.onesignal.OneSignal;
@@ -60,7 +63,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
-        implements View.OnClickListener, UserValueListener, NotificationListener, RatingDialogListener,
+        implements View.OnClickListener, UserValueListener, NotificationListener, RatingDialogListener, RatingEventListener,
         AppointmentsFragment.OnAppointmentsFragmentInteractionListener, BookingFragment.OnFragmentInteractionListener{
 
     private static final String TAG = "MainActivity";
@@ -91,15 +94,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /*FloatingActionButton fab_contact = (FloatingActionButton) findViewById(R.id.fab_contact);
-        fab_contact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                contactUs();
-            }
-        });
-        if (this.session.getUserType()==1) fab_contact.setVisibility(View.GONE);*/
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -124,7 +118,8 @@ public class MainActivity extends AppCompatActivity
         Button btnAgreements = (Button) findViewById(R.id.btn_menu_agreements); btnAgreements.setOnClickListener(this);
 
         RelativeLayout layout_feedback = (RelativeLayout) findViewById(R.id.layout_feedback);
-        if (this.session.getUserType() == 1) {
+        if (this.session.getUserType() >= 1) // hide feedback for admins, operators
+        {
             layout_feedback.setVisibility(View.GONE);
         }
 
@@ -142,6 +137,7 @@ public class MainActivity extends AppCompatActivity
 
         AppManager.getInstance().setUserValueListenerMain(this);
         AppManager.getInstance().setNotificationListener(this);
+        AppManager.getInstance().setRatingEventListener(this);
 
         //Initializing viewPager
         viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -210,11 +206,20 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+        boolean ratingActionRequired = Util.getLocalBooleanData("AppRating", "actionRequired");
+        if (ratingActionRequired) {
+            this.showRatingDiglog();
+            Util.saveLocalBooleanData("AppRating", "actionRequired", false);
+        }
+
+        Util.saveLocalBooleanData("Application", "Paused", false);
 
         // Clear all notification
         OneSignal.clearOneSignalNotifications();
@@ -231,6 +236,13 @@ public class MainActivity extends AppCompatActivity
             editor.commit();
             startActivity(new Intent(this, NotificationsActivity.class));
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        Util.saveLocalBooleanData("Application", "Paused", true);
     }
 
     @Override
@@ -342,6 +354,21 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onRatingEventRequired(Notification notification) {
+        Util.saveLocalBooleanData("AppRating", "actionRequired", true);
+        boolean pausedApp = Util.getLocalBooleanData("Application", "Paused");
+        if (pausedApp) {
+            return;
+        }
+
+        if (!notification.isRead()) {
+            showRatingDiglog();
+            Util.saveLocalBooleanData("AppRating", "actionRequired", false);
+            References.getInstance().notificationsRef.child(session.getIdx()).child(notification.getIdx()).child("isRead").setValue(true);
+        }
+    }
+
+    @Override
     public void didMakeOrder(Order order) {
         viewPager.setCurrentItem(1, true);
     }
@@ -363,34 +390,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initPushNotification(){
-
-        /*OneSignal.startInit(this)
-                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
-                .unsubscribeWhenNotificationsAreDisabled(false)
-                .setNotificationOpenedHandler(new OneSignal.NotificationOpenedHandler() {
-                    @Override
-                    public void notificationOpened(OSNotificationOpenResult result) {
-                        MainActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                startActivity(new Intent(MainActivity.this, NotificationsActivity.class));
-                            }
-                        });
-                    }
-                })
-
-                .setNotificationReceivedHandler(new OneSignal.NotificationReceivedHandler() {
-                    @Override
-                    public void notificationReceived(OSNotification notification) {
-                        if (isAppOnForeground(MainActivity.this)){
-                            // Clear all notification
-                            //OneSignal.clearOneSignalNotifications();
-                        }else{
-                            Log.d("Notification", notification.toString());
-                        }
-                    }
-                })
-                .init();*/
 
         OneSignal.addPermissionObserver(new OSPermissionObserver() {
             @Override
@@ -518,33 +517,8 @@ public class MainActivity extends AppCompatActivity
         this.startActivity(sendIntent);
     }
 
-    private void sendFeedback(){
-        Intent i = new Intent(Intent.ACTION_SEND);
-        i.setType("message/rfc822");
-        i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"acuacarwash@gmail.com"});
-        i.putExtra(Intent.EXTRA_SUBJECT, "feedback for acua " + currentVersion);
-        i.putExtra(Intent.EXTRA_TEXT   , "");
-        try {
-            startActivity(Intent.createChooser(i, "Feedback"));
-        } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void contactUs(){
-        Intent i = new Intent(Intent.ACTION_SEND);
-        i.setType("message/rfc822");
-        i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"acuacarwash@gmail.com"});
-        i.putExtra(Intent.EXTRA_SUBJECT, "regarding to acua");
-        i.putExtra(Intent.EXTRA_TEXT   , "");
-        try {
-            startActivity(Intent.createChooser(i, "Send mail..."));
-        } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private void showRatingDiglog(){
+
         new AppRatingDialog.Builder()
                 .setPositiveButtonText("Submit")
                 .setNegativeButtonText("Cancel")
@@ -567,6 +541,8 @@ public class MainActivity extends AppCompatActivity
                 .show();
     }
 
+
+
     @Override
     public void onPositiveButtonClicked(int rate, String comment) {
         // interpret results, send it to analytics etc...
@@ -581,19 +557,40 @@ public class MainActivity extends AppCompatActivity
                     result = "Failed to send your rating. Please try again...";
                 }
                 Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
+
+                showAppRatingDialog();
             }
         });
 
-        /*AppManager.getInstance().sendPushNotificationToCustomer(ADMIN_PUSH_ID, title,  comment);
-        DatabaseReference reference = References.getInstance().notificationsRef.child(ADMIN_USER_ID).push();
-        String notificationId = reference.getKey();
-        Map<String, Object> notificationData = new HashMap<>();
-        notificationData.put("idx", notificationId);
-        notificationData.put("title", title);
-        notificationData.put("message", comment);
-        notificationData.put("createdAt", System.currentTimeMillis());
-        notificationData.put("isRead", false);
-        reference.setValue(notificationData);*/
+    }
+
+    private void showAppRatingDialog() {
+        final AlertView alertView = new AlertView.Builder()
+            .setTitle("Rate us!")
+                .setStyle(AlertView.Style.Alert)
+                .setMessage("Please take the time to rate us on our product page")
+                .setDestructive("OK", "Later")
+                .setContext(this)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(Object o, int position) {
+                        if (position == 0) {
+                            launchMarket();
+                        }
+                    }
+                })
+                .build();
+        alertView.show();
+    }
+
+    private void launchMarket() {
+        Uri uri = Uri.parse("market://details?id=" + getPackageName());
+        Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
+        try {
+            startActivity(myAppLinkToMarket);
+        } catch (ActivityNotFoundException e) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + getPackageName())));
+        }
     }
 
     @Override
@@ -616,7 +613,7 @@ public class MainActivity extends AppCompatActivity
         AppManager.getInstance().lastFeedbackOrder = null;
         for (int i=AppManager.getInstance().selfOrders.size()-1; i>=0; i--) {
             Order order = AppManager.getInstance().selfOrders.get(i);
-            if (order.serviceStatus == OrderServiceStatus.COMPLETED) {
+            if (order.serviceStatus == OrderServiceStatus.COMPLETED && order.completedAt > 0) {
                 AppManager.getInstance().lastFeedbackOrder = order;
                 break;
             }

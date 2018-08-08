@@ -21,6 +21,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.acua.app.interfaces.NotificationListener;
+import com.acua.app.interfaces.RatingEventListener;
 import com.acua.app.models.Notification;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -98,6 +99,7 @@ public class AppManager {
     private MenuValueListener menuValueListener;
     private OrderValueListener orderValueListener;
     private NotificationListener notificationListener;
+    private RatingEventListener ratingEventListener;
 
     public List<CarType> carTypes = new ArrayList<>();
     public List<WashType> washTypes = new ArrayList<>();
@@ -244,8 +246,11 @@ public class AppManager {
         this.orderValueListener = orderValueListener;
     }
 
+    public void setRatingEventListener(RatingEventListener ratingEventListener) {
+        this.ratingEventListener = ratingEventListener;
+    }
 
-    public void startTrackingNotification(String uid){
+    public void startTrackingNotification(final String uid){
         if (trackNotificationListener != null)
             return;
 
@@ -255,7 +260,20 @@ public class AppManager {
                 if (dataSnapshot.getValue() !=  null) {
                     Map<String, Object> data = (Map<String, Object>) dataSnapshot.getValue();
                     Notification notification = new Notification(data);
-                    notifications.add(notification);
+
+                    if (notification.getTitle().equals("Please Rate our Service")){
+                        if (notificationListener != null)
+                            ratingEventListener.onRatingEventRequired(notification);
+                    } else {
+                        notifications.add(notification);
+                    }
+
+                    Collections.sort(notifications, new Comparator<Notification>() {
+                        @Override
+                        public int compare(Notification o1, Notification o2) {
+                            return Long.valueOf(o2.getCreatedAt()).compareTo(Long.valueOf(o1.getCreatedAt()));
+                        }
+                    });
 
                     if (notificationListener != null)
                         notificationListener.onReceivedNotification(notification);

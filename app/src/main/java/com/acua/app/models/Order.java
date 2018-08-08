@@ -1,6 +1,8 @@
 package com.acua.app.models;
 
 
+import com.acua.app.utils.Util;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +23,7 @@ public class Order {
     public List<String> washers = new ArrayList<>();
     public WashMenu menu;
     public OrderLocation location;
-    public long beginAt, endAt;
+    public long beginAt, endAt, completedAt;
     public OrderServiceStatus serviceStatus = BOOKED;
     public OrderPayStatus payStatus = UNPAID;
     public boolean hasTap = true;
@@ -56,8 +58,9 @@ public class Order {
         this.payStatus = OrderPayStatus.valueOf(String.valueOf(data.get("payStatus")));
         this.serviceStatus = OrderServiceStatus.valueOf(String.valueOf(data.get("serviceStatus")));
 
-        this.beginAt = ((Number) data.get("beginAt")).longValue();
-        this.endAt = ((Number) data.get("endAt")).longValue();
+        this.beginAt = Util.getLongFromData("beginAt", data);
+        this.endAt = Util.getLongFromData("endAt", data);
+        this.completedAt = Util.getLongFromData("completedAt", data);
 
         this.hasTap = getBooleanFromData("hasTap", data);
         this.hasPlug = getBooleanFromData("hasPlug", data);
