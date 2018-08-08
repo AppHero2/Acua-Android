@@ -473,7 +473,8 @@ public class BookingFragment extends Fragment {
         }
 
         if (!TimeUtil.checkAvailableTimeRange(order.beginAt)) {
-            Toast.makeText(getActivity(), "The operating hours for the car wash is " + ServiceTimeStart +":00 to "+ServiceTimeEnd +":00.", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getActivity(), "The operating hours for the car wash is " + ServiceTimeStart +":00 to "+ServiceTimeEnd +":00.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Dear valued client, our winter operating hours are " + ServiceTimeStart +":00 to "+ServiceTimeEnd +":00.", Toast.LENGTH_SHORT).show();
             return false;
         }
 

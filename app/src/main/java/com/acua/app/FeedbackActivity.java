@@ -19,8 +19,10 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.acua.app.classes.AppManager;
+import com.acua.app.interfaces.ResultListener;
 import com.acua.app.interfaces.UserValueListener;
 import com.acua.app.models.CarType;
 import com.acua.app.models.Feedback;
@@ -326,8 +328,21 @@ public class FeedbackActivity extends AppCompatActivity {
     }
 
     private void submitFeedback(){
+        String title = "Feedback Received";
+        String content = etFeedback.getText().toString();
+        String html = session.getFullName() + "(" + session.getEmail() + ")" + " left feedback \n" + content;
+        AppManager.getInstance().sendEmailPushToADMIN(title, title, html, new ResultListener() {
+            @Override
+            public void onResponse(boolean success, String response) {
+                String result = "Your feedback has been sent successfully.";
+                if (!success) {
+                    result = "Failed to send your feedback. Please try again...";
+                }
+                Toast.makeText(FeedbackActivity.this, result, Toast.LENGTH_SHORT).show();
+            }
+        });
 
-        final DatabaseReference reference = References.getInstance().feedbackRef.push();
+        /*final DatabaseReference reference = References.getInstance().feedbackRef.push();
         String feedbackId = reference.getKey();
         final Map<String, Object> feedbackData = new HashMap<>();
         feedbackData.put("idx", feedbackId);
@@ -344,17 +359,8 @@ public class FeedbackActivity extends AppCompatActivity {
                 AppManager.getInstance().sendPushNotificationToCustomer(ADMIN_PUSH_ID, "Feedback Received From " + user.getFullName() + "(" + user.getEmail() + ")",  "");
                 reference.setValue(feedbackData);
             }
-        });
+        });*/
 
-        /*if (washer != null) {
-            // send feedback to operator
-            feedbackData.put("washerID", washer.getIdx());
-            AppManager.getInstance().sendPushNotificationToCustomer(washer.getPushToken(), "Feedback Received From " + washer.getEmail(),  "");
-        } else {
-            // send feedback to admin
-            feedbackData.put("washerID", ADMIN_USER_ID);
-            AppManager.getInstance().sendPushNotificationToCustomer(ADMIN_PUSH_ID, "Feedback Received From " + washer.getEmail(),  "");
-        }*/
     }
 
     /// ---->>> ADAPTER

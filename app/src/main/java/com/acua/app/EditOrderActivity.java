@@ -499,7 +499,8 @@ public class EditOrderActivity extends AppCompatActivity {
         }
 
         if (!TimeUtil.checkAvailableTimeRange(order.beginAt)) {
-            Toast.makeText(this, "The operating hours for the car wash is " + ServiceTimeStart +":00 to "+ServiceTimeEnd +":00.", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "The operating hours for the car wash is " + ServiceTimeStart +":00 to "+ServiceTimeEnd +":00.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Dear valued client, our winter operating hours are " + ServiceTimeStart +":00 to "+ServiceTimeEnd +":00.", Toast.LENGTH_SHORT).show();
             return false;
         }
 

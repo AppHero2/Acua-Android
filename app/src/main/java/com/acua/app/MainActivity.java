@@ -3,6 +3,7 @@ package com.acua.app;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import com.acua.app.fragments.AdminStatisticsFragment;
 import com.acua.app.fragments.AppointmentsFragment;
 import com.acua.app.fragments.BookingFragment;
 import com.acua.app.interfaces.NotificationListener;
+import com.acua.app.interfaces.ResultListener;
 import com.acua.app.interfaces.UserValueListener;
 import com.acua.app.models.Notification;
 import com.acua.app.models.Order;
@@ -41,7 +43,6 @@ import com.acua.app.utils.Util;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.matrixxun.starry.badgetextview.MaterialBadgeTextView;
@@ -53,16 +54,10 @@ import com.onesignal.OneSignal;
 import com.stepstone.apprating.AppRatingDialog;
 import com.stepstone.apprating.listener.RatingDialogListener;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.acua.app.utils.Const.ADMIN_PUSH_ID;
-import static com.acua.app.utils.Const.ADMIN_USER_ID;
 
 public class MainActivity extends AppCompatActivity
         implements View.OnClickListener, UserValueListener, NotificationListener, RatingDialogListener,
@@ -226,6 +221,16 @@ public class MainActivity extends AppCompatActivity
 
         // Refresh Notifications badge count
         refreshNotificationBadgeCount();
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Notification", Context.MODE_PRIVATE);
+        boolean notificationOpened = sharedPreferences.getBoolean("notificationOpened", false);
+        if (notificationOpened) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("notificationOpened", false);
+            editor.apply();
+            editor.commit();
+            startActivity(new Intent(this, NotificationsActivity.class));
+        }
     }
 
     @Override
@@ -359,7 +364,7 @@ public class MainActivity extends AppCompatActivity
 
     private void initPushNotification(){
 
-        OneSignal.startInit(this)
+        /*OneSignal.startInit(this)
                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                 .unsubscribeWhenNotificationsAreDisabled(false)
                 .setNotificationOpenedHandler(new OneSignal.NotificationOpenedHandler() {
@@ -385,7 +390,7 @@ public class MainActivity extends AppCompatActivity
                         }
                     }
                 })
-                .init();
+                .init();*/
 
         OneSignal.addPermissionObserver(new OSPermissionObserver() {
             @Override
@@ -567,7 +572,19 @@ public class MainActivity extends AppCompatActivity
         // interpret results, send it to analytics etc...
         User session = AppManager.getSession();
         String title = session.getFullName() + " left service rating as " + rate + ".";
-        AppManager.getInstance().sendPushNotificationToCustomer(ADMIN_PUSH_ID, title,  comment);
+        String html = "<p>" + comment + "</p>";
+        AppManager.getInstance().sendEmailPushToADMIN(title, title, html, new ResultListener() {
+            @Override
+            public void onResponse(boolean success, String response) {
+                String result = "Your rating has been sent successfully.";
+                if (!success) {
+                    result = "Failed to send your rating. Please try again...";
+                }
+                Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        /*AppManager.getInstance().sendPushNotificationToCustomer(ADMIN_PUSH_ID, title,  comment);
         DatabaseReference reference = References.getInstance().notificationsRef.child(ADMIN_USER_ID).push();
         String notificationId = reference.getKey();
         Map<String, Object> notificationData = new HashMap<>();
@@ -576,7 +593,7 @@ public class MainActivity extends AppCompatActivity
         notificationData.put("message", comment);
         notificationData.put("createdAt", System.currentTimeMillis());
         notificationData.put("isRead", false);
-        reference.setValue(notificationData);
+        reference.setValue(notificationData);*/
     }
 
     @Override

@@ -536,10 +536,49 @@ public class AppManager {
         }
     }
 
-    /**
-     * save user data to local storage
-     * @param user
-     */
+    public void sendEmailPushToADMIN(String subject, String text, String html, final ResultListener listener) {
+        String url = Const.URL_HEROKU_BASE + "email/send";
+
+        final Map<String, String> params = new HashMap();
+        params.put("subject", subject);
+        params.put("text", text);
+        params.put("html", html);
+        params.put("Content-Type", "application/x-www-form-urlencoded");
+
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+        StringRequest strRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response)
+                    {
+                        if (listener != null) {
+                            listener.onResponse(true, response);
+                        }
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        if (listener != null) {
+                            listener.onResponse(false, error.getLocalizedMessage());
+                        }
+                    }
+                })
+        {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                return params;
+            }
+        };
+
+        queue.add(strRequest);
+    }
+
     public static void saveSession(User user){
         Context context = AppManager.getInstance().context;
         SharedPreferences sharedPreferences = context.getSharedPreferences("AppSession", Context.MODE_PRIVATE);
@@ -556,13 +595,10 @@ public class AppManager {
         Gson gson = new Gson();
         String payCard = gson.toJson(user.getPayCard());
         editor.putString("payCard", payCard);
+        editor.apply();
         editor.commit();
     }
 
-    /**
-     * get user data from local storage
-     * @return user
-     */
     public static User getSession() {
         Context context = AppManager.getInstance().context;
         SharedPreferences sharedPreferences = context.getSharedPreferences("AppSession", Context.MODE_PRIVATE);
@@ -600,15 +636,11 @@ public class AppManager {
         }
     }
 
-    /**
-     * delete user data from local storage
-     * this method might be used when user logout
-     * @param context
-     */
     public static void deleteSession(Context context){
         SharedPreferences sharedPreferences = context.getSharedPreferences("AppSession", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("uid", null);
+        editor.apply();
         editor.commit();
     }
 
@@ -636,7 +668,6 @@ public class AppManager {
                     }
                 });
     }
-
 
     public void makePayment(String phone, String token, String type, int amount, final ResultListener listener){
 
@@ -681,35 +712,6 @@ public class AppManager {
         };
 
         queue.add(strRequest);
-
-        /*RequestBody requestBody = new MultipartBody.Builder()
-                .addFormDataPart("phoneNumber", phone)
-                .addFormDataPart("serviceType", type)
-                .addFormDataPart("stripeToken", token)
-                .addFormDataPart("serviceCost", String.valueOf(amount))
-                .build();
-
-        final Request request = new Request.Builder()
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .url(Const.URL_HEROKU_BASE+"payment/charge")
-                .post(requestBody)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                if (listener != null) {
-                    listener.onResponse(false, e.getLocalizedMessage());
-                }
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (listener != null) {
-                    listener.onResponse(true, response.body().string());
-                }
-            }
-        });*/
     }
 
 }

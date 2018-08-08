@@ -1,10 +1,10 @@
 package com.acua.app;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +14,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.acua.app.classes.AppManager;
+import com.acua.app.interfaces.ResultListener;
 import com.acua.app.models.Notification;
 import com.acua.app.models.User;
 import com.acua.app.utils.References;
@@ -23,19 +25,12 @@ import com.acua.app.utils.TimeUtil;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.stepstone.apprating.AppRatingDialog;
 import com.stepstone.apprating.listener.RatingDialogListener;
 
-import org.json.JSONArray;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class NotificationsActivity extends AppCompatActivity implements RatingDialogListener{
 
@@ -123,7 +118,19 @@ public class NotificationsActivity extends AppCompatActivity implements RatingDi
         User session = AppManager.getSession();
         final String title = session.getFullName() + " left service rating as " + rate + ".";
 
-        Query query = References.getInstance().usersRef.orderByChild("userType").equalTo(2);
+        String html = "<p>" + comment + "</p>";
+        AppManager.getInstance().sendEmailPushToADMIN(title, title, html, new ResultListener() {
+            @Override
+            public void onResponse(boolean success, String response) {
+                String result = "Your rating has been sent successfully.";
+                if (!success) {
+                    result = "Failed to send your rating. Please try again...";
+                }
+                Toast.makeText(NotificationsActivity.this, result, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        /*Query query = References.getInstance().usersRef.orderByChild("userType").equalTo(2);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -152,7 +159,7 @@ public class NotificationsActivity extends AppCompatActivity implements RatingDi
             public void onCancelled(DatabaseError databaseError) {
                 Log.w( "Notification", databaseError.getMessage());
             }
-        });
+        });*/
 
     }
 
