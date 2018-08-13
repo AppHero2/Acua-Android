@@ -8,6 +8,7 @@ public class Const {
     public static final String KEY_GOOGLE_PlACE = "AIzaSyC6IrVi3PSVo_GzG-0Gx9LvtSvTlQogCGw";
     public static final String KEY_STRIPE_KEY = "pk_test_IDr1Z3jZiKG8i1sTMMIkZb2R";
     public static final String URL_HEROKU_BASE = "https://acua-node.herokuapp.com/";
+    public static final String URL_HEROKU_PAYMENT = "https://acua-node.herokuapp.com/payment";
 
     public static final int ServiceTimeStart = 7;
     public static final int ServiceTimeEnd = 17;

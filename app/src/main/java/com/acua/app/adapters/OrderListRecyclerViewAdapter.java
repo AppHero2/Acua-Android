@@ -219,29 +219,59 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
                     if (mItem.serviceStatus == OrderServiceStatus.COMPLETED) {
 
-                        AlertView actionSheet = new AlertView.Builder().setContext(view.getContext())
-                                .setStyle(AlertView.Style.ActionSheet)
-                                .setTitle("Would you like to:")
-                                .setMessage(null)
-                                .setCancelText("Dismiss")
-                                .setDestructive("Rate Service", "Leave Feedback")
-                                .setOthers(null)
-                                .setOnItemClickListener(new OnItemClickListener() {
-                                    @Override
-                                    public void onItemClick(Object o, int position) {
-                                        alertButtonPostion = position;
-                                    }
-                                })
-                                .build();
+                        AlertView actionSheet;
+                        if (mItem.payStatus != OrderPayStatus.PAID) {
+                            actionSheet = new AlertView.Builder().setContext(view.getContext())
+                                    .setStyle(AlertView.Style.ActionSheet)
+                                    .setTitle("Would you like to:")
+                                    .setMessage(null)
+                                    .setCancelText("Dismiss")
+                                    .setDestructive("Pay For Service", "Rate Service", "Leave Feedback")
+                                    .setOthers(null)
+                                    .setOnItemClickListener(new OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(Object o, int position) {
+                                            alertButtonPostion = position;
+                                        }
+                                    })
+                                    .build();
+                        } else {
+                            actionSheet = new AlertView.Builder().setContext(view.getContext())
+                                    .setStyle(AlertView.Style.ActionSheet)
+                                    .setTitle("Would you like to:")
+                                    .setMessage(null)
+                                    .setCancelText("Dismiss")
+                                    .setDestructive("Rate Service", "Leave Feedback")
+                                    .setOthers(null)
+                                    .setOnItemClickListener(new OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(Object o, int position) {
+                                            alertButtonPostion = position;
+                                        }
+                                    })
+                                    .build();
+                        }
+
+
 
                         actionSheet.setOnDismissListener(new OnDismissListener() {
                             @Override
                             public void onDismiss(Object o) {
                                 if (alertButtonPostion != AlertView.CANCELPOSITION) {
-                                    if (alertButtonPostion == 0){
-                                        fragment.onClickRatService();
-                                    }else if (alertButtonPostion == 1){
-                                        fragment.onClickFeedback();
+                                    if (mItem.payStatus != OrderPayStatus.PAID) {
+                                        if (alertButtonPostion == 0){
+                                            fragment.onClickPayFor(mItem);
+                                        }else if (alertButtonPostion == 1) {
+                                            fragment.onClickRatService();
+                                        }else if (alertButtonPostion == 2) {
+                                            fragment.onClickFeedback();
+                                        }
+                                    } else {
+                                        if (alertButtonPostion == 0){
+                                            fragment.onClickRatService();
+                                        }else if (alertButtonPostion == 1) {
+                                            fragment.onClickFeedback();
+                                        }
                                     }
                                 }
                             }
@@ -380,19 +410,19 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             tvSchedule.setText(schedule);
             tvStatus.setText(String.valueOf(mItem.serviceStatus));
 
-            if (mItem.serviceStatus == OrderServiceStatus.COMPLETED && mItem.payStatus != OrderPayStatus.PAID) {
-                tvRemain.setVisibility(View.GONE);
-                //btnPay.setVisibility(View.VISIBLE); // disable pay button for this version
-                btnPay.setVisibility(View.GONE);
-            } else {
-                tvRemain.setVisibility(View.VISIBLE);
-                btnPay.setVisibility(View.GONE);
-            }
-
-            if (mItem.payStatus == OrderPayStatus.PAID) {
-                tvStatus.setText("Paid");
-                btnPay.setVisibility(View.GONE);
-            }
+//            if (mItem.serviceStatus == OrderServiceStatus.COMPLETED && mItem.payStatus != OrderPayStatus.PAID) {
+//                tvRemain.setVisibility(View.GONE);
+//                //btnPay.setVisibility(View.VISIBLE); // disable pay button for this version
+//                btnPay.setVisibility(View.GONE);
+//            } else {
+//                tvRemain.setVisibility(View.VISIBLE);
+//                btnPay.setVisibility(View.GONE);
+//            }
+//
+//            if (mItem.payStatus == OrderPayStatus.PAID) {
+//                tvStatus.setText("Paid");
+//                btnPay.setVisibility(View.GONE);
+//            }
         }
 
         private boolean isExpired = false;
@@ -404,7 +434,11 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
             if (mItem != null){
                 if (mItem.serviceStatus == OrderServiceStatus.COMPLETED) {
-                    tvRemain.setText("service completed");
+                    if (mItem.payStatus == OrderPayStatus.PAID) {
+                        tvRemain.setText("Paid");
+                    } else {
+                        tvRemain.setText("service completed");
+                    }
                     return;
                 }
             }

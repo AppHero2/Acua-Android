@@ -732,4 +732,27 @@ public class AppManager {
         queue.add(strRequest);
     }
 
+
+    public static String getTypesString(Order order) {
+        String[] types = order.menu.getIdx().split("_");
+        String washTypeId = types[0];
+        String carTypeId = types[1];
+
+        String washName = "";
+        String carName = "";
+        for (WashType type : AppManager.getInstance().washTypes) {
+            if (type.getIdx().equals(washTypeId)) {
+                washName = type.getName();
+                break;
+            }
+        }
+        for (CarType type : AppManager.getInstance().carTypes) {
+            if (type.getIdx().equals(carTypeId)) {
+                carName = type.getName();
+                break;
+            }
+        }
+
+        return carName + ", " + washName;
+    }
 }

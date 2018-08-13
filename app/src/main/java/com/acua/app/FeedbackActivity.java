@@ -310,12 +310,12 @@ public class FeedbackActivity extends AppCompatActivity {
     private void submitFeedback(){
         String subject = Feedback.getFeedbackTitle(this, issueType);
         String content = etFeedback.getText().toString();
-        String html = content + "\n\n"
-                + session.getFullName() + "\n"
-                + "(" + session.getEmail() + ")" + "\n"
-                + session.getPhone() + "\n"
-                + carType + " " + washType +"\n"
-                + TimeUtil.getFullTimeString(lastOrder.completedAt);
+        String html = content + "<br/>"
+                + "<p>" + session.getFullName() + "</p>"
+                + "<p>" + "(" + session.getEmail() + ")" + "</p>"
+                + "<p>" + session.getPhone() + "</p>"
+                + "<p>" + carType + " " + washType +"</p>"
+                + "<p>" + TimeUtil.getFullTimeString(lastOrder.completedAt);
         AppManager.getInstance().sendEmailPushToADMIN(subject, subject, html, new ResultListener() {
             @Override
             public void onResponse(boolean success, String response) {

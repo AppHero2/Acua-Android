@@ -57,7 +57,10 @@ import com.onesignal.OneSignal;
 import com.stepstone.apprating.AppRatingDialog;
 import com.stepstone.apprating.listener.RatingDialogListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -604,6 +607,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onClickPayFor(Order order) {
+        AppManager.getInstance().focusedOrder = order;
+        startActivity(new Intent(MainActivity.this, PayFastDialogActivity.class));
+    }
+
+    @Override
     public void onClickRateServiceInAppointments() {
         showRatingDiglog();
     }
@@ -611,7 +620,19 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onClickFeedbackInAppointments() {
         AppManager.getInstance().lastFeedbackOrder = null;
-        for (int i=AppManager.getInstance().selfOrders.size()-1; i>=0; i--) {
+
+        ArrayList<Order> selfOrders = new ArrayList<>();
+
+        selfOrders.addAll(AppManager.getInstance().selfOrders);
+
+        Collections.sort(selfOrders, new Comparator<Order>() {
+            @Override
+            public int compare(Order o1, Order o2) {
+                return Long.valueOf(o2.completedAt).compareTo(Long.valueOf(o1.completedAt));
+            }
+        });
+
+        for (int i = 0; i < selfOrders.size(); i++) {
             Order order = AppManager.getInstance().selfOrders.get(i);
             if (order.serviceStatus == OrderServiceStatus.COMPLETED && order.completedAt > 0) {
                 AppManager.getInstance().lastFeedbackOrder = order;

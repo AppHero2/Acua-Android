@@ -158,6 +158,12 @@ public class AppointmentsFragment extends Fragment {
         }
     }
 
+    public void onClickPayFor(Order order) {
+        if (mListener != null) {
+            mListener.onClickPayFor(order);
+        }
+    }
+
     public void onClickRatService() {
         if (mListener != null) {
             mListener.onClickRateServiceInAppointments();
@@ -188,6 +194,7 @@ public class AppointmentsFragment extends Fragment {
     }
 
     public interface OnAppointmentsFragmentInteractionListener {
+        void onClickPayFor(Order order);
         void onClickRateServiceInAppointments();
         void onClickFeedbackInAppointments();
     }

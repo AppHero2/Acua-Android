@@ -1,6 +1,7 @@
 package com.acua.app;
 
 import android.app.Application;
+import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -62,12 +63,15 @@ public class AppApplication extends Application{
                     public void notificationOpened(OSNotificationOpenResult result) {
                         Log.d("Application", "notificationOpened: " + result);
                         try {
-
-                            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("Notification", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putBoolean("notificationOpened", true);
-                            editor.apply();
-                            editor.commit();
+                            OSNotification notification = result.notification;
+                            String fullMessage = notification.payload.body;
+                            if (!fullMessage.equals("Please Rate our Service")) {
+                                SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("Notification", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putBoolean("notificationOpened", true);
+                                editor.apply();
+                                editor.commit();
+                            }
 
                             Intent intent = new Intent(getApplicationContext(), AppSplashActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
