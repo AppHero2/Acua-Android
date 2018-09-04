@@ -609,6 +609,7 @@ public class AppManager {
         editor.putString("photo", user.getPhoto());
         editor.putString("phone", user.getPhone());
         editor.putString("pushToken", user.getPushToken());
+        editor.putInt("cardStatus", user.getCardStatus());
         editor.putInt("userType", user.getUserType());
         Gson gson = new Gson();
         String payCard = gson.toJson(user.getPayCard());
@@ -629,6 +630,7 @@ public class AppManager {
         String bio = sharedPreferences.getString("bio", "?");
         String pushToken = sharedPreferences.getString("pushToken", "?");
         int userType = sharedPreferences.getInt("userType", 0);
+        int cardStatus = sharedPreferences.getInt("cardStatus", 0);
         String payCardData = sharedPreferences.getString("payCard", null);
         Map<String,Object> payCard = new Gson().fromJson(payCardData, new TypeToken<Map<String, Object>>(){}.getType());
 
@@ -642,6 +644,7 @@ public class AppManager {
             data.put("phone", phone);
             data.put("bio", bio);
             data.put("pushToken", pushToken);
+            data.put("cardStatus", cardStatus);
             data.put("userType", userType);
             data.put("payCard", payCard);
             User user = new User(data);

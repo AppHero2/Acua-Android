@@ -220,7 +220,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                     if (mItem.serviceStatus == OrderServiceStatus.COMPLETED) {
 
                         AlertView actionSheet;
-                        if (mItem.payStatus != OrderPayStatus.PAID) {
+                        /*if (mItem.payStatus != OrderPayStatus.PAID) {
                             actionSheet = new AlertView.Builder().setContext(view.getContext())
                                     .setStyle(AlertView.Style.ActionSheet)
                                     .setTitle("Would you like to:")
@@ -250,9 +250,22 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                                         }
                                     })
                                     .build();
-                        }
+                        }*/
 
-
+                        actionSheet = new AlertView.Builder().setContext(view.getContext())
+                                .setStyle(AlertView.Style.ActionSheet)
+                                .setTitle("Would you like to:")
+                                .setMessage(null)
+                                .setCancelText("Dismiss")
+                                .setDestructive("Rate Service", "Leave Feedback")
+                                .setOthers(null)
+                                .setOnItemClickListener(new OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(Object o, int position) {
+                                        alertButtonPostion = position;
+                                    }
+                                })
+                                .build();
 
                         actionSheet.setOnDismissListener(new OnDismissListener() {
                             @Override

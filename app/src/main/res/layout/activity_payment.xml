@@ -14,6 +14,44 @@
         android:layout_alignParentTop="true" />
 
     <RelativeLayout
+        android:id="@+id/layout_status"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/toolbar">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_toLeftOf="@+id/btn_verify"
+            android:layout_toStartOf="@+id/btn_verify"
+            android:gravity="center"
+            android:text="Payment Expired"
+            android:textSize="16sp"
+            android:textColor="@color/colorPrimary"/>
+
+        <Button
+            android:id="@+id/btn_verify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="Verify Now"
+            android:textColor="@color/colorWhite"/>
+    </RelativeLayout>
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/layout_status"/>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_horizontal"
@@ -22,6 +60,7 @@
         android:paddingRight="8dp"
         android:paddingEnd="8dp"
         android:orientation="vertical"
+        android:visibility="gone"
         android:layout_below="@+id/toolbar">
         <TextView
             android:layout_width="match_parent"

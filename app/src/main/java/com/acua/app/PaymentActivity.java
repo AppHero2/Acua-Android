@@ -1,13 +1,18 @@
 package com.acua.app;
 
+import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +20,7 @@ import android.widget.Toast;
 import com.acua.app.classes.AppManager;
 import com.acua.app.models.PayCard;
 import com.acua.app.models.User;
+import com.acua.app.utils.Const;
 import com.acua.app.utils.References;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -40,6 +46,10 @@ public class PaymentActivity extends AppCompatActivity {
     private SimpleAdapter mAdatper;
     private List<Map<String, String>> mCardTokens = new ArrayList<Map<String, String>>();
 
+    private WebView webView;
+    private Boolean loadingFinished = false, redirect = false;
+
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +70,49 @@ public class PaymentActivity extends AppCompatActivity {
             }
         });
 
-        cardInputWidget = (CardInputWidget) findViewById(R.id.card_input_widget);
+        User user = AppManager.getSession();
+        if (user != null) {
+
+            webView = (WebView) findViewById(R.id.webView);
+            final String urlString = Const.URL_HEROKU_PAYMENT_VERIFY + "?userId=" + user.getIdx();
+
+            final RelativeLayout layout_status = findViewById(R.id.layout_status);
+            Button btnVerify = findViewById(R.id.btn_verify);
+            btnVerify.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    layout_status.setVisibility(View.GONE);
+                    webView.setVisibility(View.VISIBLE);
+                    loadPaymentWebview(urlString);
+                }
+            });
+
+            switch (user.getCardStatus()) {
+                case 0: // not verified
+                {
+                    layout_status.setVisibility(View.GONE);
+                    webView.setVisibility(View.VISIBLE);
+                    loadPaymentWebview(urlString);
+                }
+                    break;
+                case 1: // verified
+                {
+                    layout_status.setVisibility(View.VISIBLE);
+                    webView.setVisibility(View.GONE);
+                }
+                    break;
+                case 2: // expired
+                {
+                    layout_status.setVisibility(View.VISIBLE);
+                    webView.setVisibility(View.GONE);
+                }
+                    break;
+            }
+
+        }
+
+
+        /*cardInputWidget = (CardInputWidget) findViewById(R.id.card_input_widget);
         ListView listView =  (ListView) findViewById(R.id.listview);
 
         User session = AppManager.getSession();
@@ -114,6 +166,47 @@ public class PaymentActivity extends AppCompatActivity {
                                 hud.dismiss();
                             }
                         });
+            }
+        });*/
+    }
+
+    void loadPaymentWebview(String url){
+
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.loadUrl(url.replace(" ", "%20"));
+        webView.setWebViewClient(new WebViewClient() {
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String urlNewString) {
+                if (!loadingFinished) {
+                    redirect = true;
+                }
+
+                loadingFinished = false;
+                webView.loadUrl(urlNewString);
+                return true;
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+
+                hud.show();
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                if (!redirect) {
+                    loadingFinished = true;
+                }
+
+                if (loadingFinished && !redirect) {
+                    //HIDE LOADING IT HAS FINISHED
+                } else {
+                    redirect = false;
+                }
+
+                hud.dismiss();
             }
         });
     }

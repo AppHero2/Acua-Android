@@ -13,7 +13,8 @@ import static com.acua.app.utils.Util.getStringFromData;
 public class User {
 
     private String idx, firstname, lastname, email, photo, phone, bio, pushToken;
-    private int userType = 0; //0 = customer, 1 = service, 2 = admin
+    private int userType = 0; // 0 = customer, 1 = service, 2 = admin
+    private int cardStatus = 0; // 0 = not verified, 1 = verified, 2 = expired
     private PayCard payCard;
     public User(Map<String, Object> data){
         updateData(data);
@@ -29,6 +30,7 @@ public class User {
         this.bio = getStringFromData("bio", data);
         this.pushToken = getStringFromData("pushToken", data);
         this.userType = getIntFromData("userType", data);
+        this.cardStatus = getIntFromData("cardStatus", data);
         Map<String, Object> cardData = getMapDataFromData("payCard", data);
         this.payCard = new PayCard(cardData);
     }
@@ -75,5 +77,9 @@ public class User {
 
     public PayCard getPayCard() {
         return payCard;
+    }
+
+    public int getCardStatus() {
+        return cardStatus;
     }
 }
