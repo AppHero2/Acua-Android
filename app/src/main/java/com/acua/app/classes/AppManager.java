@@ -23,6 +23,9 @@ import android.util.Log;
 import com.acua.app.interfaces.NotificationListener;
 import com.acua.app.interfaces.RatingEventListener;
 import com.acua.app.models.Notification;
+import com.acua.app.utils.TimeUtil;
+import com.acua.app.utils.Util;
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -609,11 +612,12 @@ public class AppManager {
         editor.putString("photo", user.getPhoto());
         editor.putString("phone", user.getPhone());
         editor.putString("pushToken", user.getPushToken());
+        editor.putString("cardToken", user.getCardToken());
         editor.putInt("cardStatus", user.getCardStatus());
         editor.putInt("userType", user.getUserType());
-        Gson gson = new Gson();
+        /*Gson gson = new Gson();
         String payCard = gson.toJson(user.getPayCard());
-        editor.putString("payCard", payCard);
+        editor.putString("payCard", payCard);*/
         editor.apply();
         editor.commit();
     }
@@ -631,8 +635,9 @@ public class AppManager {
         String pushToken = sharedPreferences.getString("pushToken", "?");
         int userType = sharedPreferences.getInt("userType", 0);
         int cardStatus = sharedPreferences.getInt("cardStatus", 0);
-        String payCardData = sharedPreferences.getString("payCard", null);
-        Map<String,Object> payCard = new Gson().fromJson(payCardData, new TypeToken<Map<String, Object>>(){}.getType());
+        String cardToken = sharedPreferences.getString("cardToken", "");
+        /*String payCardData = sharedPreferences.getString("payCard", null);
+        Map<String,Object> payCard = new Gson().fromJson(payCardData, new TypeToken<Map<String, Object>>(){}.getType());*/
 
         if (uid != null) {
             Map<String, Object> data = new HashMap<>();
@@ -645,8 +650,8 @@ public class AppManager {
             data.put("bio", bio);
             data.put("pushToken", pushToken);
             data.put("cardStatus", cardStatus);
+            data.put("cardToken", cardToken);
             data.put("userType", userType);
-            data.put("payCard", payCard);
             User user = new User(data);
 
             AppManager.getInstance().session = user;
@@ -690,16 +695,28 @@ public class AppManager {
                 });
     }
 
-    public void makePayment(String phone, String token, String type, int amount, final ResultListener listener){
+    public void makePayment(String token, String item, String amount, final ResultListener listener){
 
-        String url = Const.URL_HEROKU_BASE + "payment/charge";
+        String url = "https://api.payfast.co.za/subscriptions/" + token +"/adhoc";
+
+        String timestamp = "2018-09-06T12:00:01"; //TimeUtil.getISO8601Date();
+        String signature = Util.md5("amount=" + amount + "&item_name=" + item
+                + "&merchant-id=12925581"
+                + "&passphrase=abcdEFGH12345"
+                + "&time_stamp=" + timestamp
+                + "&version=v1");
+
+        final Map<String, String> headers = new HashMap<>();
+        headers.put("merchant-id", "12925581");
+        headers.put("version", "v1");
+        headers.put("timestamp", timestamp);
+        headers.put("signature", signature);
+        headers.put("Content-Type", "application/x-www-form-urlencoded");
 
         final Map<String, String> params = new HashMap();
-        params.put("phoneNumber", phone);
-        params.put("stripeToken", token);
-        params.put("serviceType", type);
-        params.put("serviceCost", String.valueOf(amount));
-        params.put("Content-Type", "application/x-www-form-urlencoded");
+        params.put("amount", amount);
+        params.put("item_name", item);
+//        params.put("Content-Type", "application/x-www-form-urlencoded");
 
         RequestQueue queue = Volley.newRequestQueue(context);
 
@@ -710,7 +727,7 @@ public class AppManager {
                     public void onResponse(String response)
                     {
                         if (listener != null) {
-                            listener.onResponse(false, response);
+                            listener.onResponse(true, response);
                         }
                     }
                 },
@@ -729,6 +746,11 @@ public class AppManager {
             protected Map<String, String> getParams()
             {
                 return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return headers;
             }
         };
 

@@ -1,5 +1,6 @@
 package com.acua.app.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import com.acua.app.R;
@@ -182,6 +183,12 @@ public class TimeUtil {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar.getTimeInMillis();
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    public static String getISO8601Date(){
+         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault());
+         return sdf.format(new Date());
     }
 
 }

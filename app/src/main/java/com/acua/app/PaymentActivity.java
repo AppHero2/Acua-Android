@@ -49,6 +49,9 @@ public class PaymentActivity extends AppCompatActivity {
     private WebView webView;
     private Boolean loadingFinished = false, redirect = false;
 
+    private TextView tvStatus;
+    private Button btnVerify;
+
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,7 +80,8 @@ public class PaymentActivity extends AppCompatActivity {
             final String urlString = Const.URL_HEROKU_PAYMENT_VERIFY + "?userId=" + user.getIdx();
 
             final RelativeLayout layout_status = findViewById(R.id.layout_status);
-            Button btnVerify = findViewById(R.id.btn_verify);
+            tvStatus = findViewById(R.id.tv_status);
+            btnVerify = findViewById(R.id.btn_verify);
             btnVerify.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -99,12 +103,16 @@ public class PaymentActivity extends AppCompatActivity {
                 {
                     layout_status.setVisibility(View.VISIBLE);
                     webView.setVisibility(View.GONE);
+                    tvStatus.setText("Your verified credit card token : " + user.getCardToken());
+                    btnVerify.setText("Verify Again");
                 }
                     break;
                 case 2: // expired
                 {
                     layout_status.setVisibility(View.VISIBLE);
                     webView.setVisibility(View.GONE);
+                    tvStatus.setText("Your credit card is expired");
+                    btnVerify.setText("Verify Again");
                 }
                     break;
             }

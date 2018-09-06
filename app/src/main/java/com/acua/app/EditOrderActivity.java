@@ -357,18 +357,24 @@ public class EditOrderActivity extends AppCompatActivity {
     }
 
     private void makeOrder(Order order) {
-
         User session = AppManager.getSession();
-        final String push_title = session.getFullName() + " has updated an offer.";
-        final String push_message = carType.getName() + ", " + washType.getName() + " at " + TimeUtil.getSimpleDateString(order.beginAt);
+        if (session != null) {
+            if (session.getCardStatus() == 1 && !session.getCardToken().isEmpty()) {
+                final String push_title = session.getFullName() + " has updated an offer.";
+                final String push_message = carType.getName() + ", " + washType.getName() + " at " + TimeUtil.getSimpleDateString(order.beginAt);
 
-        References.getInstance().ordersRef.child(order.idx).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                Toast.makeText(EditOrderActivity.this, "Updated successfully", Toast.LENGTH_SHORT).show();
-                AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
+                References.getInstance().ordersRef.child(order.idx).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(EditOrderActivity.this, "Updated successfully", Toast.LENGTH_SHORT).show();
+                        AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
+                    }
+                });
             }
-        });
+            else {
+                Util.showAlert("Note", "Please verify your payment first", this);
+            }
+        }
     }
 
     private void showDateTime(Calendar calendar) {

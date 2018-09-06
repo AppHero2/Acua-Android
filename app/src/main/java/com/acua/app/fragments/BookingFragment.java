@@ -90,9 +90,6 @@ public class BookingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
     }
 
     @Override
@@ -332,20 +329,27 @@ public class BookingFragment extends Fragment {
     private void makeOrder(final Order order) {
 
         User session = AppManager.getSession();
-        final String push_title = session.getFullName() + " has made an offer.";
-        final String push_message = carType.getName() + ", " + washType.getName() + " at " + TimeUtil.getSimpleDateString(order.beginAt);
+        if (session != null) {
+            if (session.getCardStatus() == 1 && !session.getCardToken().isEmpty()) {
+                final String push_title = session.getFullName() + " has made an offer.";
+                final String push_message = carType.getName() + ", " + washType.getName() + " at " + TimeUtil.getSimpleDateString(order.beginAt);
 
-        DatabaseReference reference = References.getInstance().ordersRef.push();
-        order.idx = reference.getKey();
-        References.getInstance().ordersRef.child(order.idx).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                Toast.makeText(getActivity(), "Booked successfully", Toast.LENGTH_SHORT).show();
-                AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
+                DatabaseReference reference = References.getInstance().ordersRef.push();
+                order.idx = reference.getKey();
+                References.getInstance().ordersRef.child(order.idx).setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(getActivity(), "Booked successfully", Toast.LENGTH_SHORT).show();
+                        AppManager.getInstance().sendPushNotificationToService(push_title, push_message);
 
-                mListener.didMakeOrder(order);
+                        mListener.didMakeOrder(order);
+                    }
+                });
             }
-        });
+            else {
+                Util.showAlert("Note", "Please verify your payment first", getActivity());
+            }
+        }
     }
 
     private void showDateTime(Calendar calendar) {

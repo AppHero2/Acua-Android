@@ -347,7 +347,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             tvSchedule = (TextView) view.findViewById(R.id.tv_schedule);
             tvStatus = (TextView) view.findViewById(R.id.tv_status);
             btnPay = (Button) view.findViewById(R.id.btn_pay);
-            btnPay.setOnClickListener(new View.OnClickListener() {
+            /*btnPay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (mItem.menu != null) {
@@ -394,7 +394,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                         }
                     }
                 }
-            });
+            });*/
         }
 
         public void updateData(){
@@ -540,8 +540,9 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                             }
                         });
                     } else if (mItem.serviceStatus == OrderServiceStatus.ENGAGED) {
-                        mItem.serviceStatus = OrderServiceStatus.COMPLETED;
-                        References.getInstance().ordersRef.child(mItem.idx).setValue(mItem).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        /*mItem.serviceStatus = OrderServiceStatus.COMPLETED;
+                        References.getInstance().ordersRef.child(mItem.idx).setValue(mItem)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 String title = "acuar experience complete!";
@@ -557,7 +558,25 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                                 notificationData.put("isRead", false);
                                 reference.setValue(notificationData);
                             }
+                        });*/
+
+                        String item = "test"; //AppManager.getTypesString(mItem);
+                        String amount = "500"; //String.valueOf(mItem.menu.getPrice());
+                        AppManager.getInstance().makePayment(mUser.getCardToken(), item, amount, new ResultListener() {
+                            @Override
+                            public void onResponse(boolean success, String response) {
+                                if (success) {
+                                    References.getInstance().ordersRef.child(mItem.idx).child("payStatus").setValue(OrderPayStatus.PAID)
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+
+                                        }
+                                    });
+                                }
+                            }
                         });
+
                     } else {
 
                     }
