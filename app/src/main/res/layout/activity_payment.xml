@@ -16,19 +16,28 @@
     <RelativeLayout
         android:id="@+id/layout_status"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="300dp"
         android:layout_below="@+id/toolbar">
+
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:text="Automatic Card Payment"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"
+            android:gravity="center"/>
 
         <TextView
             android:id="@+id/tv_status"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="50dp"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_toLeftOf="@+id/btn_verify"
-            android:layout_toStartOf="@+id/btn_verify"
+            android:layout_below="@id/text1"
             android:gravity="center"
             android:text="Payment Expired"
             android:textSize="16sp"
@@ -38,14 +47,24 @@
             android:id="@+id/btn_verify"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/tv_status"
             android:backgroundTint="@color/colorPrimary"
-            android:text="Verify Now"
-            android:textColor="@color/colorWhite"/>
+            android:text="Verify another card"
+            android:textColor="@color/colorWhite"
+            android:textSize="18sp"
+            android:textAllCaps="false"/>
+
+        <TextView
+            android:id="@+id/text2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/payment_note"
+            android:textSize="18sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_below="@+id/btn_verify"
+            android:gravity="center"/>
+
     </RelativeLayout>
     <WebView
         android:id="@+id/webView"

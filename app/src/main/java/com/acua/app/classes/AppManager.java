@@ -64,12 +64,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 //import java.util.concurrent.TimeUnit;
 //
 //import okhttp3.Call;
@@ -695,68 +699,99 @@ public class AppManager {
                 });
     }
 
-    public void makePayment(String token, String item, String amount, final ResultListener listener){
+    public void makePayment(final String token, final String item, final String amount, final ResultListener listener) {
 
         String url = "https://api.payfast.co.za/subscriptions/" + token +"/adhoc";
 
-        String timestamp = "2018-09-06T12:00:01"; //TimeUtil.getISO8601Date();
-        String signature = Util.md5("amount=" + amount + "&item_name=" + item
-                + "&merchant-id=12925581"
-                + "&passphrase=abcdEFGH12345"
-                + "&time_stamp=" + timestamp
-                + "&version=v1");
+        final String timestamp = TimeUtil.getISO8601Date();
 
-        final Map<String, String> headers = new HashMap<>();
-        headers.put("merchant-id", "12925581");
-        headers.put("version", "v1");
-        headers.put("timestamp", timestamp);
-        headers.put("signature", signature);
-        headers.put("Content-Type", "application/x-www-form-urlencoded");
-
-        final Map<String, String> params = new HashMap();
-        params.put("amount", amount);
+        Map<String, String> params = new HashMap<>();
+        params.put("merchant-id", "12925581");
+        params.put("passphrase", "abcdEFGH12345");
+        params.put("timestamp", timestamp);
+        params.put("version", "v1");
         params.put("item_name", item);
-//        params.put("Content-Type", "application/x-www-form-urlencoded");
+        params.put("amount", amount);
 
-        RequestQueue queue = Volley.newRequestQueue(context);
+        try {
+            final String signature = generateSignature(params);
 
-        StringRequest strRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>()
-                {
-                    @Override
-                    public void onResponse(String response)
+            RequestQueue queue = Volley.newRequestQueue(context);
+
+            StringRequest strRequest = new StringRequest(Request.Method.POST, url,
+                    new Response.Listener<String>()
                     {
-                        if (listener != null) {
-                            listener.onResponse(true, response);
+                        @Override
+                        public void onResponse(String response)
+                        {
+                            if (listener != null) {
+                                listener.onResponse(true, response);
+                            }
                         }
-                    }
-                },
-                new Response.ErrorListener()
-                {
-                    @Override
-                    public void onErrorResponse(VolleyError error)
+                    },
+                    new Response.ErrorListener()
                     {
-                        if (listener != null) {
-                            listener.onResponse(false, error.getLocalizedMessage());
+                        @Override
+                        public void onErrorResponse(VolleyError error)
+                        {
+                            if (listener != null) {
+                                listener.onResponse(false, error.getLocalizedMessage());
+                            }
                         }
-                    }
-                })
-        {
-            @Override
-            protected Map<String, String> getParams()
+                    })
             {
-                return params;
-            }
+                @Override
+                protected Map<String, String> getParams()
+                {
+                    final Map<String, String> body = new HashMap();
+                    body.put("amount", amount);
+                    body.put("item_name", item);
+                    return body;
+                }
 
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                return headers;
-            }
-        };
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    final Map<String, String> headers = new HashMap<>();
+                    headers.put("merchant-id", "12925581");
+                    headers.put("version", "v1");
+                    headers.put("timestamp", timestamp);
+                    headers.put("signature", signature);
+                    headers.put("Content-Type", "application/x-www-form-urlencoded");
+                    return headers;
+                }
+            };
 
-        queue.add(strRequest);
+            queue.add(strRequest);
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
     }
 
+    private String generateSignature(Map<String, String> params) throws UnsupportedEncodingException {
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        SortedSet<String> keys = new TreeSet<>(params.keySet());
+
+        int i = 0;
+        for (String key : keys) {
+            String value = params.get(key);
+
+            if (i >= keys.size()-1) {
+                stringBuilder.append(key).append("=").append(URLEncoder.encode(value, "utf-8"));
+            } else {
+                stringBuilder.append(key).append("=").append(URLEncoder.encode(value, "utf-8")).append("&");
+            }
+
+            i++;
+        }
+
+        String pfParamString = stringBuilder.toString();
+
+        return Util.md5(pfParamString);
+    }
 
     public static String getTypesString(Order order) {
         String[] types = order.menu.getIdx().split("_");

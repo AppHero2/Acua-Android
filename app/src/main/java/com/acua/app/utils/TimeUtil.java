@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.acua.app.R;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -187,8 +188,8 @@ public class TimeUtil {
 
     @SuppressLint("SimpleDateFormat")
     public static String getISO8601Date(){
-         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault());
-         return sdf.format(new Date());
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+         return df.format(new Date());
     }
 
 }

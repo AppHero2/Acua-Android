@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -49,9 +50,6 @@ public class PaymentActivity extends AppCompatActivity {
     private WebView webView;
     private Boolean loadingFinished = false, redirect = false;
 
-    private TextView tvStatus;
-    private Button btnVerify;
-
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,8 +78,8 @@ public class PaymentActivity extends AppCompatActivity {
             final String urlString = Const.URL_HEROKU_PAYMENT_VERIFY + "?userId=" + user.getIdx();
 
             final RelativeLayout layout_status = findViewById(R.id.layout_status);
-            tvStatus = findViewById(R.id.tv_status);
-            btnVerify = findViewById(R.id.btn_verify);
+            TextView tvStatus = findViewById(R.id.tv_status);
+            Button btnVerify = findViewById(R.id.btn_verify);
             btnVerify.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -90,6 +88,9 @@ public class PaymentActivity extends AppCompatActivity {
                     loadPaymentWebview(urlString);
                 }
             });
+
+            TextView text2 = findViewById(R.id.text2);
+            text2.setText(Html.fromHtml("<b>Or</b><br/> <b>Cash</b> or <b>Card</b> payment will be facilitated by<br/> the Acuar operator upon arrival."));
 
             switch (user.getCardStatus()) {
                 case 0: // not verified
@@ -103,8 +104,8 @@ public class PaymentActivity extends AppCompatActivity {
                 {
                     layout_status.setVisibility(View.VISIBLE);
                     webView.setVisibility(View.GONE);
-                    tvStatus.setText("Your verified credit card token : " + user.getCardToken());
-                    btnVerify.setText("Verify Again");
+                    tvStatus.setText("Your verified credit card token :\n" + user.getCardToken());
+                    btnVerify.setText("Verify another card");
                 }
                     break;
                 case 2: // expired
@@ -112,7 +113,7 @@ public class PaymentActivity extends AppCompatActivity {
                     layout_status.setVisibility(View.VISIBLE);
                     webView.setVisibility(View.GONE);
                     tvStatus.setText("Your credit card is expired");
-                    btnVerify.setText("Verify Again");
+                    btnVerify.setText("Verify another card");
                 }
                     break;
             }

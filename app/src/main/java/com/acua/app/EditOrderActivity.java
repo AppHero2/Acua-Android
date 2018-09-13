@@ -51,6 +51,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static com.acua.app.utils.Const.LIMIT_ORDERS_PER_HOUR;
 import static com.acua.app.utils.Const.ServiceTimeEnd;
 import static com.acua.app.utils.Const.ServiceTimeStart;
 
@@ -326,7 +327,7 @@ public class EditOrderActivity extends AppCompatActivity {
                 currentOrder.hasPlug = hasPlug;
 
                 if (isValidBooking(currentOrder)) {
-                    if (isExistingTwo(currentOrder.beginAt)) {
+                    if (isExistingOrderCount(currentOrder.beginAt)) {
                         final long validTime = generateValidTime(currentOrder.beginAt);
                         String validTimeString = TimeUtil.getFullTimeString(validTime);
                         String title = "Note";
@@ -465,14 +466,14 @@ public class EditOrderActivity extends AppCompatActivity {
         long value = time - 3600 * 1000;
         while (true) {
             value += 3600 * 1000;
-            if (TimeUtil.checkAvailableTimeRange(value) && ! isExistingTwo(value)) {
+            if (TimeUtil.checkAvailableTimeRange(value) && ! isExistingOrderCount(value)) {
                 break;
             }
         }
         return value;
     }
 
-    private boolean isExistingTwo(long time){
+    private boolean isExistingOrderCount(long time){
         int existCount = 0;
         for (Order theOrder: AppManager.getInstance().orderList) {
             if (theOrder.beginAt <= time && time <= theOrder.endAt) {
@@ -480,7 +481,7 @@ public class EditOrderActivity extends AppCompatActivity {
             }
         }
 
-        return existCount >= 2;
+        return existCount >= LIMIT_ORDERS_PER_HOUR;
     }
 
     private boolean isPastTime(long time) {

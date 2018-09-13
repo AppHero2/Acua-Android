@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
@@ -56,6 +55,7 @@ import java.util.Date;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
+import static com.acua.app.utils.Const.LIMIT_ORDERS_PER_HOUR;
 import static com.acua.app.utils.Const.ServiceTimeEnd;
 import static com.acua.app.utils.Const.ServiceTimeStart;
 
@@ -295,7 +295,7 @@ public class BookingFragment extends Fragment {
 
                 if (isValidBooking(order)) {
 
-                    if (isExistingTwo(order.beginAt)) {
+                    if (isExistingOrdersCount(order.beginAt)) {
                         final long validTime = generateValidTime(order.beginAt);
                         String validTimeString = TimeUtil.getFullTimeString(validTime);
                         String title = "Note";
@@ -437,14 +437,14 @@ public class BookingFragment extends Fragment {
         long value = time - 3600 * 1000;
         while (true) {
             value += 3600 * 1000;
-            if (TimeUtil.checkAvailableTimeRange(value) && ! isExistingTwo(value)) {
+            if (TimeUtil.checkAvailableTimeRange(value) && ! isExistingOrdersCount(value)) {
                 break;
             }
         }
         return value;
     }
 
-    private boolean isExistingTwo(long time){
+    private boolean isExistingOrdersCount(long time){
         int existCount = 0;
         for (Order theOrder: AppManager.getInstance().orderList) {
             if (theOrder.beginAt <= time && time <= theOrder.endAt) {
@@ -452,7 +452,7 @@ public class BookingFragment extends Fragment {
             }
         }
 
-        return existCount >= 2;
+        return existCount >= LIMIT_ORDERS_PER_HOUR;
     }
 
     private boolean isPastTime(long time) {

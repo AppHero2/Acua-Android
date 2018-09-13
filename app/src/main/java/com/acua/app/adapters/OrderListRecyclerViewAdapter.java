@@ -1,5 +1,6 @@
 package com.acua.app.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -41,6 +42,7 @@ import com.acua.app.utils.References;
 import com.acua.app.utils.TimeUtil;
 import com.acua.app.utils.Util;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -540,44 +542,53 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                             }
                         });
                     } else if (mItem.serviceStatus == OrderServiceStatus.ENGAGED) {
-                        /*mItem.serviceStatus = OrderServiceStatus.COMPLETED;
-                        References.getInstance().ordersRef.child(mItem.idx).setValue(mItem)
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                String title = "acuar experience complete!";
-                                String message = "Thank you for choosing acuar. Keep safe until we meet again";
-                                AppManager.getInstance().sendPushNotificationToCustomer(mUser.getPushToken(), title,  message);
-                                DatabaseReference reference = References.getInstance().notificationsRef.child(mUser.getIdx()).push();
-                                String notificationId = reference.getKey();
-                                Map<String, Object> notificationData = new HashMap<>();
-                                notificationData.put("idx", notificationId);
-                                notificationData.put("title", title);
-                                notificationData.put("message", message);
-                                notificationData.put("createdAt", System.currentTimeMillis());
-                                notificationData.put("isRead", false);
-                                reference.setValue(notificationData);
-                            }
-                        });*/
 
-                        String item = "test"; //AppManager.getTypesString(mItem);
-                        String amount = "500"; //String.valueOf(mItem.menu.getPrice());
-                        AppManager.getInstance().makePayment(mUser.getCardToken(), item, amount, new ResultListener() {
+                        String item = AppManager.getTypesString(mItem);
+                        String amount = String.valueOf((int) (mItem.menu.getPrice()*100));
+                        String token = mUser.getCardToken();
+
+                        hud.show();
+                        AppManager.getInstance().makePayment(token, item, amount, new ResultListener() {
+                            @SuppressLint("ShowToast")
                             @Override
                             public void onResponse(boolean success, String response) {
+                                hud.dismiss();
                                 if (success) {
+                                    Toast.makeText(activity, "Payment made", Toast.LENGTH_LONG).show();
+
+                                    mItem.serviceStatus = OrderServiceStatus.COMPLETED;
+                                    References.getInstance().ordersRef.child(mItem.idx).setValue(mItem)
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    String title = "acuar experience complete!";
+                                                    String message = "Thank you for choosing acuar. Keep safe until we meet again";
+                                                    AppManager.getInstance().sendPushNotificationToCustomer(mUser.getPushToken(), title,  message);
+                                                    DatabaseReference reference = References.getInstance().notificationsRef.child(mUser.getIdx()).push();
+                                                    String notificationId = reference.getKey();
+                                                    Map<String, Object> notificationData = new HashMap<>();
+                                                    notificationData.put("idx", notificationId);
+                                                    notificationData.put("title", title);
+                                                    notificationData.put("message", message);
+                                                    notificationData.put("createdAt", System.currentTimeMillis());
+                                                    notificationData.put("isRead", false);
+                                                    reference.setValue(notificationData);
+                                                }
+                                            });
+
                                     References.getInstance().ordersRef.child(mItem.idx).child("payStatus").setValue(OrderPayStatus.PAID)
                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
 
-                                        }
-                                    });
+                                                }
+                                            });
+                                }
+                                else {
+                                    Toast.makeText(activity, "Payment failed", Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
-
-                    } else {
 
                     }
                 }
